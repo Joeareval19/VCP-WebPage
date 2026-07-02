@@ -84,12 +84,18 @@ When an issue is assigned to Tomas, auto-move to **Started**.
 
 ---
 
-## Custom Skills to Build
+## Custom Skills (BUILT — live in `.claude/skills/`)
 
-| Skill | Purpose |
-|-------|---------|
-| `/vcp-spec` | Wrapper around `/spec` that adds issue to VCP Tracker as Pending |
-| `/vcp-assign` | Assign an issue to a team member and move to Started |
+| Skill | Purpose | Status |
+|-------|---------|--------|
+| `/vcp-spec` | Wrapper around gstack `/spec` that adds the issue to VCP Tracker as Pending | ✅ Built |
+| `/vcp-start` | Assign an issue to yourself, move it to Started, create a working branch | ✅ Built |
+| `/vcp-onboard` | Auto-register a worker: detect gh identity, assign sequential VCP-NNN ID, add to TEAM.md, configure git attribution | ✅ Built |
+
+These live in the repo (`.claude/skills/`), so anyone who clones the repo and
+opens Claude Code gets them automatically. `CLAUDE.md` instructs every session
+to run `/vcp-onboard` if the current gh user is missing from `TEAM.md` —
+workers are registered dynamically on first contact.
 
 ---
 
