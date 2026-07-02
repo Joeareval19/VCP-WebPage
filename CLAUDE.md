@@ -27,19 +27,19 @@ systems — don't skip columns:
 
 | Stage | gstack skill | Board action | Wiki action |
 |-------|-------------|--------------|-------------|
-| 1. Ideate | `/gstack office-hours` (pressure-test the idea) | — | Note per meaningful idea/decision, linked to its topic MOC |
-| 2. Spec | `/vcp-spec` (wraps `/gstack spec`) | Issue created → **Pending** | Spec's key decisions get `[[wikilinks]]` into existing notes |
+| 1. Ideate | `/office-hours` (pressure-test the idea) | — | Note per meaningful idea/decision, linked to its topic MOC |
+| 2. Spec | `/vcp-spec` (wraps gstack `/spec`) | Issue created → **Pending** | Spec's key decisions get `[[wikilinks]]` into existing notes |
 | 3. Claim | `/vcp-start <issue#>` | Assignee set → **Started**, branch created | — |
-| 4. Plan | `/gstack autoplan` (big work) or direct (small) | — | Architecture choices → decision note (`parent:` the feature note) |
-| 5. Build | normal dev; `/gstack investigate` when stuck | — | Non-obvious root causes → note (future debugging trail) |
-| 6. Verify | `/gstack review` then `/gstack qa` | — | — |
-| 7. Ship | `/gstack ship` (PR body MUST contain `Closes #N`) | Merge auto-closes issue → **Completed** | — |
-| 8. Learn | `/gstack retro` (weekly) | — | Learnings land as wiki notes, linked from the relevant MOC |
+| 4. Plan | `/autoplan` (big work) or direct (small) | — | Architecture choices → decision note (`parent:` the feature note) |
+| 5. Build | normal dev; `/investigate` when stuck | — | Non-obvious root causes → note (future debugging trail) |
+| 6. Verify | `/review` then `/qa` | — | — |
+| 7. Ship | `/ship` (PR body MUST contain `Closes #N`) | Merge auto-closes issue → **Completed** | — |
+| 8. Learn | `/retro` (weekly) | — | Learnings land as wiki notes, linked from the relevant MOC |
 
 Rules that keep the system honest:
 
 - **Never file work without a ticket.** `/vcp-spec` is the only approved way
-  to create tickets (NOT plain `/gstack spec` — the wrapper adds the issue to the
+  to create tickets (NOT plain `/spec` — the wrapper adds the issue to the
   VCP Tracker board and sets Status = Pending).
 - **Never start work without claiming.** `/vcp-start` assigns you and moves
   the card — the board must always reflect who is doing what.
@@ -72,18 +72,18 @@ and ship with the repo.
 - `/vcp-spec` — file a ticket (spec interrogation + board integration)
 - `/vcp-start` — claim a ticket, move to Started, create branch
 - `/vcp-onboard` — register a new worker (auto-run via checklist above)
-- `/gstack autoplan` — CEO + Eng + Design reviewed plan before big builds
-- `/gstack review` — staff-engineer code review before shipping
-- `/gstack ship` — sync, test, audit coverage, push PR
+- `/autoplan` — CEO + Eng + Design reviewed plan before big builds
+- `/review` — staff-engineer code review before shipping
+- `/ship` — sync, test, audit coverage, push PR
 
 **Situational:**
-- `/gstack office-hours` — interrogate a product idea before speccing it
-- `/gstack qa` — browser-based QA of the webpage
-- `/gstack investigate` — root-cause debugging methodology
-- `/gstack cso` — OWASP + STRIDE security audit (run before any public launch)
-- `/gstack design-consultation`, `/gstack design-shotgun`, `/gstack design-html` — UI design work
-- `/gstack retro` — weekly retrospective (feeds the wiki)
-- `/gstack careful` / `/gstack guard` — safety rails when doing risky operations
+- `/office-hours` — interrogate a product idea before speccing it
+- `/qa` — browser-based QA of the webpage
+- `/investigate` — root-cause debugging methodology
+- `/cso` — OWASP + STRIDE security audit (run before any public launch)
+- `/design-consultation`, `/design-shotgun`, `/design-html` — UI design work
+- `/retro` — weekly retrospective (feeds the wiki)
+- `/careful` / `/guard` — safety rails when doing risky operations
 
 **Not for this project:** `ios-*` skills (this is a web project).
 
