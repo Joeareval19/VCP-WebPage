@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCP Design System — Component Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<nav class="vcp-nav">
+  <span class="vcp-nav__wordmark sheen-text">VCP</span>
+  <ul class="vcp-nav__links label-caps">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#library">Library</a></li>
+  </ul>
+</nav>
+
+<main class="container">
+
+  <section style="padding: var(--space-6) 0;">
+    <h1 class="sheen-text">VCP Design System</h1>
+    <p class="text-muted">Dark + metallic silver brand foundation — tokens, typography, and core components rendered together for visual QA.</p>
+  </section>
+
+  <section id="typography" style="margin-bottom: var(--space-6);">
+    <div class="vcp-section-heading">
+      <h2>Typography</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <h1>Heading 1 / 56</h1>
+    <h2>Heading 2 / 40</h2>
+    <h3>Heading 3 / 28</h3>
+    <h4>Heading 4 / 20</h4>
+    <p>Body / 16 — A clean neutral sans for readability on dark. The quick silver fox jumps over the lazy metal.</p>
+    <p style="font-size: var(--fs-14);">Small / 14 — secondary body copy.</p>
+    <p class="label-caps">Small-caps label / 12</p>
+  </section>
+
+  <section id="colors" style="margin-bottom: var(--space-6);">
+    <div class="vcp-section-heading">
+      <h2>Color Tokens</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3);">
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--bg); border:1px solid var(--line);"></div>
+        <small>--bg</small>
+      </div>
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--surface); border:1px solid var(--line);"></div>
+        <small>--surface</small>
+      </div>
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--surface-raised); border:1px solid var(--line);"></div>
+        <small>--surface-raised</small>
+      </div>
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--silver);"></div>
+        <small>--silver</small>
+      </div>
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--silver-bright);"></div>
+        <small>--silver-bright</small>
+      </div>
+      <div>
+        <div style="height:64px; border-radius:var(--radius); background:var(--silver-sheen);"></div>
+        <small>--silver-sheen</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="buttons" style="margin-bottom: var(--space-6);">
+    <div class="vcp-section-heading">
+      <h2>Buttons</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div style="display:flex; gap: var(--space-3);">
+      <button class="vcp-btn vcp-btn--primary">Primary Action</button>
+      <button class="vcp-btn vcp-btn--secondary">Secondary Action</button>
+    </div>
+  </section>
+
+  <section id="tags" style="margin-bottom: var(--space-6);">
+    <div class="vcp-section-heading">
+      <h2>Tags</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div style="display:flex; gap: var(--space-2);">
+      <span class="vcp-tag">Research</span>
+      <span class="vcp-tag">Projects</span>
+      <span class="vcp-tag">Library</span>
+    </div>
+  </section>
+
+  <section id="cards" style="margin-bottom: var(--space-6);">
+    <div class="vcp-section-heading">
+      <h2>Cards</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4);">
+      <article class="vcp-card">
+        <span class="vcp-tag">Research</span>
+        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">Signal Processing at Scale</h3>
+        <p class="vcp-card__body">Exploring low-latency inference pipelines for real-time systems.</p>
+      </article>
+      <article class="vcp-card">
+        <span class="vcp-tag">Projects</span>
+        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">VCP Tracker</h3>
+        <p class="vcp-card__body">Ticket-driven development across GitHub, gstack, and the wiki.</p>
+      </article>
+      <article class="vcp-card">
+        <span class="vcp-tag">Library</span>
+        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">Design Systems Reading List</h3>
+        <p class="vcp-card__body">Curated papers and references on metallic, minimal UI.</p>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <span>VCP &copy; 2026. All rights reserved.</span>
+  <ul class="vcp-footer__links">
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+  </ul>
+</footer>
+
+</body>
+</html>
