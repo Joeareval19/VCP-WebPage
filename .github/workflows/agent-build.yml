@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Resolve issue number
         id: t
-        shell: pwsh
+        shell: powershell
         run: |
           $n = "${{ github.event.inputs.issue }}"
           if (-not $n) { $n = "${{ github.event.client_payload.issue }}" }
@@ -46,7 +46,7 @@ jobs:
       # Claim: assign + move board card to Started. Uses the machine's gh auth
       # (Joeareval19, has project scope) — NOT the workflow GITHUB_TOKEN.
       - name: Claim ticket
-        shell: pwsh
+        shell: powershell
         env:
           GH_TOKEN: ""
         run: |
@@ -58,7 +58,7 @@ jobs:
           Write-Host "Issue #$n claimed and set to Started"
 
       - name: Run Claude agent
-        shell: pwsh
+        shell: powershell
         env:
           GH_TOKEN: ""
         run: |
@@ -82,7 +82,7 @@ jobs:
 
       - name: Report failure on the ticket
         if: failure()
-        shell: pwsh
+        shell: powershell
         env:
           GH_TOKEN: ""
         run: |
