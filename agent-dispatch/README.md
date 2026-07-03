@@ -18,3 +18,10 @@ GitHub App webhook (projects_v2_item) -> smee.io channel -> `relay.js` on the wo
 - Parallel agents: 3 runners (vcp-laptop, -2, -3); per-issue concurrency still one agent per ticket
 - Workflow concurrency: one agent per issue number
 - Agent capped at --max-turns 100; failures are commented on the ticket
+
+## Hard constraint: subscription auth only
+Agents authenticate with Jose's Claude **subscription login** on the worker
+machine — never `ANTHROPIC_API_KEY` billing. Do NOT move this workflow to
+GitHub-hosted runners (they cannot use the local login). Scale by adding
+self-hosted runners on machines that have the Claude login (second laptop,
+headless mini PC, home VM).
