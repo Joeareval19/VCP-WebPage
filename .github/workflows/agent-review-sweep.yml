@@ -1,0 +1,90 @@
+name: AI Review Audit Sweep
+
+# Reconciliation net for the AI Review Audit pipeline (see agent-review.yml).
+# The native pull_request trigger and the relay's card-review dispatch are
+# both single point-in-time events with no retry — if either is dropped
+# (observed in practice: PR #8 and #16 sat in Review with zero audit runs,
+# no error, no trace, despite idle runners), nothing else in the system
+# would ever notice. This sweep makes the pipeline self-healing regardless
+# of *why* the original trigger didn't fire: every 5 minutes it finds any
+# Review-column ticket whose PR has no verdict label yet and force-dispatches
+# a fresh audit. Part of #17.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: ai-review-sweep
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: [self-hosted, vcp-laptop]
+    timeout-minutes: 10
+    steps:
+      - name: Find unaudited Review-column PRs and dispatch
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $ErrorActionPreference = "Stop"
+          $projectId = "PVT_kwHOBdoj_c4BcT54"
+          $statusFieldId = "PVTSSF_lAHOBdoj_c4BcT54zhW9rGs"
+          $repo = "Joeareval19/VCP-WebPage"
+
+          # 1. Pull every board item currently in the Review column.
+          $query = @'
+          query {
+            node(id: "PROJECT_ID") {
+              ... on ProjectV2 {
+                items(first: 100) {
+                  nodes {
+                    content {
+                      ... on Issue { number state }
+                    }
+                    fieldValueByName(name: "Status") {
+                      ... on ProjectV2ItemFieldSingleSelectValue { name }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          '@ -replace "PROJECT_ID", $projectId
+
+          $items = gh api graphql -f query=$query | ConvertFrom-Json
+          $reviewIssues = $items.data.node.items.nodes |
+            Where-Object { $_.fieldValueByName.name -eq "Review" -and $_.content.state -eq "OPEN" } |
+            ForEach-Object { $_.content.number }
+
+          if (-not $reviewIssues -or $reviewIssues.Count -eq 0) {
+            Write-Host "No open issues in Review — nothing to sweep."
+            exit 0
+          }
+          Write-Host "Review-column open issues: $($reviewIssues -join ', ')"
+
+          # 2. Pull all open PRs once (cheaper than one gh call per issue).
+          $prs = gh pr list --repo $repo --state open --json number,title,body,labels | ConvertFrom-Json
+
+          foreach ($n in $reviewIssues) {
+            # Same match rule relay.js uses: "Closes #N" in body, or "(#N)" in title.
+            $rx = "close[sd]?\s+#$n\b"
+            $pr = $prs | Where-Object {
+              ($_.body -and $_.body -match $rx) -or ($_.title -like "*(#$n)*")
+            } | Select-Object -First 1
+
+            if (-not $pr) {
+              Write-Host "Issue #$n - no open PR found, skipping."
+              continue
+            }
+
+            $labelNames = $pr.labels | ForEach-Object { $_.name }
+            if ($labelNames -contains "ai-approved" -or $labelNames -contains "ai-changes-requested") {
+              Write-Host "Issue #$n / PR #$($pr.number) - already audited, skipping."
+              continue
+            }
+
+            Write-Host "Issue #$n / PR #$($pr.number) - NO audit verdict found. Dispatching agent-review.yml..."
+            gh workflow run agent-review.yml --repo $repo -f "pr=$($pr.number)"
+          }
