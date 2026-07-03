@@ -1,0 +1,89 @@
+name: AI Review Audit
+
+# Independent AI auditor for the Review column.
+# Triggers:
+#  1. pull_request opened/reopened/ready  -> native, fires the moment an agent
+#     (or human) opens a PR — same moment the card lands in Review
+#  2. repository_dispatch `card-review`   -> relay fires it when a card is
+#     dragged into Review (re-review path, dedup'd by verdict labels)
+#  3. workflow_dispatch                   -> force a fresh audit on any PR
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  repository_dispatch:
+    types: [card-review]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR number to audit"
+        required: true
+
+concurrency:
+  group: ai-review-${{ github.event.inputs.pr || github.event.client_payload.pr || github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    if: github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'skip-ai-review')
+    runs-on: [self-hosted, vcp-laptop]
+    timeout-minutes: 30
+    steps:
+      - name: Resolve PR number
+        id: t
+        shell: powershell
+        run: |
+          $p = "${{ github.event.inputs.pr }}"
+          if (-not $p) { $p = "${{ github.event.client_payload.pr }}" }
+          if (-not $p) { $p = "${{ github.event.pull_request.number }}" }
+          if (-not $p) { throw "No PR number resolved" }
+          "number=$p" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run auditor agent
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $p = "${{ steps.t.outputs.number }}"
+          $prompt = @(
+            "You are an INDEPENDENT AI code auditor for PR #$p in Joeareval19/VCP-WebPage.",
+            "You did not write this code. Your job is to judge it. You NEVER modify code, never merge, never close anything - your only outputs are one PR comment and one label.",
+            "",
+            "Audit procedure:",
+            "1. gh pr view $p --repo Joeareval19/VCP-WebPage --json title,body,headRefName,files",
+            "2. Find the linked ticket (Closes #N in the body). gh issue view N --repo Joeareval19/VCP-WebPage - this spec is the CONTRACT the PR must fulfill.",
+            "3. gh pr diff $p --repo Joeareval19/VCP-WebPage - the full change set.",
+            "4. Study current main in this checkout: does the change conflict with, duplicate, or regress anything that already exists? Check CLAUDE.md rules compliance.",
+            "5. Audit on four axes:",
+            "   a. SPEC COMPLIANCE - every acceptance criterion met? Anything out-of-scope smuggled in?",
+            "   b. CORRECTNESS - bugs, edge cases, broken logic (cite file:line).",
+            "   c. SECURITY - secrets in code, injection risks, unsafe patterns.",
+            "   d. REGRESSION RISK - what existing behavior could this break?",
+            "6. Post EXACTLY ONE comment: gh pr comment $p --repo Joeareval19/VCP-WebPage --body <report>",
+            "   Report format (markdown): '## AI Audit' header; 'Verdict: LGTM' or 'Verdict: CHANGES REQUESTED' on its own line; spec-compliance checklist mirroring the acceptance criteria; findings list with file:line references (or 'No findings'); one-line regression assessment vs main.",
+            "7. Label the PR with the verdict:",
+            "   LGTM -> gh pr edit $p --repo Joeareval19/VCP-WebPage --add-label ai-approved",
+            "   CHANGES REQUESTED -> gh pr edit $p --repo Joeareval19/VCP-WebPage --add-label ai-changes-requested",
+            "",
+            "Judgment calibration: be a rigorous staff engineer, not a nitpicker. Style preferences are not findings. A finding must be a real defect: spec violation, bug, security issue, or regression. If the code is good, say LGTM plainly."
+          ) -join "`n"
+          claude -p $prompt --dangerously-skip-permissions --max-turns 50
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "First attempt failed ($LASTEXITCODE). Retrying in 30s..."
+            Start-Sleep 30
+            claude -p $prompt --dangerously-skip-permissions --max-turns 50
+            if ($LASTEXITCODE -ne 0) { throw "auditor exited $LASTEXITCODE after retry" }
+          }
+
+      - name: Report failure on the PR
+        if: failure()
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $p = "${{ steps.t.outputs.number }}"
+          gh pr comment $p --repo Joeareval19/VCP-WebPage --body "AI audit failed to complete: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
