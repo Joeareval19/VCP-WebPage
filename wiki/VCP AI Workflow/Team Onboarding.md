@@ -2,7 +2,7 @@
 title: Team Onboarding
 tags: [operations, team, onboarding]
 related: [[The Three Systems]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 ---
 
 New humans join with zero ceremony: clone the repo, open Claude Code, and the system registers them. Nobody schedules an onboarding call.

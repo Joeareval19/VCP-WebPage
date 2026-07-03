@@ -2,7 +2,7 @@
 title: Review Gate
 tags: [operations, quality, review]
 related: [[Ticket Lifecycle]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 depends_on: [[Agent Dispatch Pipeline]]
 ---
 

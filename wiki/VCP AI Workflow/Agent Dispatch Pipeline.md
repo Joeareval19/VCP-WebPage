@@ -2,7 +2,7 @@
 title: Agent Dispatch Pipeline
 tags: [operations, automation, agents]
 related: [[Worker Fleet and Scaling]], [[Review Gate]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 depends_on: [[Ticket Lifecycle]]
 ---
 

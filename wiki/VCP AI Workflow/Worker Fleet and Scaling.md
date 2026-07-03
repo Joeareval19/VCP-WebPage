@@ -2,7 +2,7 @@
 title: Worker Fleet and Scaling
 tags: [operations, infrastructure, scaling]
 related: [[Agent Dispatch Pipeline]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 depends_on: [[Agent Dispatch Pipeline]]
 ---
 

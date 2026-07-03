@@ -1,5 +1,5 @@
 ---
-title: MOC - Operations
+title: MOC - VCP AI Workflow
 tags: [operations, moc, workflow]
 related: []
 parent:

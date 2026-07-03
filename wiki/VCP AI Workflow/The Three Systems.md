@@ -2,7 +2,7 @@
 title: The Three Systems
 tags: [operations, architecture]
 related: [[Ticket Lifecycle]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 ---
 
 VCP runs on three systems with strictly separated jobs — mixing them is how companies lose track of themselves.

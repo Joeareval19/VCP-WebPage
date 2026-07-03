@@ -49,6 +49,36 @@ Rules that keep the system honest:
   remembering, the wiki note names the ticket (`#N`) and the issue gets a
   comment linking the note path. Ticket = what/when/who; wiki = why.
 
+## GitHub is the only source of truth for specs (non-negotiable)
+
+A spec that only exists locally (in conversation, in a local file, in memory)
+does not count as filed. This holds for creation AND every update after:
+
+- **Never draft a spec as a local file and stop there.** `/vcp-spec` must run
+  to completion — `gh issue create` must actually execute — before a spec is
+  considered to exist. A markdown draft in the working tree is not a spec,
+  it's scratch input to `/vcp-spec`.
+- **Every spec field lives on the GitHub Issue, not just locally.** Title,
+  body, acceptance criteria, labels — if it's part of the spec, it goes in
+  the issue body/fields via `gh issue edit`, not just discussed in chat or
+  written to a local note.
+- **Every status change is pushed immediately, not batched.** The moment a
+  spec's state changes (claimed, blocked, scope changed, superseded, closed)
+  update the GitHub Issue and VCP Tracker board status in the same turn —
+  don't do the local work first and "sync to GitHub later." GitHub must
+  never be stale relative to local state, even for a few minutes.
+- **Wiki notes about a spec cross-reference the issue, both directions.**
+  Per the ticket↔wiki linking rule above: the wiki note names the ticket
+  (`#N`) AND the GitHub issue gets a comment linking the wiki note's path
+  (`gh issue comment N --body "..."`). A wiki note discussing a spec with no
+  issue-side comment pointing back to it is an incomplete update — finish it
+  in the same pass, not as a followup.
+- **If a `gh` call fails, the task isn't done.** Don't report a spec/status
+  change as complete if the corresponding `gh issue`/`gh api graphql` command
+  errored — retry or surface the failure to the user. Local state changing
+  while the GitHub call silently failed is the one failure mode this section
+  exists to prevent.
+
 ### Project board IDs (for GraphQL calls)
 
 | Thing | ID |
@@ -140,17 +170,25 @@ way one thought leads to the next. Every note follows this shape:
    tags: [<topic tags>]
    related: [[Note A]], [[Note B]]
    parent: [[Broader Topic Note]]
+   depends_on: [[Note C]], [[Note D]]
    ---
    ```
-   - `related` lists sibling notes on the same topic.
-   - `parent` links up to the broader note this one is a part of (omit if
-     this note has no natural parent, e.g. a top-level MOC).
+   - `related` — sibling notes on the same topic (loose association).
+   - `parent` — the broader note this one is part of (omit for top-level
+     MOCs).
+   - `depends_on` — notes this one's content REQUIRES to be true/understood
+     first (a real dependency, not just a related idea). Omit if none.
+     This is the field that turns the graph into a dependency map, not
+     just a topic map — don't reuse `related` for this.
 2. **Inline `[[wikilinks]]`** in the body wherever a concept, decision, or
    term is discussed that has (or deserves) its own note — not just in
-   frontmatter. This is what makes reading feel like following a trail.
+   frontmatter. This is what makes reading feel like following a trail:
+   opening one note should immediately redirect an agent to the notes it
+   needs next.
 3. **Link relationships must be real.** Only link notes that actually
-   relate. Don't invent a `related` entry just to satisfy this policy —
-   fabricated links are worse than no links, they make the graph lie.
+   relate, and only use `depends_on` for genuine prerequisites. Don't
+   invent links to satisfy this policy — fabricated links are worse than
+   no links, they make the graph (and the dependency map) lie.
 4. **New concept, no note yet?** Create a stub note (title + one-line
    purpose + `parent` link back) rather than leaving the mention as plain
    text. A `[[link]]` to a not-yet-created note is fine — Obsidian will
@@ -159,5 +197,24 @@ way one thought leads to the next. Every note follows this shape:
    around one theme, add or update a `MOC - <Topic>.md` hub note that lists
    and links every note in the cluster. Each member note links back to its
    MOC via `parent`.
+
+### Efficiency rules (don't bloat the graph)
+
+- **One concept, one note.** Before creating a note, search `wiki/` for an
+  existing note covering the same concept (`grep -ri "<concept>" wiki/`).
+  Extend/link the existing note instead of forking a near-duplicate.
+- **Batch the links while the context is loaded.** When creating or editing
+  a note, resolve all of its `related`/`parent`/`depends_on` links and any
+  inline `[[links]]` in that same pass — don't leave linking as a followup
+  step, and don't make a second pass over the vault later to "add links."
+  Writing a note and its cross-links is one atomic action, not two.
+- **Every new note updates its neighbors.** If note B declares `parent: [[A]]`
+  or `depends_on: [[A]]`, note A must gain a mention (or `related` entry) of
+  B in the same edit. Links are bidirectional in effect even though
+  Obsidian only requires the forward link — don't leave a neighbor unaware
+  a new dependent was added.
+- **No orphans, no dead ends.** A note with zero inbound and zero outbound
+  links has failed the point of the vault — either link it into an existing
+  MOC/parent or reconsider whether it needed to be a separate note at all.
 
 See `wiki/_template.md` for the exact skeleton to copy for new notes.

@@ -2,7 +2,7 @@
 title: Ticket Lifecycle
 tags: [operations, board, tickets]
 related: [[Agent Dispatch Pipeline]], [[Review Gate]]
-parent: [[MOC - Operations]]
+parent: [[MOC - VCP AI Workflow]]
 depends_on: [[The Three Systems]]
 ---
 
