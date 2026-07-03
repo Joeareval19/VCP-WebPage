@@ -1,0 +1,90 @@
+name: Agent Build
+
+# Triggers:
+#  1. `ai-build` label added to an issue  -> instant, native
+#  2. repository_dispatch `card-started`  -> fired by the Phase B webhook relay when
+#     a VCP Tracker card is dragged to Started (payload: {"issue": N})
+#  3. workflow_dispatch                   -> manual/test runs
+on:
+  issues:
+    types: [labeled]
+  repository_dispatch:
+    types: [card-started]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number to implement"
+        required: true
+
+# One agent per ticket, ever. A second trigger for the same issue waits.
+concurrency:
+  group: agent-issue-${{ github.event.inputs.issue || github.event.client_payload.issue || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    # Label trigger only proceeds for the ai-build label
+    if: github.event_name != 'issues' || github.event.label.name == 'ai-build'
+    runs-on: [self-hosted, vcp-laptop]
+    timeout-minutes: 90
+    steps:
+      - name: Resolve issue number
+        id: t
+        shell: pwsh
+        run: |
+          $n = "${{ github.event.inputs.issue }}"
+          if (-not $n) { $n = "${{ github.event.client_payload.issue }}" }
+          if (-not $n) { $n = "${{ github.event.issue.number }}" }
+          if (-not $n) { throw "No issue number resolved" }
+          "number=$n" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Claim: assign + move board card to Started. Uses the machine's gh auth
+      # (Joeareval19, has project scope) — NOT the workflow GITHUB_TOKEN.
+      - name: Claim ticket
+        shell: pwsh
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ steps.t.outputs.number }}"
+          gh issue edit $n --repo Joeareval19/VCP-WebPage --add-assignee Joeareval19
+          $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
+          $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
+          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\`", value: {singleSelectOptionId: \`"489f0bb8\`"}}) { projectV2Item { id } } }" | Out-Null
+          Write-Host "Issue #$n claimed and set to Started"
+
+      - name: Run Claude agent
+        shell: pwsh
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ steps.t.outputs.number }}"
+          $prompt = @"
+You are an autonomous build agent for the VCP-WebPage repo, implementing GitHub issue #$n.
+
+Steps:
+1. Run: gh issue view $n --repo Joeareval19/VCP-WebPage  (read the full spec)
+2. Read CLAUDE.md and follow the repo workflow and design rules.
+3. Create a branch named issue-$n-<short-slug> from main.
+4. Implement the spec completely — meet every acceptance criterion.
+5. Commit with clear messages, push the branch.
+6. Open a PR: gh pr create --repo Joeareval19/VCP-WebPage --title "<title> (#$n)" --body "... Closes #$n"
+7. Do NOT merge the PR. A human reviews.
+
+Constraints: never push to main directly; never touch tickets other than #$n.
+"@
+          claude -p $prompt --dangerously-skip-permissions --max-turns 100
+          if ($LASTEXITCODE -ne 0) { throw "claude agent exited $LASTEXITCODE" }
+
+      - name: Report failure on the ticket
+        if: failure()
+        shell: pwsh
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ steps.t.outputs.number }}"
+          gh issue comment $n --repo Joeareval19/VCP-WebPage --body "Agent run failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
