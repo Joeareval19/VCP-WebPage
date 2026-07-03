@@ -63,20 +63,20 @@ jobs:
           GH_TOKEN: ""
         run: |
           $n = "${{ steps.t.outputs.number }}"
-          $prompt = @"
-You are an autonomous build agent for the VCP-WebPage repo, implementing GitHub issue #$n.
-
-Steps:
-1. Run: gh issue view $n --repo Joeareval19/VCP-WebPage  (read the full spec)
-2. Read CLAUDE.md and follow the repo workflow and design rules.
-3. Create a branch named issue-$n-<short-slug> from main.
-4. Implement the spec completely — meet every acceptance criterion.
-5. Commit with clear messages, push the branch.
-6. Open a PR: gh pr create --repo Joeareval19/VCP-WebPage --title "<title> (#$n)" --body "... Closes #$n"
-7. Do NOT merge the PR. A human reviews.
-
-Constraints: never push to main directly; never touch tickets other than #$n.
-"@
+          $prompt = @(
+            "You are an autonomous build agent for the VCP-WebPage repo, implementing GitHub issue #$n.",
+            "",
+            "Steps:",
+            "1. Run: gh issue view $n --repo Joeareval19/VCP-WebPage  (read the full spec)",
+            "2. Read CLAUDE.md and follow the repo workflow and design rules.",
+            "3. Create a branch named issue-$n-<short-slug> from main.",
+            "4. Implement the spec completely - meet every acceptance criterion.",
+            "5. Commit with clear messages, push the branch.",
+            "6. Open a PR with: gh pr create --repo Joeareval19/VCP-WebPage --title '<title> (#$n)' --body '... Closes #$n'",
+            "7. Do NOT merge the PR. A human reviews.",
+            "",
+            "Constraints: never push to main directly; never touch tickets other than #$n."
+          ) -join "`n"
           claude -p $prompt --dangerously-skip-permissions --max-turns 100
           if ($LASTEXITCODE -ne 0) { throw "claude agent exited $LASTEXITCODE" }
 
