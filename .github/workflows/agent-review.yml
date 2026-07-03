@@ -105,13 +105,35 @@ jobs:
             "The PR branch is already checked out in this workspace. main is available for comparison (git diff main..., git show main:<file>).",
             "Deliver per your charter: exactly one PR comment (gh pr comment) and exactly one verdict label (ai-approved or ai-changes-requested via gh pr edit --add-label)."
           ) -join "`n"
-          claude -p $prompt --dangerously-skip-permissions --max-turns 50
+          claude -p $prompt --dangerously-skip-permissions --max-turns 80
           if ($LASTEXITCODE -ne 0) {
             Write-Host "First attempt failed ($LASTEXITCODE). Retrying in 30s..."
             Start-Sleep 30
-            claude -p $prompt --dangerously-skip-permissions --max-turns 50
+            claude -p $prompt --dangerously-skip-permissions --max-turns 80
             if ($LASTEXITCODE -ne 0) { throw "auditor exited $LASTEXITCODE after retry" }
           }
+
+      # Sterling wrote `Score: <n>/100` in audits/PR-<n>-audit.md and pushed it
+      # to the PR branch. Publish that score to the board item's Score field.
+      - name: Publish score to board
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $p = "${{ steps.t.outputs.number }}"
+          git pull origin HEAD 2>&1 | Out-Null
+          $report = "audits/PR-$p-audit.md"
+          if (-not (Test-Path $report)) { Write-Host "No report file - skipping score publish"; exit 0 }
+          $m = Select-String -Path $report -Pattern 'Score:\s*(\d+)\s*/\s*100' | Select-Object -First 1
+          if (-not $m) { Write-Host "No score line found - skipping"; exit 0 }
+          $score = [int]$m.Matches[0].Groups[1].Value
+          # find the linked issue from the PR body (Closes #N)
+          $body = gh pr view $p --repo Joeareval19/VCP-WebPage --json body --jq '.body'
+          if ($body -match '[Cc]loses?\s+#(\d+)') { $n = $Matches[1] } else { Write-Host "No linked issue - skipping"; exit 0 }
+          $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
+          $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
+          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTF_lAHOBdoj_c4BcT54zhXDFyA\`", value: {number: $score}}) { projectV2Item { id } } }" | Out-Null
+          Write-Host "Board item for issue #$n scored: $score/100"
 
       - name: Report failure on the PR
         if: failure()
