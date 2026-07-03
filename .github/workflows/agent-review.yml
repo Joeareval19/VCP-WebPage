@@ -69,6 +69,14 @@ jobs:
         env:
           GH_TOKEN: ""
         run: |
+          # This step is log-only by design (see comment above) — it must
+          # never inherit the runner's default Stop preference. Under Stop,
+          # 2>&1 on a native command whose stderr has content (e.g. `gh pr
+          # checks` on a PR with zero check runs, or any gh auth/network
+          # error) raises a terminating NativeCommandError at that line,
+          # skipping every $LASTEXITCODE reset below it. Found by Sterling's
+          # audit of PR #20 (BLOCKER), reproduced live against PR #8.
+          $ErrorActionPreference = "Continue"
           $p = "${{ steps.t.outputs.number }}"
           $log = Join-Path $env:RUNNER_TEMP "audit-machine.log"
           "=== gh pr checks (registered CI) ===" | Out-File $log -Encoding utf8
