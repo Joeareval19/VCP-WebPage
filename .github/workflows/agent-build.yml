@@ -77,8 +77,14 @@ jobs:
             "",
             "Constraints: never push to main directly; never touch tickets other than #$n."
           ) -join "`n"
+          # One automatic retry — transient API stalls shouldn't kill unattended runs
           claude -p $prompt --dangerously-skip-permissions --max-turns 100
-          if ($LASTEXITCODE -ne 0) { throw "claude agent exited $LASTEXITCODE" }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "First attempt failed ($LASTEXITCODE). Retrying in 30s..."
+            Start-Sleep 30
+            claude -p ($prompt + "`nNOTE: a previous attempt may have left partial work - check existing branches/changes first and continue from there.") --dangerously-skip-permissions --max-turns 100
+            if ($LASTEXITCODE -ne 0) { throw "claude agent exited $LASTEXITCODE after retry" }
+          }
 
       - name: Report failure on the ticket
         if: failure()
