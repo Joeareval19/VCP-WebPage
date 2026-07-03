@@ -1,0 +1,46 @@
+name: Approve and Merge
+
+# Human approval gesture that works WITHOUT the webhook relay:
+# add the `approve` label to a ticket whose card is in Review ->
+# its PR squash-merges to main, branch deleted, issue closes via Closes #N.
+# (The board-drag Review -> Completed path does the same thing via relay.js
+# once the GitHub App is registered.)
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: approve-issue-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: github.event.label.name == 'approve'
+    runs-on: [self-hosted, vcp-laptop]
+    timeout-minutes: 10
+    steps:
+      - name: Find and merge the ticket's PR
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ github.event.issue.number }}"
+          $prs = gh pr list --repo Joeareval19/VCP-WebPage --state open --json number,title,body | ConvertFrom-Json
+          $pr = $prs | Where-Object { $_.body -match "[Cc]loses? #$n\b" -or $_.title -match "\(#$n\)" } | Select-Object -First 1
+          if (-not $pr) {
+            gh issue comment $n --repo Joeareval19/VCP-WebPage --body "Approve failed: no open PR found referencing #$n"
+            throw "no PR for issue #$n"
+          }
+          gh pr merge $pr.number --repo Joeareval19/VCP-WebPage --squash --delete-branch
+          Write-Host "Merged PR #$($pr.number) for issue #$n"
+
+      - name: Move card to Completed
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ github.event.issue.number }}"
+          $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
+          $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
+          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\`", value: {singleSelectOptionId: \`"96b35fff\`"}}) { projectV2Item { id } } }" | Out-Null
+          Write-Host "Card #$n -> Completed"
