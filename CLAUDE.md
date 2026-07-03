@@ -48,6 +48,25 @@ Rules that keep the system honest:
 - **Ticket ↔ wiki linking.** When a spec or PR makes a decision worth
   remembering, the wiki note names the ticket (`#N`) and the issue gets a
   comment linking the note path. Ticket = what/when/who; wiki = why.
+- **Dependencies are mandatory at spec time.** Every spec's `## Dependencies`
+  section must be mirrored as native GitHub blocked-by links when the issue
+  is filed (`gh api -X POST repos/Joeareval19/VCP-WebPage/issues/N/dependencies/blocked_by -F issue_id=<blocker id>`).
+  An empty Dependencies section is a claim ("this can start immediately"),
+  not an omission — state it explicitly. Never dispatch an agent on a ticket
+  with open blockers.
+
+### Waterfall view (dependency skill-tree)
+
+The board's **Roadmap layout** doubles as a dependency waterfall. Start/End
+dates on tickets are **placeholders that encode topology, not schedule**:
+wave 1 = no open blockers, wave k = blocked only by earlier waves; wave k
+renders as week k. Never treat these dates as deadlines or promise them.
+
+- After filing specs or changing dependencies, run:
+  `node agent-dispatch/waterfall.js` (recomputes waves, rewrites all dates)
+- Date field IDs: Start `PVTF_lAHOBdoj_c4BcT54zhXCzXQ`, End `PVTF_lAHOBdoj_c4BcT54zhXCzY8`
+- When a blocker closes, its dependents shift left on the next sync — the
+  waterfall always shows what is buildable NOW (wave 1) vs. what waits.
 
 ## GitHub is the only source of truth for specs (non-negotiable)
 

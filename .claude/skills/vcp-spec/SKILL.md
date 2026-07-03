@@ -44,6 +44,29 @@ gh api graphql -f query="mutation {
 }"
 ```
 
+## Step 3.5 — Declare dependencies (MANDATORY)
+
+Read the spec's `## Dependencies` section. For EVERY blocker ticket it names,
+create the native GitHub blocked-by link:
+
+```bash
+BLOCKER_ID=$(gh api repos/Joeareval19/VCP-WebPage/issues/<blocker#> --jq '.id')
+gh api -X POST "repos/Joeareval19/VCP-WebPage/issues/N/dependencies/blocked_by" -F issue_id=$BLOCKER_ID
+```
+
+If the spec has no dependencies, its Dependencies section must SAY so
+explicitly ("None — can start immediately"). Do not file a spec whose
+Dependencies section is missing or vague — go back and pin it down.
+
+Then resync the waterfall so the Roadmap view reflects the new topology:
+
+```bash
+node agent-dispatch/waterfall.js
+```
+
+(Start/End dates are placeholders encoding dependency waves — week k = wave
+k — never real deadlines. See CLAUDE.md "Waterfall view".)
+
 ## Step 4 — Confirm to the user
 
 Report: issue number + URL, board status (Pending), and creator
