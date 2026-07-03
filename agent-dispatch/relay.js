@@ -72,6 +72,21 @@ const server = http.createServer((req, res) => {
         return;
       }
 
+      // Card lands in Review: dispatch the AI auditor — but only if the PR
+      // hasn't been audited yet (the native pull_request trigger covers
+      // fresh PRs; this path is for drag-driven re-reviews).
+      if (to === "Review") {
+        const prs = JSON.parse(gh(["pr", "list", "--repo", REPO, "--state", "open", "--json", "number,body,title,labels"]));
+        const rx = new RegExp(`close[sd]?\\s+#${issue.number}\\b`, "i");
+        const pr = prs.find((x) => rx.test(x.body || "") || (x.title || "").includes(`(#${issue.number})`));
+        if (!pr) { log(`REVIEW #${issue.number}: no open PR found - nothing to audit`); return; }
+        const audited = (pr.labels || []).some((l) => l.name === "ai-approved" || l.name === "ai-changes-requested");
+        if (audited) { log(`REVIEW #${issue.number}: PR #${pr.number} already audited - skip (use workflow_dispatch to force)`); return; }
+        gh(["api", `repos/${REPO}/dispatches`, "-f", "event_type=card-review", "-F", `client_payload[pr]=${pr.number}`]);
+        log(`DISPATCHED card-review for PR #${pr.number} (issue #${issue.number})`);
+        return;
+      }
+
       // Drag Review -> Completed: human approval -> merge the PR
       if (to === "Completed" && from === "Review") {
         if (issue.state === "CLOSED") { log(`skip #${issue.number}: already closed`); return; }
