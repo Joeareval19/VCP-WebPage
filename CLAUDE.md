@@ -20,6 +20,39 @@ vault** (why decisions were made).
    Work that matches an existing Pending ticket should claim it, not
    duplicate it.
 
+## Multi-session discipline (shared working directory)
+
+Multiple Claude sessions AND the human work in this folder concurrently.
+Assume someone else is editing right now. These rules are how we avoid
+committing each other's work-in-progress (it has happened):
+
+1. **This folder is pinned to `main`. Never switch branches here.** No
+   `git checkout -b`, no `git checkout <branch>` — switching yanks the
+   working tree out from under every other session.
+2. **Branch work happens in worktrees, outside OneDrive:**
+   `git worktree add ~/vcp-worktrees/<slug> -b <branch> origin/main`
+   — edit/copy files there, commit there, PR from there, then
+   `git worktree remove ~/vcp-worktrees/<slug>` after merge.
+3. **Stage explicit file paths only.** NEVER `git add -A`, `git add .`, or
+   directory-level adds in this folder. Before every commit, run
+   `git status` and confirm every staged file is yours from this session.
+   Found a stray staged file? Unstage it — do not commit it, do not delete it.
+4. **Never `git reset --hard` or `git checkout -- <file>` here** unless you
+   can prove the discarded content is yours alone. A neighbor's uncommitted
+   work looks identical to noise.
+5. **Pull after your PRs merge.** If the pull conflicts with a local
+   uncommitted edit, stop and surface it to the human — don't resolve by
+   force.
+6. The agent fleet is unaffected — runners use isolated `_work` checkouts.
+
+## Design system (binding for all UI work)
+
+Read `DESIGN.md` before writing any UI. It routes to the executable design
+law: `css/tokens.css` (tokens only — zero one-off colors/fonts/sizes),
+`css/components.css` (reuse before inventing), and `demo.html` (the living
+component reference, keep it current). These files are the build guide all
+agents inherit.
+
 ## The VCP lifecycle
 
 Every unit of work moves through these stages. Each stage touches all three
