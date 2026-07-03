@@ -54,6 +54,16 @@ jobs:
 
       # The machine layer: registered CI checks + local lint/build/test on
       # the PR branch. Sterling ingests this log BEFORE reading the diff.
+      #
+      # IMPORTANT: this step only LOGS the results of gh pr checks / npm run
+      # *, it never gates on them (the log itself, ingested by Sterling, is
+      # what enforces "failing machine check caps the verdict"). Every native
+      # command below can legitimately return non-zero — `gh pr checks` in
+      # particular ALWAYS reports this very audit run as pending/failing
+      # (it's a registered check on itself, mid-run) — so $LASTEXITCODE is
+      # explicitly reset to 0 after each one. Without this, PowerShell/Actions
+      # attributes an earlier command's non-zero exit code to the whole step,
+      # which crashed 100% of audit runs before this fix (see #19).
       - name: Run machine checks (lint / build / tests)
         shell: powershell
         env:
@@ -63,6 +73,7 @@ jobs:
           $log = Join-Path $env:RUNNER_TEMP "audit-machine.log"
           "=== gh pr checks (registered CI) ===" | Out-File $log -Encoding utf8
           $checks = gh pr checks $p --repo Joeareval19/VCP-WebPage 2>&1 | Out-String
+          $global:LASTEXITCODE = 0
           if (-not $checks.Trim()) { $checks = "no checks reported" }
           $checks | Out-File $log -Append -Encoding utf8
           "" | Out-File $log -Append -Encoding utf8
@@ -75,8 +86,10 @@ jobs:
                 $ran = $true
                 "--- npm run $script ---" | Out-File $log -Append -Encoding utf8
                 npm install --no-audit --no-fund 2>&1 | Select-Object -Last 2 | Out-File $log -Append -Encoding utf8
+                $global:LASTEXITCODE = 0
                 npm run $script 2>&1 | Out-File $log -Append -Encoding utf8
                 "exit code: $LASTEXITCODE" | Out-File $log -Append -Encoding utf8
+                $global:LASTEXITCODE = 0
               }
             }
             if (-not $ran) { "package.json present but no lint/build/test scripts" | Out-File $log -Append -Encoding utf8 }
@@ -85,6 +98,7 @@ jobs:
           }
           "machine_log=$log" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Get-Content $log
+          exit 0
         id: machine
 
       - name: Run Sterling (auditor agent)
