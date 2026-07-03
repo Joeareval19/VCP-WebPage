@@ -55,12 +55,23 @@ Rules that keep the system honest:
 |-------|----|
 | Project | `PVT_kwHOBdoj_c4BcT54` |
 | Status field | `PVTSSF_lAHOBdoj_c4BcT54zhW9rGs` |
-| Pending option | `792a8429` |
-| Started option | `489f0bb8` |
-| Completed option | `b0e1c8d5` |
+| Pending option | `945c8a59` |
+| Started option | `de246815` |
+| Review option | `18317928` |
+| Completed option | `96b35fff` |
 
 Board column meanings: **Pending** = spec filed, unclaimed. **Started** =
-assigned, in progress. **Completed** = PR merged, issue closed.
+agent or human working. **Review** = agent done, PR open, awaiting human
+review. **Completed** = human approved; dragging Review → Completed
+auto-merges the PR (relay handles it).
+
+Review-gate rules:
+- Agents NEVER merge. When an agent finishes, its workflow moves the card to
+  **Review** and the PR waits.
+- A human approves by dragging the card Review → Completed (or merging the
+  PR directly — the issue closes either way).
+- Up to 3 agents run in parallel (runners vcp-laptop, -2, -3); the per-issue
+  concurrency group still guarantees one agent per ticket.
 
 ## gstack skill roster
 

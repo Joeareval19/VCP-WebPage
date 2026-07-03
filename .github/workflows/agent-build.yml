@@ -54,7 +54,7 @@ jobs:
           gh issue edit $n --repo Joeareval19/VCP-WebPage --add-assignee Joeareval19
           $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
           $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
-          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\`", value: {singleSelectOptionId: \`"489f0bb8\`"}}) { projectV2Item { id } } }" | Out-Null
+          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\`", value: {singleSelectOptionId: \`"de246815\`"}}) { projectV2Item { id } } }" | Out-Null
           Write-Host "Issue #$n claimed and set to Started"
 
       - name: Run Claude agent
@@ -85,6 +85,19 @@ jobs:
             claude -p ($prompt + "`nNOTE: a previous attempt may have left partial work - check existing branches/changes first and continue from there.") --dangerously-skip-permissions --max-turns 100
             if ($LASTEXITCODE -ne 0) { throw "claude agent exited $LASTEXITCODE after retry" }
           }
+
+      # Agent finished -> card goes to Review. Human approves by dragging
+      # Review -> Completed, which auto-merges the PR (relay handles it).
+      - name: Move card to Review
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ steps.t.outputs.number }}"
+          $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
+          $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
+          gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\`", value: {singleSelectOptionId: \`"18317928\`"}}) { projectV2Item { id } } }" | Out-Null
+          Write-Host "Issue #$n moved to Review - awaiting human approval"
 
       - name: Report failure on the ticket
         if: failure()

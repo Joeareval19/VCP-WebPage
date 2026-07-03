@@ -53,19 +53,36 @@ const server = http.createServer((req, res) => {
       if (!fv || fv.field_name !== "Status") return;
       const to = fv.to && fv.to.name;
       const from = fv.from && fv.from.name;
-      if (to !== "Started" || from === "Started") return;
+      if (to === from) return;
       const item = p.projects_v2_item;
       if (!item || item.content_type !== "Issue") return;
-      const q = `query { node(id: "${item.content_node_id}") { ... on Issue { number assignees(first: 1) { totalCount } } } }`;
+      const q = `query { node(id: "${item.content_node_id}") { ... on Issue { number state assignees(first: 1) { totalCount } } } }`;
       const out = JSON.parse(gh(["api", "graphql", "-f", `query=${q}`]));
       const issue = out.data && out.data.node;
       if (!issue || typeof issue.number !== "number") return;
-      if (issue.assignees.totalCount > 0) {
-        log(`skip #${issue.number}: already assigned (workflow claim or human)`);
+
+      // Drag -> Started: dispatch an agent (only for unclaimed tickets)
+      if (to === "Started") {
+        if (issue.assignees.totalCount > 0) {
+          log(`skip #${issue.number}: already assigned (workflow claim or human)`);
+          return;
+        }
+        gh(["api", `repos/${REPO}/dispatches`, "-f", "event_type=card-started", "-F", `client_payload[issue]=${issue.number}`]);
+        log(`DISPATCHED card-started for issue #${issue.number}`);
         return;
       }
-      gh(["api", `repos/${REPO}/dispatches`, "-f", "event_type=card-started", "-F", `client_payload[issue]=${issue.number}`]);
-      log(`DISPATCHED card-started for issue #${issue.number}`);
+
+      // Drag Review -> Completed: human approval -> merge the PR
+      if (to === "Completed" && from === "Review") {
+        if (issue.state === "CLOSED") { log(`skip #${issue.number}: already closed`); return; }
+        const prs = JSON.parse(gh(["pr", "list", "--repo", REPO, "--state", "open", "--json", "number,body,title"]));
+        const rx = new RegExp(`close[sd]?\\s+#${issue.number}\\b`, "i");
+        const pr = prs.find((x) => rx.test(x.body || "") || (x.title || "").includes(`(#${issue.number})`));
+        if (!pr) { log(`APPROVE #${issue.number}: no open PR found - nothing to merge`); return; }
+        gh(["pr", "merge", String(pr.number), "--repo", REPO, "--squash", "--delete-branch"]);
+        log(`MERGED PR #${pr.number} for issue #${issue.number} (human approved via board)`);
+        return;
+      }
     } catch (e) {
       log("ERROR " + e.message);
     }

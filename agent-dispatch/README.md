@@ -14,6 +14,7 @@ GitHub App webhook (projects_v2_item) -> smee.io channel -> `relay.js` on the wo
 - Triggers that also work without the webhook: `ai-build` label, `gh workflow run agent-build.yml -f issue=N`
 
 ## Guards
-- Relay only dispatches when Status changes to Started AND the issue is unassigned
+- Relay: Status->Started + unassigned = dispatch agent; Review->Completed = human approval, auto-merges the PR
+- Parallel agents: 3 runners (vcp-laptop, -2, -3); per-issue concurrency still one agent per ticket
 - Workflow concurrency: one agent per issue number
 - Agent capped at --max-turns 100; failures are commented on the ticket

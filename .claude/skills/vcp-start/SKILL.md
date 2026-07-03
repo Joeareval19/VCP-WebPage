@@ -43,7 +43,7 @@ gh api graphql -f query="mutation {
     projectId: \"PVT_kwHOBdoj_c4BcT54\",
     itemId: \"$ITEM_ID\",
     fieldId: \"PVTSSF_lAHOBdoj_c4BcT54zhW9rGs\",
-    value: {singleSelectOptionId: \"489f0bb8\"}
+    value: {singleSelectOptionId: \"de246815\"}
   }) { projectV2Item { id } }
 }"
 ```
