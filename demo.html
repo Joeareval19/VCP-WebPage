@@ -5,133 +5,302 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP Design System — Component Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<style>
+  /* Demo-page layout only — components live in css/components.css */
+  .demo-section { margin-bottom: 112px; }
+  .demo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .demo-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .demo-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .demo-swatch { height: 64px; border-radius: var(--radius); border: 1px solid var(--line); }
+  @media (max-width: 900px) {
+    .demo-grid-2, .demo-grid-3 { grid-template-columns: 1fr; }
+    h1 { font-size: var(--fs-56); }
+  }
+</style>
 </head>
 <body>
 
-<nav class="vcp-nav">
-  <span class="vcp-nav__wordmark sheen-text">VCP</span>
-  <ul class="vcp-nav__links label-caps">
-    <li><a href="#research">Research</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#library">Library</a></li>
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <div class="vcp-nav__brand">
+    <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </div>
+  <ul class="vcp-nav__links">
+    <li><a href="#cards" aria-current="page">Work</a></li>
+    <li><a href="#cards">Research</a></li>
+    <li><a href="#narrative">Story</a></li>
+    <li><a href="#cards">Press</a></li>
+    <li><a href="#details" class="vcp-btn vcp-btn--silver vcp-btn--sm">Connect</a></li>
   </ul>
 </nav>
 
-<main class="container">
+<main>
 
-  <section style="padding: var(--space-6) 0;">
-    <h1 class="sheen-text">VCP Design System</h1>
-    <p class="text-muted">Dark + metallic silver brand foundation — tokens, typography, and core components rendered together for visual QA.</p>
+  <!-- ============ MASTHEAD ============ -->
+  <header style="padding: 88px 0 118px; max-width: 62ch;">
+    <p class="kicker label-caps label-caps--wide" style="margin-bottom: 34px;">Vegas Consulting Partners</p>
+    <h1>The VCP <em class="sheen-text">design language</em></h1>
+    <p style="margin-top: 30px; max-width: 52ch;">A component system for the portfolio — the ventures, the research, the record. Liquid glass over brushed silver. Nothing rushed, everything intentional. Every element earns its place.</p>
+    <div class="demo-row" style="gap: 38px; margin-top: 46px; padding-top: 30px; border-top: 1px solid var(--line);">
+      <div><div class="meta-mono" style="margin-bottom: 6px;">MATERIAL</div><div style="font-size: var(--fs-14);">Glass · Silver · Graphite</div></div>
+      <div><div class="meta-mono" style="margin-bottom: 6px;">TYPE</div><div style="font-size: var(--fs-14);">Cormorant · Manrope</div></div>
+      <div><div class="meta-mono" style="margin-bottom: 6px;">TONE</div><div style="font-size: var(--fs-14);">Poised · Minimal · Exact</div></div>
+    </div>
+  </header>
+
+  <!-- ============ 01 MATERIALS ============ -->
+  <section class="demo-section" id="materials">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">01</span>
+      <h2>Materials &amp; palette</h2>
+    </div>
+    <div class="demo-grid-2" style="grid-template-columns: 1.15fr 1fr;">
+      <div class="vcp-card"><div class="vcp-card__body" style="padding: 34px;">
+        <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Liquid glass</div>
+        <div style="font-family: var(--font-display); font-size: 27px; color: #F2F3F5; margin-bottom: 10px;">Frosted, luminous, layered</div>
+        <p style="font-size: 13.5px; max-width: 38ch; margin: 0;">Blur 22–26px, a 10% white hairline, one specular highlight along the top edge. Used for surfaces that float above the graphite.</p>
+      </div></div>
+      <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 22px;">
+        <div style="border-radius: var(--radius-lg); background: var(--silver-panel); position: relative; display: flex; align-items: flex-end; padding: 22px; box-shadow: 0 26px 60px -30px rgba(0,0,0,0.7);">
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.9);"></div>
+          <div>
+            <div style="font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(20,22,26,0.6); font-weight: 700;">Brushed silver</div>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: rgba(20,22,26,0.5); margin-top: 4px;">specular · reflective</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <div class="demo-swatch" style="height: auto; background: var(--bg);"></div>
+          <div class="demo-swatch" style="height: auto; background: var(--surface);"></div>
+          <div class="demo-swatch" style="height: auto; background: var(--surface-raised); border: none;"></div>
+          <div class="demo-swatch" style="height: auto; background: var(--silver-metal); border: none;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-row" style="gap: 26px; margin-top: 22px;">
+      <div class="demo-row" style="gap: 10px;"><span style="width:14px;height:14px;border-radius:4px;background:var(--bg);border:1px solid var(--line-strong);"></span><span class="meta-mono" style="color: var(--text-muted);">Graphite&nbsp;&nbsp;#0B0C0E</span></div>
+      <div class="demo-row" style="gap: 10px;"><span style="width:14px;height:14px;border-radius:4px;background:var(--surface);"></span><span class="meta-mono" style="color: var(--text-muted);">Slate&nbsp;&nbsp;#17191D</span></div>
+      <div class="demo-row" style="gap: 10px;"><span style="width:14px;height:14px;border-radius:4px;background:var(--silver-metal);"></span><span class="meta-mono" style="color: var(--text-muted);">Silver&nbsp;&nbsp;#CDD2D9</span></div>
+      <div class="demo-row" style="gap: 10px;"><span style="width:14px;height:14px;border-radius:4px;background:var(--silver-bright);"></span><span class="meta-mono" style="color: var(--text-muted);">Platinum&nbsp;&nbsp;#E8EAED</span></div>
+    </div>
   </section>
 
-  <section id="typography" style="margin-bottom: var(--space-6);">
+  <!-- ============ 02 TYPOGRAPHY ============ -->
+  <section class="demo-section" id="typography">
     <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">02</span>
       <h2>Typography</h2>
-      <hr class="vcp-section-heading__rule">
     </div>
-    <h1>Heading 1 / 56</h1>
-    <h2>Heading 2 / 40</h2>
-    <h3>Heading 3 / 28</h3>
-    <h4>Heading 4 / 20</h4>
-    <p>Body / 16 — A clean neutral sans for readability on dark. The quick silver fox jumps over the lazy metal.</p>
-    <p style="font-size: var(--fs-14);">Small / 14 — secondary body copy.</p>
-    <p class="label-caps">Small-caps label / 12</p>
-  </section>
-
-  <section id="colors" style="margin-bottom: var(--space-6);">
-    <div class="vcp-section-heading">
-      <h2>Color Tokens</h2>
-      <hr class="vcp-section-heading__rule">
-    </div>
-    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3);">
+    <div class="demo-grid-2" style="gap: 52px;">
       <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--bg); border:1px solid var(--line);"></div>
-        <small>--bg</small>
+        <div class="label-caps label-caps--wide" style="margin-bottom: 26px;">Display — Cormorant Garamond</div>
+        <div style="font-family: var(--font-display); font-size: 60px; line-height: 1; color: #F2F3F5;">Aa</div>
+        <div style="font-family: var(--font-display); font-size: 38px; line-height: 1.15;">Discipline over noise</div>
+        <div style="font-family: var(--font-display); font-style: italic; font-size: 26px; color: var(--text-soft); margin-top: 8px;">a study in restraint</div>
+        <div class="meta-mono" style="margin-top: 22px; line-height: 1.9;">300 / 400 / 500 · roman + italic<br>headings · pull quotes · numerals</div>
       </div>
       <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--surface); border:1px solid var(--line);"></div>
-        <small>--surface</small>
-      </div>
-      <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--surface-raised); border:1px solid var(--line);"></div>
-        <small>--surface-raised</small>
-      </div>
-      <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--silver);"></div>
-        <small>--silver</small>
-      </div>
-      <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--silver-bright);"></div>
-        <small>--silver-bright</small>
-      </div>
-      <div>
-        <div style="height:64px; border-radius:var(--radius); background:var(--silver-sheen);"></div>
-        <small>--silver-sheen</small>
+        <div class="label-caps label-caps--wide" style="margin-bottom: 26px;">Text — Manrope</div>
+        <div style="font-weight: 600; font-size: var(--fs-20); margin-bottom: var(--space-3);">Clear, quiet, engineered.</div>
+        <p style="font-size: 14.5px; max-width: 44ch;">Body copy sits at 300–400 weight for calm reading. Labels lift to 600 and stretch into wide uppercase tracking — the voice of a system that measures twice.</p>
+        <div class="demo-row" style="gap: 20px; margin-top: 24px;">
+          <span class="label-caps label-caps--wide" style="color: var(--text-muted);">Eyebrow label</span>
+          <span style="font-weight: 500; font-size: 13px;">Button / UI</span>
+          <span class="meta-mono">meta · 12px</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="buttons" style="margin-bottom: var(--space-6);">
+  <!-- ============ 03 NAVIGATION ============ -->
+  <section class="demo-section" id="navigation">
     <div class="vcp-section-heading">
-      <h2>Buttons</h2>
-      <hr class="vcp-section-heading__rule">
+      <span class="vcp-section-heading__num">03</span>
+      <h2>Navigation</h2>
     </div>
-    <div style="display:flex; gap: var(--space-3);">
-      <button class="vcp-btn vcp-btn--primary">Primary Action</button>
-      <button class="vcp-btn vcp-btn--secondary">Secondary Action</button>
+    <p class="text-muted" style="font-size: var(--fs-14);">The glass nav bar at the top of this page is the component — sticky, translucent, wordmark in sheen, one silver call-to-action.</p>
+  </section>
+
+  <!-- ============ 04 BUTTONS ============ -->
+  <section class="demo-section" id="buttons">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">04</span>
+      <h2>Buttons &amp; controls</h2>
+    </div>
+    <div class="demo-row">
+      <button class="vcp-btn vcp-btn--silver">Silver — primary</button>
+      <button class="vcp-btn vcp-btn--glass">Glass — ghost</button>
+      <button class="vcp-btn vcp-btn--quiet">Text — quiet →</button>
+      <button class="vcp-btn vcp-btn--icon" aria-label="Open">↗</button>
+    </div>
+    <div class="demo-row" style="gap: 14px; margin-top: 24px;">
+      <span class="vcp-tag vcp-tag--dot">Venture</span>
+      <span class="vcp-tag">AI</span>
+      <span class="vcp-tag">Fintech</span>
+      <span class="vcp-tag vcp-tag--featured">Featured</span>
     </div>
   </section>
 
-  <section id="tags" style="margin-bottom: var(--space-6);">
+  <!-- ============ 05 CARDS ============ -->
+  <section class="demo-section" id="cards">
     <div class="vcp-section-heading">
-      <h2>Tags</h2>
-      <hr class="vcp-section-heading__rule">
-    </div>
-    <div style="display:flex; gap: var(--space-2);">
-      <span class="vcp-tag">Research</span>
-      <span class="vcp-tag">Projects</span>
-      <span class="vcp-tag">Library</span>
-    </div>
-  </section>
-
-  <section id="cards" style="margin-bottom: var(--space-6);">
-    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">05</span>
       <h2>Cards</h2>
-      <hr class="vcp-section-heading__rule">
     </div>
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4);">
+
+    <div class="demo-grid-2" style="margin-bottom: 22px;">
+      <!-- Work / venture -->
       <article class="vcp-card">
-        <span class="vcp-tag">Research</span>
-        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">Signal Processing at Scale</h3>
-        <p class="vcp-card__body">Exploring low-latency inference pipelines for real-time systems.</p>
+        <div class="vcp-card__media">
+          <span class="meta-mono">[ venture visual ]</span>
+          <span class="vcp-card__badge">Venture</span>
+        </div>
+        <div class="vcp-card__body">
+          <div class="vcp-card__head">
+            <h3 class="vcp-card__title">Meridian Capital AI</h3>
+            <span class="meta-mono">2025</span>
+          </div>
+          <p style="font-size: var(--fs-14); margin: 12px 0 20px;">Autonomous portfolio intelligence for private markets — an operating company under the VCP umbrella.</p>
+          <a class="vcp-link" href="#cards">View case study →</a>
+        </div>
       </article>
+      <!-- Research -->
       <article class="vcp-card">
-        <span class="vcp-tag">Projects</span>
-        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">VCP Tracker</h3>
-        <p class="vcp-card__body">Ticket-driven development across GitHub, gstack, and the wiki.</p>
+        <div class="vcp-card__body" style="display: flex; flex-direction: column; height: 100%;">
+          <div class="vcp-card__eyebrow">
+            <span class="vcp-tag--caps label-caps">Research</span>
+            <span class="vcp-card__eyebrow-rule"></span>
+            <span class="meta-mono">PDF · 24pp</span>
+          </div>
+          <h3 class="vcp-card__title" style="font-size: 27px;">Liquidity, Latency &amp; the Machine Investor</h3>
+          <p style="font-size: 13.5px; margin: 14px 0 0; color: var(--text-muted);">Vegas, D. — <em style="font-size: 15px;">Journal of Applied Capital Systems</em>, 2025</p>
+          <p style="font-size: var(--fs-14); margin: 16px 0 24px; flex: 1;">On how sub-second execution reshapes the incentives of allocators when the counterparty is a model, not a desk.</p>
+          <div class="vcp-card__footer" style="margin-top: 0;">
+            <div class="demo-row" style="gap: 8px;">
+              <span class="vcp-tag" style="padding: 5px 12px; font-size: 11.5px;">Markets</span>
+              <span class="vcp-tag" style="padding: 5px 12px; font-size: 11.5px;">AI</span>
+            </div>
+            <a class="vcp-link" href="#cards">Read →</a>
+          </div>
+        </div>
       </article>
-      <article class="vcp-card">
-        <span class="vcp-tag">Library</span>
-        <h3 class="vcp-card__title" style="margin-top: var(--space-3);">Design Systems Reading List</h3>
-        <p class="vcp-card__body">Curated papers and references on metallic, minimal UI.</p>
-      </article>
+    </div>
+
+    <div class="demo-grid-3">
+      <!-- Press -->
+      <article class="vcp-card"><div class="vcp-card__body" style="padding: 28px;">
+        <div class="vcp-tag--caps label-caps" style="margin-bottom: 20px;">Press</div>
+        <div style="font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: 0.02em;">FORBES</div>
+        <p class="vcp-quote">"A quiet architect of the AI-finance frontier."</p>
+        <a class="meta-mono" href="#cards" style="color: var(--text-faint);">March 2025 →</a>
+      </div></article>
+      <!-- Speaking -->
+      <article class="vcp-card"><div class="vcp-card__body" style="padding: 28px;">
+        <div class="vcp-tag--caps label-caps" style="margin-bottom: 20px;">Speaking</div>
+        <h3 class="vcp-card__title" style="font-size: 23px;">The Intentional Firm</h3>
+        <dl class="vcp-kv" style="margin-top: 18px;">
+          <div><dt>Event</dt><dd>SALT · Keynote</dd></div>
+          <div><dt>Where</dt><dd>Las Vegas</dd></div>
+          <div><dt>When</dt><dd>Sep 2025</dd></div>
+        </dl>
+      </div></article>
+      <!-- Stat -->
+      <article class="vcp-card"><div class="vcp-card__body" style="padding: 28px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+        <div class="vcp-tag--caps label-caps">By the record</div>
+        <div>
+          <div class="vcp-stat__number sheen-text">07</div>
+          <p class="vcp-stat__caption">companies under the VCP umbrella, spanning AI, finance &amp; media.</p>
+        </div>
+      </div></article>
+    </div>
+  </section>
+
+  <!-- ============ 06 HERO ============ -->
+  <section class="demo-section" id="hero">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">06</span>
+      <h2>Hero pattern</h2>
+    </div>
+    <div class="vcp-hero">
+      <div class="vcp-hero__content">
+        <p class="kicker label-caps label-caps--wide" style="margin-bottom: 26px;">Entrepreneur · Tech · Finance · AI</p>
+        <h2 style="font-size: 62px; line-height: 1.04; letter-spacing: -0.01em; font-weight: 400; margin: 0;">Everything under<br>one <em class="sheen-text">deliberate</em> umbrella.</h2>
+        <p style="margin: 26px 0 0; max-width: 46ch;">The ventures, the research, the record — Vegas Consulting Partners is where the work lives. Composed, exact, and built to last.</p>
+        <div class="vcp-hero__actions">
+          <button class="vcp-btn vcp-btn--silver">Explore the work</button>
+          <a class="vcp-link" href="#narrative" style="border: none;">Read the story →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 NARRATIVE ============ -->
+  <section class="demo-section" id="narrative">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">07</span>
+      <h2>Story · mission · vision</h2>
+    </div>
+    <div class="vcp-pullquote" style="margin-bottom: 22px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: 24px;">The story</div>
+      <p>Nothing here was done quickly. <em style="color: rgba(232,234,237,0.66);">That is the point.</em></p>
+    </div>
+    <div class="demo-grid-2">
+      <div class="vcp-card"><div class="vcp-card__body" style="padding: 34px;">
+        <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--text-muted); margin-bottom: var(--space-3);">Mission</div>
+        <p style="font-family: var(--font-display); font-size: 27px; line-height: 1.34; color: #F2F3F5; margin: 0; font-weight: 400;">To build companies at the intersection of capital and intelligence — with the patience the work deserves.</p>
+      </div></div>
+      <div class="vcp-card"><div class="vcp-card__body" style="padding: 34px;">
+        <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--text-muted); margin-bottom: var(--space-3);">Vision</div>
+        <p style="font-family: var(--font-display); font-size: 27px; line-height: 1.34; color: #F2F3F5; margin: 0; font-weight: 400;">A single, deliberate umbrella where every venture, idea and page reflects one standard — elegance with intent.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 DETAILS ============ -->
+  <section id="details">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">08</span>
+      <h2>Details</h2>
+    </div>
+    <div class="demo-grid-2" style="grid-template-columns: 1.3fr 1fr;">
+      <div class="vcp-card"><div class="vcp-card__body" style="padding: 32px;">
+        <div class="vcp-tag--caps label-caps" style="margin-bottom: 8px;">Stay in touch</div>
+        <div style="font-family: var(--font-display); font-size: var(--fs-20); color: #F2F3F5; margin-bottom: 22px;">Notes from the umbrella</div>
+        <form class="vcp-input-group" onsubmit="return false;">
+          <input class="vcp-input" type="email" placeholder="you@company.com" aria-label="Email address">
+          <button class="vcp-btn vcp-btn--silver" type="submit">Subscribe</button>
+        </form>
+      </div></div>
+      <div class="vcp-card"><div class="vcp-card__body" style="padding: 32px; display: flex; flex-direction: column; justify-content: center; gap: var(--space-3); height: 100%;">
+        <div class="demo-row" style="gap: 12px;"><span class="vcp-status-dot"></span><span style="font-size: 13px; color: var(--text-soft);">Available for select advisory</span></div>
+        <div class="demo-row" style="gap: 12px;"><span class="meta-mono">EST.</span><span style="font-size: 13px; color: var(--text-soft);">Las Vegas · Global</span></div>
+        <div class="demo-row" style="gap: 10px; margin-top: 4px;">
+          <a class="vcp-social" href="#details" aria-label="LinkedIn">in</a>
+          <a class="vcp-social" href="#details" aria-label="X">X</a>
+          <a class="vcp-social" href="#details" aria-label="More">✦</a>
+        </div>
+      </div></div>
     </div>
   </section>
 
 </main>
 
 <footer class="vcp-footer">
-  <span>VCP &copy; 2026. All rights reserved.</span>
-  <ul class="vcp-footer__links">
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#research">Research</a></li>
-    <li><a href="#projects">Projects</a></li>
-  </ul>
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <div class="vcp-footer__meta">© 2026 · All ventures<br>Everything with intent</div>
 </footer>
+
+</div>
 
 </body>
 </html>
