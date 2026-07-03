@@ -1,0 +1,72 @@
+/* VCP Design System — base/reset. See issue #1. */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--silver-bright);
+  margin: 0 0 var(--space-3);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 { font-size: var(--fs-56); }
+h2 { font-size: var(--fs-40); }
+h3 { font-size: var(--fs-28); }
+h4 { font-size: var(--fs-20); }
+
+p { margin: 0 0 var(--space-3); color: var(--text); }
+
+a {
+  color: var(--silver-bright);
+  text-decoration: none;
+}
+
+small, .text-muted { color: var(--text-muted); }
+
+/* Small-caps label style used for nav links, tags */
+.label-caps {
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  font-weight: 600;
+}
+
+/* Visible focus state — required by accessibility criteria */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--silver);
+  color: var(--bg);
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* Metallic sheen text — signature effect for wordmark, headings */
+.sheen-text {
+  background: var(--silver-sheen);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--silver-bright); /* fallback if background-clip unsupported */
+}

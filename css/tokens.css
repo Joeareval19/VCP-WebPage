@@ -1,0 +1,52 @@
+/* VCP Design System — tokens (single source of truth). See issue #1. */
+:root {
+  /* Color */
+  --bg: #0B0B0D;
+  --surface: #141417;
+  --surface-raised: #1C1C21;
+  --silver: #C7C9D1;
+  --silver-bright: #E8E9ED;
+  --silver-sheen: linear-gradient(135deg, #9A9CA6 0%, #E8E9ED 45%, #B9BBC4 55%, #7E8089 100%);
+  --text: #D9DADE;
+  --text-muted: #8B8D96;
+  --line: #26262B;
+
+  /* Focus / feedback */
+  --focus-ring: #C7C9D1;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --fs-12: 0.75rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-20: 1.25rem;
+  --fs-28: 1.75rem;
+  --fs-40: 2.5rem;
+  --fs-56: 3.5rem;
+
+  --tracking-label: 0.12em;
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+
+  /* Spacing (used by components) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+
+  --radius: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-med: 0ms;
+  }
+}

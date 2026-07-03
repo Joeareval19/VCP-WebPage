@@ -1,0 +1,180 @@
+/* VCP Design System — core components. See issue #1. */
+
+/* === Nav === */
+.vcp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(11, 11, 13, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.vcp-nav__wordmark {
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.vcp-nav__links {
+  display: flex;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vcp-nav__links a {
+  color: var(--silver);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.vcp-nav__links a:hover {
+  color: var(--silver-bright);
+}
+
+/* === Footer === */
+.vcp-footer {
+  border-top: 1px solid var(--line);
+  padding: var(--space-5) var(--space-4);
+  margin-top: var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: var(--fs-14);
+}
+
+.vcp-footer__links {
+  display: flex;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vcp-footer__links a {
+  color: var(--text-muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.vcp-footer__links a:hover {
+  color: var(--silver-bright);
+}
+
+/* === Card === */
+.vcp-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  transition: border-color var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+
+.vcp-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--silver-sheen);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease);
+  pointer-events: none;
+}
+
+.vcp-card:hover {
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.vcp-card:hover::before {
+  opacity: 1;
+}
+
+.vcp-card__title {
+  margin-bottom: var(--space-2);
+}
+
+.vcp-card__body {
+  color: var(--text-muted);
+}
+
+/* === Tag / chip === */
+.vcp-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--silver);
+  border-radius: 999px;
+  color: var(--silver);
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  font-weight: 600;
+}
+
+/* === Button === */
+.vcp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.vcp-btn--primary {
+  background: var(--bg);
+  border: 1px solid var(--silver);
+  color: var(--silver-bright);
+}
+
+.vcp-btn--primary:hover {
+  background: var(--silver-sheen);
+  color: var(--bg);
+  border-color: transparent;
+}
+
+.vcp-btn--secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.vcp-btn--secondary:hover {
+  border-color: var(--silver);
+  color: var(--silver-bright);
+}
+
+/* === Section heading === */
+.vcp-section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.vcp-section-heading__rule {
+  height: 1px;
+  width: 100%;
+  background: var(--line);
+  border: none;
+  margin: 0;
+}
