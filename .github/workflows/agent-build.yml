@@ -43,6 +43,36 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Hard stop: re-fetch the issue's live assignee + board Status right
+      # before doing any real work. Every trigger path (label, webhook relay,
+      # manual dispatch) funnels through this one check, so it's the last
+      # word regardless of which race got us here. The relay's own assignee
+      # check (Phase B) is a soft, best-effort filter upstream of this — this
+      # step is the actual lock. Two agents landing on the same ticket within
+      # the same second still only gets one past this gate, because whichever
+      # workflow's "Claim ticket" step (below) wins the assignee-write race
+      # is the one a *later* run's fresh re-fetch here will see and bail on.
+      - name: Refuse if already claimed
+        shell: powershell
+        env:
+          GH_TOKEN: ""
+        run: |
+          $n = "${{ steps.t.outputs.number }}"
+          $issue = gh api repos/Joeareval19/VCP-WebPage/issues/$n | ConvertFrom-Json
+          if ($issue.assignees.Count -gt 0) {
+            Write-Host "Issue #$n already assigned to $($issue.assignees[0].login) — refusing to double-dispatch."
+            exit 1
+          }
+          $issueId = $issue.node_id
+          $status = gh api graphql -f query="query { node(id: \`"$issueId\`") { ... on Issue { projectItems(first: 10) { nodes { project { id } fieldValueByName(name: \`"Status\`") { ... on ProjectV2ItemFieldSingleSelectValue { name } } } } } } }" | ConvertFrom-Json
+          $ourItem = $status.data.node.projectItems.nodes | Where-Object { $_.project.id -eq "PVT_kwHOBdoj_c4BcT54" } | Select-Object -First 1
+          $boardStatus = $ourItem.fieldValueByName.name
+          if ($boardStatus -in @("Started", "Review", "Completed")) {
+            Write-Host "Issue #$n board Status is already '$boardStatus' — refusing to double-dispatch."
+            exit 1
+          }
+          Write-Host "Issue #$n is unclaimed (Status: $boardStatus) — proceeding."
+
       # Claim: assign + move board card to Started. Uses the machine's gh auth
       # (Joeareval19, has project scope) — NOT the workflow GITHUB_TOKEN.
       - name: Claim ticket
