@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Socials — VCP</title>
+<meta name="description" content="Vegas Consulting Partners — links to Jose's/VCP's external presence across social platforms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  /* Socials-page layout only — components live in css/components.css */
+  .socials-section { margin-bottom: var(--space-7); }
+  .socials-header { max-width: 62ch; margin-bottom: var(--space-6); }
+  .socials-header .kicker { margin-bottom: var(--space-4); }
+
+  .socials-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .socials-list li {
+    border-top: 1px solid var(--line);
+  }
+
+  .socials-list li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .socials-list__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-2);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  .socials-list__link:hover { transform: translateX(4px); }
+  .socials-list__link:hover .socials-list__platform { color: #fff; }
+  .socials-list__link:hover .vcp-social { border-color: var(--line-strong); color: var(--text); }
+
+  .socials-list__platform {
+    font-family: var(--font-display);
+    font-size: var(--fs-28);
+    color: var(--silver-bright);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .socials-list__meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .socials-list__handle {
+    font-family: var(--font-mono);
+    font-size: var(--fs-14);
+    color: var(--text-soft);
+  }
+
+  .socials-list__arrow {
+    font-family: var(--font-display);
+    font-size: var(--fs-20);
+    color: var(--text-faint);
+  }
+
+  .socials-empty,
+  .socials-error {
+    padding: var(--space-5) var(--space-2);
+    color: var(--text-muted);
+    font-size: var(--fs-14);
+  }
+
+  @media (max-width: 900px) {
+    .vcp-nav { flex-wrap: wrap; }
+    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
+    .socials-list__link { flex-wrap: wrap; gap: var(--space-3); }
+    .socials-list__platform { flex-basis: 100%; }
+  }
+
+  @media (max-width: 560px) {
+    .socials-list__link { padding: var(--space-3) var(--space-1); gap: var(--space-2); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <div class="vcp-nav__brand">
+    <a href="/" style="display: flex; align-items: center; gap: var(--space-2);">
+      <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    </a>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </div>
+  <ul class="vcp-nav__links">
+    <li><a href="/research">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/socials" aria-current="page">Socials</a></li>
+    <li><a href="/#about">About</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ============ HEADER ============ -->
+  <header class="socials-section" style="padding-top: var(--space-6);">
+    <div class="socials-header">
+      <p class="kicker label-caps label-caps--wide">Socials</p>
+      <h1>Find VCP elsewhere</h1>
+      <p>One place to continue the relationship beyond this site — the platforms Jose and VCP are active on.</p>
+    </div>
+  </header>
+
+  <!-- ============ SOCIAL LINKS ============ -->
+  <section class="socials-section" id="socials-list">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">01</span>
+      <h2>Channels</h2>
+      <span class="placeholder-note">[placeholder links — Jose supplies real accounts]</span>
+    </div>
+    <ul class="socials-list" id="socials-list__items" aria-live="polite">
+      <!-- Rendered from data/socials.json by js/socials.js -->
+    </ul>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <ul class="vcp-footer__links">
+    <li><a href="/research">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/socials">Socials</a></li>
+  </ul>
+  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent</div>
+</footer>
+
+</div>
+
+<style>
+  .placeholder-note {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+</style>
+
+<script src="js/socials.js"></script>
+</body>
+</html>
