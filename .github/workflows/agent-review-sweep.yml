@@ -34,16 +34,22 @@ jobs:
           $repo = "Joeareval19/VCP-WebPage"
 
           # 1. Pull every board item currently in the Review column.
+          # GraphQL VARIABLES, not string interpolation: PS 5.1 strips embedded
+          # double quotes when passing args to native executables, so the old
+          # quoted-literal query reached gh mangled and failed on EVERY pass -
+          # the error was swallowed and each run printed "nothing to sweep"
+          # (execution-verified during the #26 audit). This sweep has been a
+          # silent no-op since it shipped.
           $query = @'
-          query {
-            node(id: "PROJECT_ID") {
+          query($pid: ID!, $fname: String!) {
+            node(id: $pid) {
               ... on ProjectV2 {
                 items(first: 100) {
                   nodes {
                     content {
                       ... on Issue { number state }
                     }
-                    fieldValueByName(name: "Status") {
+                    fieldValueByName(name: $fname) {
                       ... on ProjectV2ItemFieldSingleSelectValue { name }
                     }
                   }
@@ -51,9 +57,10 @@ jobs:
               }
             }
           }
-          '@ -replace "PROJECT_ID", $projectId
+          '@
 
-          $items = gh api graphql -f query=$query | ConvertFrom-Json
+          $items = gh api graphql -f query=$query -f pid=$projectId -f fname=Status | ConvertFrom-Json
+          if (-not $items -or -not $items.data.node) { throw "Board query failed - gh returned no data (see stderr above)" }
           $reviewIssues = $items.data.node.items.nodes |
             Where-Object { $_.fieldValueByName.name -eq "Review" -and $_.content.state -eq "OPEN" } |
             ForEach-Object { $_.content.number }
