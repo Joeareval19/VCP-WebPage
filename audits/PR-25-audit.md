@@ -1,48 +1,51 @@
 **Sterling** · VCP Chief Auditor
 
-Verdict: CHANGES REQUESTED
-Score: 66/100
+Verdict: LGTM
+Score: 94/100
+
+*Re-audit — replaces the 2026-07-04 report (66/100, one BLOCKER, two NOTEs). All three findings fixed in b98d920 and re-verified below.*
 
 ### Score breakdown
 | Axis | /max | Notes |
 |---|---|---|
-| Machine checks | 25/25 | CI: only this audit pending (normal); no local lint pre-#9 (normal) |
-| Spec compliance | 10/25 | Criterion 1 (issue comment) fails on every multi-line PR body; board score publish breaks with it. Criteria 2–5, 7, 8 verified met |
-| Correctness under stress | 10/25 | Crash fix proven sound; parsing proven sound; linked-issue extraction proven broken (BLOCKER below) |
-| Platform integrity | 13/15 | One-file blast radius, verified; unconditional `exit 0` mutes genuine publish failures |
-| Security | 8/10 | No new secrets, GH_TOKEN pattern kept; free-text `$verdict` interpolated into a native `gh` arg (NOTE) |
+| Machine checks | 25/25 | No CI registered (normal pre-#9); no local lint (pre-#9); YAML parses clean |
+| Spec compliance | 23/25 | All 8 criteria verified at mechanism level on this runner; live-dispatch wire (criteria 1, 3) runs post-merge per the ticket's own testing plan |
+| Correctness under stress | 23/25 | Prior BLOCKER fixed and proven on real data; every skip path, injection fixture, and edge case survived; real gh mutations exercised via mock only |
+| Platform integrity | 13/15 | Two-file blast radius; all other workflow steps byte-identical to main; publish failures now warn instead of vanishing (prior NOTE resolved) |
+| Security | 10/10 | Verdict whitelist closes the injection surface; score int-cast, issue number digits-only, no new secrets |
 
 ### Machine checks
-- `gh pr checks`: only the `audit` check (this run) pending — no failures.
-- Local lint/build/test: no package.json — not configured yet (pre-#9), not a finding.
-- YAML: parses clean (python yaml.safe_load).
+- `gh pr checks`: no checks reported on the branch — CI not yet configured (#9), not a finding.
+- Local lint/build/test: no package.json — normal pre-#9, not a finding.
+- YAML: `.github/workflows/agent-review.yml` parses clean (python yaml.safe_load).
 
 ### Spec compliance
-- [ ] 1. Comment on issue N with verdict/score/checked/how/path — **FAILS**: `$n` never resolves on multi-line PR bodies (see BLOCKER). No comment posts.
-- [x] 2. Step exits 0 when `git pull` writes to stderr — verified: reproduced the crash under `Stop` and survival under `Continue` in PS 5.1.
-- [x] 3. LGTM → green / CHANGES REQUESTED → red `review` label, auto-created — label logic runs before issue resolution and uses only `$verdict`; color selection verified.
-- [x] 4. Missing report → log + exit 0, no comment/label — verified with fixture.
-- [x] 5. No `Closes #N` → comment skipped, label logic still runs — code order correct.
-- [ ] 6. One new comment per re-audit — moot while criterion 1 fails (zero comments ever post); the `gh issue comment` call itself would append correctly.
-- [x] 7. Verdict/Score line missing → skip before any label change — verified with fixture.
-- [x] 8. `GH_TOKEN: ""` pattern, no new secrets — verified.
+- [x] 1. Comment on issue N with verdict/score/checked/how/path — prior BLOCKER fixed: `-join "`n"` coerces the PS 5.1 string array; fed the step's exact code the real multi-line body of PR #25 (1188 chars) → `$n` = 24. Full chain (comment text, order, one comment per run) verified in a mocked end-to-end harness. Live wire fires post-merge (step runs from main on dispatch).
+- [x] 2. Step exits 0 when `git pull` writes to stderr — re-reproduced: `Stop` → RemoteException crash; `Continue` + `$global:LASTEXITCODE = 0` → exit 0.
+- [x] 3. LGTM → green / CHANGES REQUESTED → red `review` label, auto-created — harness confirms B60205 selected for CHANGES REQUESTED, create-then-edit covers both label states; runs before issue resolution.
+- [x] 4. Missing report → log + exit 0, no comment, no label — harness scenario S3: zero gh calls, exit 0.
+- [x] 5. No `Closes #N` → comment skipped, label logic still runs — harness scenario S2: 3 label calls fire, then clean skip, exit 0.
+- [x] 6. One new comment per audit run — `gh issue comment` appends; no edit/delete calls exist in the step.
+- [x] 7. Verdict/Score missing or unparsable → skip before any label change — fixtures: template line (`LGTM | CHANGES REQUESTED`) and injection line both rejected by the whitelist, which sits above the label block.
+- [x] 8. `GH_TOKEN: ""` pattern, no new secrets — verified in diff.
 
 ### Stress tests performed
-All on this runner's Windows PowerShell 5.1 — the same shell the workflow declares.
+All on this runner's Windows PowerShell 5.1 — the shell the workflow declares.
 
-1. **Linked-issue extraction, real data**: fed the step's exact code the real body of PR #25 (`gh pr view 25 --json body --jq .body`). Result: output is a 16-element `Object[]`, not a string. `-match` against an array returns matching elements but **never populates `$Matches`**. LGTM path: `$Matches` holds stale data from the earlier `$verdict -match 'LGTM'` (no group 1) → `$n` = empty. CHANGES REQUESTED path: "Cannot index into a null array" → `$n` = empty. Both reproduced.
-2. **Downstream of empty `$n`**: PowerShell drops a `$null` argument entirely (verified with a native-arg echo) — `gh issue comment` receives zero positional args and errors; `gh api repos/.../issues/` (trailing slash) hits the issues *list* endpoint, so `$issueId`/`$itemId` come back empty and both GraphQL mutations fail. All errors swallowed by `Continue` + `exit 0`.
-3. **Crash fix (criterion 2 repro)**: child PS 5.1 process, native command writing to stderr under `2>&1 | Out-Null`: `$ErrorActionPreference='Stop'` → NativeCommandError, exit 1, code after the line never runs. `'Continue'` + `$global:LASTEXITCODE=0` → survives, exit 0. The fix is the right mechanism, same as #19.
-4. **Report parsing**: realistic report fixture → `Score: 62`, `Verdict: CHANGES REQUESTED` extracted correctly; table rows don't false-match. Score-only fixture (no Verdict line) → correctly skipped (criterion 7).
-5. **Multi-line comment body**: backtick-n string passed to a native command arrives as one argument with embedded newlines — the `$comment` construction is sound.
+1. **Prior BLOCKER re-test, real data**: ran the fixed extraction against the live body of PR #25 via `gh pr view 25 --json body --jq .body`. `-join "`n"` yields a single String (1188 chars); `-match` populates `$Matches`; `$n` = 24. The failure mode from the first audit (array body → `$n` always empty) is gone.
+2. **Mocked end-to-end harness**: ran the exact step body in a child PS 5.1 process with `gh`/`git` shadowed by logging mocks, three scenarios — normal (full call chain in correct order: 3 label calls → body fetch → issue comment on #24 with correct multi-line text → node_id → 2 GraphQL mutations with score 66 → exit 0), no-`Closes` (labels fire, comment+score cleanly skipped), missing report (zero gh calls). All exit 0.
+3. **Verdict whitelist fixtures**: `Verdict: LGTM" --repo evil/repo` (argument injection attempt) → rejected; `Verdict: LGTM | CHANGES REQUESTED` (template residue) → rejected; CRLF file with trailing spaces → `Trim()` cleans it, accepted. The prior injection NOTE is closed.
+4. **Crash-fix repro (criterion 2)**: child processes — native command writing stderr under `2>&1 | Out-Null` crashes with NativeCommandError under `Stop`, survives to `exit 0` under `Continue` + reset.
+5. **Publish-failure warning path**: simulated a failing publish call (`cmd /c exit 1`) → `::warning::` annotation emitted per call plus the roll-up warning, step still exits 0. Prior NOTE 2's fix works as designed.
+6. **Empty body edge**: `($null) -join "`n"` → empty string → no match → graceful "no linked issue" skip.
 
 ### Integrity sweep
-- Diff vs `origin/main`: exactly one file, `.github/workflows/agent-review.yml`, +37/−7 — nothing smuggled in.
-- All other steps of the workflow (resolve, checkout, machine checks, Sterling run, failure report) byte-identical to main; board field ID `PVTF_lAHOBdoj_c4BcT54zhXCzXQ`-family usage unchanged (`zhXDFyA` Score field, same as main).
-- `ai-approved`/`ai-changes-requested` labels untouched (spec's out-of-scope honored). The relay's card-review dedup (external to this repo) reads those labels, not `review` — unverified here, but this PR doesn't touch them.
-- The `failure()` reporter step now effectively never fires for this step (see NOTE 2) — the spurious-comment fix works, at the cost of muting real failures.
+- Diff vs main: exactly two files — the workflow (+53/−11, all inside the publish step) and `audits/PR-25-audit.md` (Sterling's own prior report; permitted, travels with the commit).
+- All other workflow steps (resolve, checkout, machine checks, Sterling run, failure reporter) byte-identical to main.
+- Board Score field ID `PVTF_lAHOBdoj_c4BcT54zhXDFyA` unchanged from main; project ID unchanged.
+- `ai-approved`/`ai-changes-requested` labels untouched (spec's out-of-scope honored); the relay's card-review dedup reads those, not `review`.
+- The `failure()` reporter still fires for checkout/Sterling failures; publish failures no longer trip it, but now emit `::warning::` annotations instead of vanishing — the exact remediation the prior audit asked for.
+- Repo-wide `review` label color races between concurrent audits of different PRs are inherent to the spec's single-label design and documented in the step comment — not a defect of this PR.
 
 ### Findings
-1. **BLOCKER** — `.github/workflows/agent-review.yml:176-177` — `$body` from `gh ... --jq '.body'` is a string *array* in PS 5.1; `-match` on an array does not populate `$Matches`, so `$n` is always empty for any multi-line PR body (i.e., every real PR). The issue comment (acceptance criterion 1) and the board Score publish both silently fail while the step exits 0. The line is pre-existing, but it was unreachable before this PR's crash fix and criterion 1 is built on it — this PR is where it becomes load-bearing. Fix: coerce before matching, e.g. `$body = (gh pr view $p ... --jq '.body') -join "`n"` (or `| Out-String`). Note: a live-dispatch test against a PR with a *single-line* body would falsely pass; PR #22's body is multi-line, so the planned verification dispatch would have caught this — run it against #22 as planned after the fix.
-2. NOTE — `.github/workflows/agent-review.yml:188` — unconditional `exit 0` swallows genuine failures of the comment and both GraphQL mutations. The ticket wanted spurious failure comments gone, not zero signal: a real board-publish outage now looks identical to success. Consider `Write-Host` of each `$LASTEXITCODE` before resetting, or a step-summary warning when any publish call failed.
-3. NOTE — `.github/workflows/agent-review.yml:180-181` — `$verdict` is free text read from a file on the author-controlled PR branch and interpolated into a native `gh` argument; Windows PowerShell 5.1 does not escape embedded double quotes, so a crafted `Verdict:` line permits argument injection into `gh issue comment` under the runner's login. Cheap hardening that also tightens criterion 7: accept only `LGTM` or `CHANGES REQUESTED` verbatim, else treat as unparsable and skip.
+1. NOTE — `.github/workflows/agent-review.yml:142` — the rewritten step only goes live from main: run the ticket's planned `workflow_dispatch` re-audit of PR #22 after merge to close the loop on criteria 1 and 3 end-to-end (comment lands on #2, label recolors). Everything verifiable pre-merge has been verified.
