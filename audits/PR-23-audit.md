@@ -1,56 +1,54 @@
 **Sterling** · VCP Chief Auditor
 
-Verdict: CHANGES REQUESTED
-Score: 69/100
+Verdict: LGTM
+Score: 92/100
+
+Re-audit. The previous audit (69/100) found one BLOCKER and three NOTEs; commit bd680a2 fixes the BLOCKER and the most serious NOTE. Both fixes verified by execution.
 
 ### Score breakdown
 | Axis | /max | Notes |
 |---|---|---|
-| Machine checks | 25/25 | No registered CI failures; no local lint pre-#9 (normal) |
-| Spec compliance | 17/25 | Criterion 2 unmet: merge-failure comment omits the error reason (BLOCKER) |
-| Correctness under stress | 18/25 | Guard block passed 9 mocked-path tests verbatim; two defects found by execution |
-| Platform integrity | 13/15 | Started/Review handlers byte-identical to main; dispatch interface unchanged; residual silent-rest path on transient `gh` failure |
-| Security | 7/10 | Webhook-controlled `node_id` interpolated into a GraphQL *mutation* under warn-only HMAC |
-
-Raw 80, capped at 69 by the BLOCKER.
+| Machine checks | 25/25 | No registered CI failures; no local lint pre-#9 (normal); `node --check` pass |
+| Spec compliance | 23/25 | Criteria 1–5 + 6a all verified met; 6b (relay restart) is post-merge deployment, documented but unverifiable pre-merge |
+| Correctness under stress | 23/25 | 13 mocked-path tests + live-gh validation all pass; one failure-of-failure edge loses the merge reason from the log (NOTE 3) |
+| Platform integrity | 14/15 | Only 2 hunks touch relay.js; Started/Review handlers and webhook parsing byte-identical to main; workflows' dispatch events unchanged; Started-bounce dispatch side effect remains (NOTE 1) |
+| Security | 7/10 | Webhook-controlled `node_id` still interpolated into a GraphQL mutation under warn-only HMAC (NOTE 2, pre-existing pattern, accepted dev-grade) |
 
 ### Machine checks
-- `gh pr checks`: only the `audit` check registered (this run) — pending, not a failure. CI not yet configured (#9).
+- `gh pr checks`: no checks registered — CI not yet configured (#9), not a finding.
 - Local lint/build/test: no package.json — normal pre-#9, not a finding.
-- `node --check agent-dispatch/relay.js`: **pass** on the PR branch (and on main for comparison).
+- `node --check agent-dispatch/relay.js`: **pass**.
 
 ### Spec compliance
-- [x] 1. CONFLICTING PR → no merge attempt, bounce to Review, one comment naming PR #n and the conflict — verified by harness (see stress tests).
-- [ ] 2. Merge command fails → card back in Review ✓, one comment posted ✓, **but the comment does not contain the error reason** — it contains `Command failed: gh pr merge N --repo ... --squash --delete-branch`, the command echo. See BLOCKER below.
-- [x] 3. No open PR → bounce to the source column (`Started` verified), comment "nothing to merge"; unknown/missing `from` → Review, as spec'd.
-- [x] 4. Issue already CLOSED → rests, no bounce, no comment.
-- [x] 5. Happy path unchanged: `gh pr merge --squash --delete-branch`, `MERGED` log line identical to main's.
+- [x] 1. CONFLICTING PR → no merge attempt (harness recorded zero `pr merge` calls), bounce to Review, one comment naming PR #16 and the conflict state.
+- [x] 2. Merge command fails → card back in Review, one comment **containing the error reason** — comment body verified: `` merging PR #16 failed: `GraphQL: Pull request is not mergeable (mergePullRequest)` ``. Previous BLOCKER fixed: `reasonOf()` (relay.js:52) prefers the last non-empty stderr line, validated against a real failing `gh` call on this runner (returned `GraphQL: Could not resolve to a PullRequest with the number of 999999.`, not the command echo).
+- [x] 3. No open PR → bounce to the source column (Started `de246815` and Pending `945c8a59` both verified in the recorded mutation), comment "nothing to merge"; unknown `from` → Review.
+- [x] 4. Issue already CLOSED → rests, zero gh calls, log only.
+- [x] 5. Happy path unchanged: single `pr merge --squash --delete-branch` call, `MERGED` log line identical to main's.
 - [x] 6a. `node --check` passes.
-- [ ] 6b. "Relay restarted on the worker with the new file" — post-merge deployment step; documented in the PR body, unverifiable pre-merge. Must be done at merge time or the guard is not live.
+- [ ] 6b. "Relay restarted on the worker with the new file" — post-merge deployment step, documented in the PR body and README. Must be done at merge time or the guard is not live.
 
 ### Stress tests performed
-Extracted the `to === "Completed"` block and the `bounce`/`comment` helpers **verbatim from the PR branch file** into a harness with a mocked `gh()` (recorded every call), and drove all paths:
-- closed issue → rests, log only ✓
-- no PR, `from=Started` → GraphQL mutation with option `de246815` (Started) + comment + log ✓
-- no PR, `from=undefined` → bounces to Review (`18317928`) ✓
-- CONFLICTING PR → no merge call recorded, bounce to Review, comment names PR #16 and the conflict state ✓
-- MERGEABLE PR → single `pr merge --squash --delete-branch` call, `MERGED` log ✓
-- merge throws (realistic `execFileSync` error) → bounce + comment fire, **but the comment reads** `` merging PR #16 failed: `Command failed: gh pr merge 16 --repo Joeareval19/VCP-WebPage --squash --delete-branch` `` — reason absent (Finding 1)
-- regex boundaries: issue #2 does **not** match a PR closing #21; `Closes #21` matches issue 21; title fallback `(#210)` does not match `(#21)` ✓
-- `gh pr view` returning garbage/throwing → exception escapes the guard to the outer catch; card **rests in Completed unmerged** with only a relay.log line (Finding 2)
-- Verified empirically (Node 22): `execFileSync` error `message` line 1 is always `Command failed: <cmd>`; the tool's stderr (the actual reason, e.g. `GraphQL: Pull request is not mergeable`) starts at line 2 and in `e.stderr`.
+Extracted the guard block and helpers **verbatim from the PR branch file** (read from disk, not retyped) into a harness with a mocked, call-recording `gh()`; drove 13 paths:
+- closed issue / no-PR (from Started, Pending, undefined) / CONFLICTING / MERGEABLE happy path — all correct (mutations carry the right option ids; comment bodies read back correct).
+- **Fix 1 verified:** merge throws with realistic Node 22 `execFileSync` error (message line 1 = command echo, reason in `e.stderr`) → comment and log both carry `GraphQL: Pull request is not mergeable (mergePullRequest)`. Also validated `reasonOf()` against a real failing `gh pr view 999999` on this runner: returns the GraphQL reason.
+- **Fix 2 verified:** `gh pr list` throwing (transient network) and `gh pr view` returning garbage HTML both land in the new guard-wide catch → bounce to Review + comment. The pre-#21 silent-rest path is dead.
+- Empty-stderr merge failure → falls back to the command echo (no better information exists; acceptable).
+- Worst case (guard fails AND the bounce mutation fails) → no escaped exception; `ERROR guard bounce ... also failed` logged.
+- Comment API failing right after a merge failure → card still bounces, human still gets exactly one comment (from the outer catch); see NOTE 3 for the log gap.
+- Regex boundary: issue #2 does not match a PR closing #21.
 
 ### Integrity sweep
-- Blast radius: 2 files. `relay.js` is a standalone worker-machine script — nothing in the repo imports it; the 3 workflows consume only its `repository_dispatch` events (`card-started`, `card-review`), which are unchanged (grep-verified in `.github/workflows/`).
-- `to === "Started"` and `to === "Review"` handlers and all webhook parsing are byte-identical to main (diff-verified) — dispatch and audit triggers unaffected.
-- Old `Review → Completed` behavior is a strict subset of the new guard's happy path — same merge command, same log line.
-- README change is one additive doc line.
-- Unverified: live webhook round-trip and the board mutation against the real project (requires the deployed relay — out of audit scope per stress-test rules).
+- Blast radius: 2 non-audit files. `relay.js` is a standalone worker-machine script — nothing in the repo imports it.
+- `git diff main` shows exactly two hunks in relay.js: helper insertion after `gh()` and the Completed-branch rewrite. The `to === "Started"` and `to === "Review"` handlers and all webhook parsing are byte-identical to main — dispatch and audit triggers unaffected.
+- Workflow consumers grep-verified: `agent-build.yml` (`card-started`) and `agent-review.yml` (`card-review`) consume events the relay still emits identically.
+- Loop safety: a bounce to Review fires a Completed→Review webhook; the Review handler's `ai-approved`/`ai-changes-requested` label skip (relay.js:108-109) absorbs it for any audited PR. At most one comment per drag, verified in every harness path.
+- Old `Review → Completed` behavior is a strict subset of the new guard's happy path.
+- Unverified: live webhook round-trip against the real board (requires the deployed relay — out of audit scope per stress-test rules).
 
 ### Findings
-1. **BLOCKER** — `agent-dispatch/relay.js:134` — Acceptance criterion 2 requires the bounce comment to contain **the error reason**; `String(e.message).split("\n")[0]` yields `Command failed: gh pr merge ...` (the command echo — verified by execution; the reason is on line 2 / in `e.stderr`). The human re-drags, it fails again, and they still must SSH into the worker and read `relay.log` — the exact loop this ticket was filed to kill. The `relay.log` line at :137 has the same defect. Fix: prefer stderr, e.g. `const reason = String((e && e.stderr) || e.message || e).trim().split("\n").filter(Boolean).slice(-1)[0]` (gh's last stderr line carries the reason), or `message` line `[1]`.
-2. NOTE — `agent-dispatch/relay.js:111-123` — if `gh pr list` or `gh pr view` throws (transient network/auth), the exception escapes to the outer catch at :141 and the card **rests in Completed unmerged, silently** — the pre-#21 failure mode survives on this narrower path. Consider wrapping the whole Completed branch so any failure bounces to Review.
-3. NOTE — `agent-dispatch/relay.js:115-116` — loop safety was analyzed only for the Review bounce. A no-PR bounce to **Started** fires a `Completed→Started` webhook; if the issue is unassigned, `relay.js:81-88` dispatches a build agent as a side effect of a failed completion drag. Rare, but an agent dispatch is an expensive surprise — consider excluding Started as a bounce target or adding a bounce marker.
-4. NOTE — `agent-dispatch/relay.js:41` — `item.node_id` comes straight from the webhook payload and is string-interpolated into a GraphQL **mutation** while HMAC verification is warn-only (:63-65). This extends the pre-existing injection pattern (read query at :75) to a write. Accepted dev-grade risk per the in-code note, but it belongs on the production-relay hardening list.
+1. NOTE — `agent-dispatch/relay.js:125-127` — carried over: a no-PR bounce to **Started** fires a Completed→Started webhook; if the issue is unassigned, relay.js:90-97 dispatches a build agent as a side effect of a failed completion drag. Rare, but an agent dispatch is an expensive surprise — consider excluding Started as a bounce target or a bounce marker.
+2. NOTE — `agent-dispatch/relay.js:41` — carried over: `item.node_id` from the webhook payload is string-interpolated into a GraphQL **mutation** while HMAC verification is warn-only (:72-74). Accepted dev-grade risk per the in-code note; belongs on the production-relay hardening list.
+3. NOTE — `agent-dispatch/relay.js:144-147` — if `comment()` throws after a merge failure, the `BOUNCE ... merge failed (<reason>)` log line at :147 is skipped and the outer catch's comment reports the *comment* failure's reason — the actual merge reason is recorded nowhere. One-line fix: log before commenting. Failure-of-failure path, card still bounces with one comment.
 
-One-line fix for the BLOCKER; the guard architecture itself is sound and matches the spec. Re-drag to Review after the fix for re-audit.
+Both prior blockers-in-spirit are dead: the bounce comment now tells the human the real reason, and no path through the guard leaves a card resting in Completed unmerged. Remember the deployment step — copy to `~/vcp-dispatch/relay.js` and restart the relay at merge time.
