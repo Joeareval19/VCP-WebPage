@@ -21,6 +21,16 @@ GitHub App webhook (projects_v2_item) -> smee.io channel -> `relay.js` on the wo
 - Workflow concurrency: one agent per issue number
 - Agent capped at --max-turns 100; failures are commented on the ticket
 
+## Metadata capture (#41)
+Pipeline metadata streams into the **vcp-ops** Supabase project
+(`mgcczsxviukraxonnljm`, free tier): `tickets` (backfilled from gh),
+`pipeline_events` (relay: every status change, dispatch, merge, bounce, skip),
+`audits` (agent-review.yml: Sterling verdict + score per PR). RLS is on with
+zero public policies — writes need the service-role key, which lives ONLY in
+`~/vcp-dispatch/supabase-key.txt` on the worker (same convention as
+webhook-secret.txt, never in git). Capture is fire-and-forget: a missing key
+or Supabase outage logs WARN and never blocks dispatch/merge.
+
 ## Hard constraint: subscription auth only
 Agents authenticate with Jose's Claude **subscription login** on the worker
 machine — never `ANTHROPIC_API_KEY` billing. Do NOT move this workflow to
