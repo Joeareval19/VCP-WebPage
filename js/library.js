@@ -38,7 +38,7 @@
     var tags = allTags(state.papers);
     chipsEl.innerHTML = tags.map(function (tag) {
       var pressed = state.activeTags.has(tag);
-      return '<button type="button" class="vcp-chip" data-tag="' + escapeHtml(tag) + '" ' +
+      return '<button type="button" class="vcp-tag vcp-tag--filter" data-tag="' + escapeHtml(tag) + '" ' +
         'aria-pressed="' + pressed + '">' + escapeHtml(tag) + '</button>';
     }).join('');
   }

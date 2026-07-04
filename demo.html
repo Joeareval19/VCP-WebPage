@@ -268,10 +268,75 @@
     </div>
   </section>
 
-  <!-- ============ 08 DETAILS ============ -->
-  <section id="details">
+  <!-- ============ 08 PROJECT DETAIL ELEMENTS ============ -->
+  <section class="demo-section" id="project-detail-elements">
     <div class="vcp-section-heading">
       <span class="vcp-section-heading__num">08</span>
+      <h2>Project detail elements</h2>
+    </div>
+
+    <div style="margin-bottom: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Filter chips</div>
+      <div class="demo-row">
+        <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="true">All</button>
+        <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="false">Active</button>
+        <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="false">Completed</button>
+        <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="false">Incubating</button>
+      </div>
+    </div>
+
+    <div class="demo-grid-2" style="grid-template-columns: 1fr 1fr; align-items: start;">
+      <div>
+        <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Timeline</div>
+        <ol class="vcp-timeline">
+          <li class="vcp-timeline__item">
+            <span class="vcp-timeline__dot" aria-hidden="true"></span>
+            <div class="vcp-timeline__date">2026-01</div>
+            <h3 class="vcp-timeline__title">Discovery</h3>
+            <p class="vcp-timeline__note">Mapped the existing workflow and data sources.</p>
+          </li>
+          <li class="vcp-timeline__item">
+            <span class="vcp-timeline__dot" aria-hidden="true"></span>
+            <div class="vcp-timeline__date">2026-03</div>
+            <h3 class="vcp-timeline__title">Engine v1</h3>
+            <p class="vcp-timeline__note">Shipped first pass to a pilot group.</p>
+          </li>
+          <li class="vcp-timeline__item">
+            <span class="vcp-timeline__dot" aria-hidden="true"></span>
+            <div class="vcp-timeline__date">2026-06</div>
+            <h3 class="vcp-timeline__title">Full rollout</h3>
+            <p class="vcp-timeline__note">Rolled out to the entire team.</p>
+          </li>
+        </ol>
+      </div>
+      <div>
+        <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Highlighted panel (Moat)</div>
+        <div class="vcp-panel">
+          <div class="label-caps label-caps--wide vcp-panel__label">Defensibility</div>
+          <div class="vcp-prose"><p>Proprietary dataset built over a decade — a moat a new entrant cannot replicate without the same history.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Rich text table (Business model)</div>
+      <div class="vcp-prose">
+        <table>
+          <caption>Revenue mix</caption>
+          <thead><tr><th>Revenue line</th><th>Mechanism</th><th>Share</th></tr></thead>
+          <tbody>
+            <tr><td>Transaction take-rate</td><td>% of completed order</td><td>~70%</td></tr>
+            <tr><td>Subscriptions</td><td>Flat monthly fee</td><td>~25%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 DETAILS ============ -->
+  <section id="details">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">09</span>
       <h2>Details</h2>
     </div>
     <div class="demo-grid-2" style="grid-template-columns: 1.3fr 1fr;">

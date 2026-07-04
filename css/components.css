@@ -555,6 +555,144 @@
   box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
+/* === Rich text prose (overview / business model bodies) === */
+.vcp-prose p { margin: 0 0 var(--space-3); }
+.vcp-prose p:last-child { margin-bottom: 0; }
+
+.vcp-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  font-size: var(--fs-14);
+}
+
+.vcp-prose caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.vcp-prose th, .vcp-prose td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.vcp-prose th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.vcp-prose td { color: var(--text-soft); font-weight: 300; }
+
+/* === Timeline (project detail) — vertical milestone list with silver hairline === */
+.vcp-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vcp-timeline::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 5px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--line-strong), var(--line) 88%, transparent);
+}
+
+.vcp-timeline__item {
+  position: relative;
+  padding: 0 0 var(--space-5) 34px;
+}
+
+.vcp-timeline__item:last-child { padding-bottom: 0; }
+
+.vcp-timeline__dot {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-pill);
+  background: var(--silver-metal);
+  box-shadow: 0 0 0 3px var(--bg), 0 0 12px rgba(232, 235, 239, 0.35);
+}
+
+.vcp-timeline__date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.vcp-timeline__title {
+  margin: 4px 0 4px;
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  color: var(--silver-bright);
+  font-weight: 500;
+}
+
+.vcp-timeline__note {
+  margin: 0;
+  font-size: var(--fs-14);
+  color: var(--text-soft);
+}
+
+/* === Highlighted panel (Moat section) === */
+.vcp-panel {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: 30px 32px;
+  background:
+    radial-gradient(120% 140% at 8% 0%, rgba(206, 212, 220, 0.12), transparent 55%),
+    var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-highlight), var(--shadow-float);
+}
+
+.vcp-panel__label {
+  margin-bottom: var(--space-3);
+}
+
+/* === Detail page header (project/topic/paper breakouts) === */
+.vcp-detail-header {
+  padding: var(--space-6) 0 var(--space-5);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-6);
+}
+
+.vcp-detail-header__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.vcp-detail-header h1 {
+  font-size: var(--fs-56);
+}
+
+.vcp-detail-header__thesis {
+  max-width: 60ch;
+  font-family: var(--font-display);
+  font-size: var(--fs-28);
+  font-style: italic;
+  color: var(--text-soft);
+  margin-top: var(--space-3);
+}
+
 /* === Footer === */
 .vcp-footer {
   border-top: 1px solid var(--line);
