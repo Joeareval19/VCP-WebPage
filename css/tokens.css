@@ -62,6 +62,18 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-fast: 150ms;
   --dur-med: 250ms;
+  /* Ambient/looping animation duration — deliberately separate from
+     --dur-fast/--dur-med (interaction transitions): those collapse to 0ms
+     under reduced-motion for snappy-but-instant transitions, whereas a
+     looping animation needs its @keyframes suppressed outright, not sped
+     up to 0ms (which would flash rather than stop). See the
+     prefers-reduced-motion block below. */
+  --dur-ambient: 3400ms;
+
+  /* Stacking context scale — every fixed/sticky element picks a rung here
+     instead of an inline magic number. */
+  --z-nav: 100;
+  --z-widget: 500;
 
   /* Spacing (used by components) */
   --space-1: 0.25rem;
@@ -82,5 +94,6 @@
   :root {
     --dur-fast: 0ms;
     --dur-med: 0ms;
+    --dur-ambient: 0ms;
   }
 }

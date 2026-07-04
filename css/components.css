@@ -16,7 +16,7 @@
 .vcp-nav {
   position: sticky;
   top: var(--space-3);
-  z-index: 100;
+  z-index: var(--z-nav);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -752,3 +752,189 @@
 }
 
 .vcp-footer__links a:hover { color: var(--silver-bright); }
+
+/* === Voice feedback widget (issue #43) === */
+
+/* Trigger — liquid-motion ball, fixed bottom-right on every page */
+.vcp-voice-trigger {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: var(--z-widget);
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  background: var(--silver-panel);
+  background-size: 220% 220%;
+  box-shadow: var(--shadow-silver), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
+  animation: vcp-voice-liquid var(--dur-ambient) ease-in-out infinite;
+  transition: transform var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease);
+}
+
+.vcp-voice-trigger:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: var(--shadow-silver), 0 22px 48px -16px rgba(0, 0, 0, 0.78);
+}
+
+.vcp-voice-trigger:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* Shrinks + dims when the panel is open, staying visible as the panel's
+   own "live" indicator rather than disappearing (open/close affordance
+   stays visually connected, per the spec). */
+.vcp-voice-trigger[data-open="true"] {
+  width: 40px;
+  height: 40px;
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + 1px);
+}
+
+@keyframes vcp-voice-liquid {
+  0%   { background-position: 0% 50%;   border-radius: 46% 54% 60% 40% / 55% 45% 55% 45%; }
+  25%  { background-position: 50% 100%; border-radius: 58% 42% 45% 55% / 45% 55% 45% 55%; }
+  50%  { background-position: 100% 50%; border-radius: 40% 60% 54% 46% / 60% 40% 60% 40%; }
+  75%  { background-position: 50% 0%;   border-radius: 54% 46% 40% 60% / 48% 52% 48% 52%; }
+  100% { background-position: 0% 50%;   border-radius: 46% 54% 60% 40% / 55% 45% 55% 45%; }
+}
+
+/* Listening/speaking states pulse faster than the ambient idle loop, so the
+   ball visibly communicates "active" without a separate icon/label. */
+.vcp-voice-trigger[data-state="listening"],
+.vcp-voice-trigger[data-state="speaking"] {
+  animation-duration: calc(var(--dur-ambient) / 4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vcp-voice-trigger {
+    animation: none;
+    border-radius: var(--radius-pill);
+  }
+}
+
+/* Panel — bottom-anchored, not full-screen */
+.vcp-voice-panel {
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--space-5) + 76px);
+  z-index: var(--z-widget);
+  width: min(360px, calc(100vw - var(--space-5) * 2));
+  max-height: min(520px, calc(100vh - 140px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-highlight), var(--shadow-float);
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  pointer-events: none;
+  transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+
+.vcp-voice-panel[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.vcp-voice-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.vcp-voice-panel__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  color: var(--silver-bright);
+}
+
+.vcp-voice-panel__close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--fs-20);
+  line-height: 1;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.vcp-voice-panel__close:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+
+.vcp-voice-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Consent screen — the first thing shown, before the mic ever activates */
+.vcp-voice-consent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.vcp-voice-consent__notice {
+  font-size: var(--fs-14);
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+/* Transcript — alternating assistant/visitor lines within one session */
+.vcp-voice-line {
+  max-width: 88%;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: var(--fs-14);
+  line-height: 1.5;
+}
+
+.vcp-voice-line--assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+.vcp-voice-line--visitor {
+  align-self: flex-end;
+  background: var(--silver-metal);
+  color: var(--on-silver);
+  font-weight: 500;
+}
+
+/* Status row — mic state + session controls, always visible once armed */
+.vcp-voice-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.vcp-voice-status__state {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
