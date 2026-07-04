@@ -1,12 +1,16 @@
-name: Completed Integrity Sweep
+name: Board Integrity Sweep
 
-# Reconciliation net for the Completed column (#26). The relay merge guard
-# (#21) bounces bad drags it RECEIVES — but the smee.io webhook transport
-# drops events (observed 2026-07-04: an approval drag on issue #2 reached
-# nobody; PR #22 sat open under a "Completed" card). This sweep enforces the
-# invariant regardless of how a card got there: a card may only REST in
-# Completed if its issue is closed or its work actually merged. Anything
-# else bounces back to Review with one explanatory comment on the ticket.
+# Reconciliation net for the board (#26 Completed pass, #37 Started pass).
+# The relay merge guard (#21) bounces bad drags it RECEIVES — but the smee.io
+# webhook transport drops events (observed 2026-07-04: an approval drag on
+# issue #2 reached nobody; PR #22 sat open under a "Completed" card), and PRs
+# opened by local fan-out sessions never get a board move at all (observed
+# 2026-07-04: #3/#4/#5/#29/#30 stuck in Started with open PRs). Invariants
+# enforced every 5 minutes, regardless of how a card got where it is:
+#   - a card may only REST in Completed if its issue is closed or its work
+#     actually merged; otherwise it bounces to Review with one comment
+#   - a card in Started whose issue has an open `Closes #N` PR belongs in
+#     Review (the work is done and awaiting review) — moved, log-only
 on:
   schedule:
     - cron: "*/5 * * * *"
@@ -21,7 +25,7 @@ jobs:
     runs-on: [self-hosted, vcp-laptop]
     timeout-minutes: 10
     steps:
-      - name: Bounce Completed cards whose work never merged
+      - name: Reconcile board columns with repo reality
         shell: powershell
         env:
           GH_TOKEN: ""
@@ -32,7 +36,6 @@ jobs:
           $reviewOption = "18317928"
           $repo = "Joeareval19/VCP-WebPage"
 
-          # 1. Every board item currently resting in Completed with an OPEN issue.
           # GraphQL VARIABLES, not string interpolation: PS 5.1 strips embedded
           # double quotes when passing args to native executables, so any query
           # text containing "..." literals reaches gh mangled and fails
@@ -62,22 +65,26 @@ jobs:
 
           $items = gh api graphql -f query=$query -f pid=$projectId -f fname=Status | ConvertFrom-Json
           if (-not $items -or -not $items.data.node) { throw "Board query failed - gh returned no data (see stderr above)" }
-          $suspects = $items.data.node.items.nodes | Where-Object {
-            $_.fieldValueByName.name -eq "Completed" -and $_.content.state -eq "OPEN"
+          $nodes = $items.data.node.items.nodes
+
+          # Grace window (Completed pass only): skip items touched in the last
+          # 3 minutes so an in-flight relay merge is not raced. updatedAt moves
+          # on any item edit, so this is best-effort - a late bounce is fine.
+          $cutoff = (Get-Date).ToUniversalTime().AddMinutes(-3)
+          $completedSuspects = @($nodes | Where-Object {
+            $_.fieldValueByName.name -eq "Completed" -and $_.content.state -eq "OPEN" -and
+            [datetime]::Parse($_.updatedAt).ToUniversalTime() -lt $cutoff
+          })
+          $startedItems = @($nodes | Where-Object {
+            $_.fieldValueByName.name -eq "Started" -and $_.content.state -eq "OPEN"
+          })
+
+          if ($completedSuspects.Count -eq 0 -and $startedItems.Count -eq 0) {
+            Write-Host "Board is honest - nothing to sweep."
+            exit 0
           }
 
-          if (-not $suspects) { Write-Host "Completed column is honest - nothing to sweep."; exit 0 }
-
-          # 2. Grace window: skip items touched in the last 3 minutes so an
-          #    in-flight relay merge is not raced. updatedAt moves on any item
-          #    edit, so this is best-effort - a late bounce on a later pass is fine.
-          $cutoff = (Get-Date).ToUniversalTime().AddMinutes(-3)
-          $suspects = @($suspects | Where-Object { [datetime]::Parse($_.updatedAt).ToUniversalTime() -lt $cutoff })
-          if ($suspects.Count -eq 0) { Write-Host "Only fresh items (grace window) - nothing to sweep this pass."; exit 0 }
-
-          # 3. Pull open and merged PRs once each.
           $openPrs = gh pr list --repo $repo --state open --json number,title,body | ConvertFrom-Json
-          $mergedPrs = gh pr list --repo $repo --state merged --limit 100 --json number,title,body | ConvertFrom-Json
 
           function Find-Pr($list, $n) {
             $rx = "close[sd]?\s+#$n\b"
@@ -86,27 +93,44 @@ jobs:
             } | Select-Object -First 1
           }
 
-          foreach ($item in $suspects) {
+          $mutation = 'mutation($pid: ID!, $iid: ID!, $fid: ID!, $oid: String!) { updateProjectV2ItemFieldValue(input: {projectId: $pid, itemId: $iid, fieldId: $fid, value: {singleSelectOptionId: $oid}}) { projectV2Item { id } } }'
+
+          # --- Pass 1 (#26): Completed cards whose work never merged -> bounce ---
+          if ($completedSuspects.Count -gt 0) {
+            $mergedPrs = gh pr list --repo $repo --state merged --limit 100 --json number,title,body | ConvertFrom-Json
+            foreach ($item in $completedSuspects) {
+              $n = $item.content.number
+              $openPr = Find-Pr $openPrs $n
+
+              if (-not $openPr) {
+                # Merged-but-open safeguard: if a MERGED PR closes this issue,
+                # the work IS merged - the issue just didn't auto-close. Rest.
+                $mergedPr = Find-Pr $mergedPrs $n
+                if ($mergedPr) {
+                  Write-Host "Issue #$n - PR #$($mergedPr.number) already merged (issue open); leaving card."
+                  continue
+                }
+                $reason = "Card was resting in **Completed**, but no PR closes this issue - nothing was merged. Bounced back to **Review**. Open a PR with ``Closes #$n`` (or merge the existing work), then drag to Completed again."
+                $logLine = "BOUNCE #${n}: rested in Completed with no PR -> Review"
+              } else {
+                $reason = "Card was resting in **Completed**, but PR #$($openPr.number) is **not merged** (the approval webhook was likely dropped). Bounced back to **Review** - drag to Completed again to merge, or merge the PR directly."
+                $logLine = "BOUNCE #${n}: rested in Completed with unmerged PR #$($openPr.number) -> Review"
+              }
+
+              gh api graphql -f query=$mutation -f pid=$projectId -f iid=$($item.id) -f fid=$statusFieldId -f oid=$reviewOption | Out-Null
+              gh issue comment $n --repo $repo --body $reason
+              Write-Host $logLine
+            }
+          }
+
+          # --- Pass 2 (#37): Started cards with an open PR -> Review ---
+          # Routine sync, not a fault: log-only, no issue comment. The audit
+          # sweep picks the card up in Review and Sterling's summary comment
+          # (#24) provides the ticket-side visibility.
+          foreach ($item in $startedItems) {
             $n = $item.content.number
             $openPr = Find-Pr $openPrs $n
-
-            if (-not $openPr) {
-              # Merged-but-open safeguard: if a MERGED PR closes this issue,
-              # the work IS merged - the issue just didn't auto-close. Rest.
-              $mergedPr = Find-Pr $mergedPrs $n
-              if ($mergedPr) {
-                Write-Host "Issue #$n - PR #$($mergedPr.number) already merged (issue open); leaving card."
-                continue
-              }
-              $reason = "Card was resting in **Completed**, but no PR closes this issue - nothing was merged. Bounced back to **Review**. Open a PR with ``Closes #$n`` (or merge the existing work), then drag to Completed again."
-              $logLine = "BOUNCE #${n}: rested in Completed with no PR -> Review"
-            } else {
-              $reason = "Card was resting in **Completed**, but PR #$($openPr.number) is **not merged** (the approval webhook was likely dropped). Bounced back to **Review** - drag to Completed again to merge, or merge the PR directly."
-              $logLine = "BOUNCE #${n}: rested in Completed with unmerged PR #$($openPr.number) -> Review"
-            }
-
-            $mutation = 'mutation($pid: ID!, $iid: ID!, $fid: ID!, $oid: String!) { updateProjectV2ItemFieldValue(input: {projectId: $pid, itemId: $iid, fieldId: $fid, value: {singleSelectOptionId: $oid}}) { projectV2Item { id } } }'
+            if (-not $openPr) { continue }
             gh api graphql -f query=$mutation -f pid=$projectId -f iid=$($item.id) -f fid=$statusFieldId -f oid=$reviewOption | Out-Null
-            gh issue comment $n --repo $repo --body $reason
-            Write-Host $logLine
+            Write-Host "SYNC #${n}: Started with open PR #$($openPr.number) -> Review"
           }
