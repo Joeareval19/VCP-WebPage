@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research — VCP</title>
+<meta name="description" content="Vegas Consulting Partners — open research topics, running summaries, and links into the white paper library.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  /* Research page layout only — components live in css/components.css */
+  .research-header { margin-bottom: var(--space-6); max-width: 62ch; }
+  .research-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  .research-card__summary {
+    font-size: var(--fs-14);
+    margin: 0 0 var(--space-4);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .research-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  .research-card__tags .vcp-tag {
+    padding: 5px 12px;
+    font-size: 11.5px;
+  }
+  .research-card__papers {
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+  .research-card__paper-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+  .research-card__paper-link {
+    font-size: var(--fs-14);
+  }
+  .research-empty {
+    padding: var(--space-6) 0;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  @media (max-width: 1100px) {
+    .research-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .vcp-nav { flex-wrap: wrap; }
+    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
+  }
+  @media (max-width: 640px) {
+    .research-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <div class="vcp-nav__brand">
+    <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </div>
+  <ul class="vcp-nav__links">
+    <li><a href="/research" aria-current="page">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/#about">About</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ============ HEADER ============ -->
+  <header class="research-header" style="padding-top: var(--space-6);">
+    <p class="label-caps label-caps--wide">Research</p>
+    <h1 style="font-size: var(--fs-56); margin-top: var(--space-3);">Open research topics</h1>
+    <p>What VCP is studying right now, with running summaries and links into the white papers each topic feeds.</p>
+  </header>
+
+  <!-- ============ TAG FILTER ============ -->
+  <div class="research-filters" id="research-filters" role="group" aria-label="Filter research topics by tag"></div>
+
+  <!-- ============ TOPIC GRID ============ -->
+  <section aria-live="polite">
+    <div class="research-grid" id="research-grid"></div>
+    <p class="research-empty" id="research-empty" hidden>No research topics match this tag.</p>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <ul class="vcp-footer__links">
+    <li><a href="/research">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library">Library</a></li>
+  </ul>
+  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent</div>
+</footer>
+
+</div>
+
+<script src="js/research.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "ai-augmented-due-diligence",
+    "title": "[PLACEHOLDER] AI-Augmented Due Diligence",
+    "summary": "How large-language-model pipelines can shorten diligence cycles for small-to-mid-market acquisitions without sacrificing audit trail rigor. Looking at document extraction, red-flag surfacing, and human-in-the-loop review checkpoints.",
+    "tags": ["AI", "M&A", "Process"],
+    "related_papers": [
+      { "title": "[PLACEHOLDER] Diligence Automation: A Framework", "slug": "diligence-automation-framework" },
+      { "title": "[PLACEHOLDER] LLM Red-Flag Detection in Financial Statements", "slug": "llm-red-flag-detection" }
+    ],
+    "updated": "2026-06-18"
+  },
+  {
+    "slug": "regional-labor-market-shifts",
+    "title": "[PLACEHOLDER] Regional Labor Market Shifts (Southwest US)",
+    "summary": "Tracking migration of skilled labor across Nevada, Arizona, and Utah post-2024, with a focus on construction, hospitality, and logistics. Building a leading-indicator model for regional wage pressure.",
+    "tags": ["Markets", "Labor", "Southwest"],
+    "related_papers": [
+      { "title": "[PLACEHOLDER] Wage Pressure Indicators for the Southwest Corridor", "slug": "wage-pressure-southwest-corridor" }
+    ],
+    "updated": "2026-05-30"
+  },
+  {
+    "slug": "fintech-regulatory-sandboxes",
+    "title": "[PLACEHOLDER] Fintech Regulatory Sandboxes",
+    "summary": "A comparative study of state-level fintech sandbox programs and how consulting practices should advise clients navigating overlapping state and federal exemptions.",
+    "tags": ["Fintech", "Regulation"],
+    "related_papers": [
+      { "title": "[PLACEHOLDER] State Sandbox Comparison Matrix", "slug": "state-sandbox-comparison-matrix" },
+      { "title": "[PLACEHOLDER] Federal Preemption Risk in Fintech Sandboxes", "slug": "federal-preemption-risk-fintech" }
+    ],
+    "updated": "2026-06-02"
+  },
+  {
+    "slug": "small-business-succession-planning",
+    "title": "[PLACEHOLDER] Small Business Succession Planning",
+    "summary": "Researching the succession gap facing owner-operated businesses as baby-boomer founders retire, and what consulting interventions actually move outcomes for buyers and sellers.",
+    "tags": ["M&A", "Small Business"],
+    "related_papers": [],
+    "updated": "2026-04-11"
+  },
+  {
+    "slug": "energy-grid-resilience-nevada",
+    "title": "[PLACEHOLDER] Energy Grid Resilience in Nevada",
+    "summary": "Assessing grid resilience investments against extreme heat load forecasts, and where private consulting can help utilities and large commercial users plan capacity.",
+    "tags": ["Energy", "Southwest", "Infrastructure"],
+    "related_papers": [
+      { "title": "[PLACEHOLDER] Heat Load Forecasting for Desert Grids", "slug": "heat-load-forecasting-desert-grids" }
+    ],
+    "updated": "2026-06-25"
+  },
+  {
+    "slug": "ai-governance-for-smbs",
+    "title": "[PLACEHOLDER] AI Governance for Small & Mid-Size Businesses",
+    "summary": "Practical AI governance frameworks scaled down for companies without a dedicated compliance function — model inventories, vendor risk review, and lightweight audit cadences.",
+    "tags": ["AI", "Regulation", "Process"],
+    "related_papers": [
+      { "title": "[PLACEHOLDER] A Lightweight AI Governance Checklist", "slug": "lightweight-ai-governance-checklist" }
+    ],
+    "updated": "2026-06-30"
+  }
+]
