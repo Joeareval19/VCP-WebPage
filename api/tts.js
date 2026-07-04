@@ -12,15 +12,23 @@
  * resolved in favor of a serverless proxy over browser-only calls.
  */
 
+const rateLimit = require("./_rate-limit.js");
+
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech";
 // A neutral default voice — swap via ELEVENLABS_VOICE_ID env var once a
 // specific voice is chosen for the assistant's persona.
 const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 const MAX_TEXT_LENGTH = 500; // assistant questions are short; guards against abuse of the proxy
+const MAX_PER_MINUTE = 20; // a real session asks ~6 questions; well above that, comfortably below abuse volume
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  if (!rateLimit.allow(req, MAX_PER_MINUTE)) {
+    res.status(429).json({ error: "Too many requests" });
     return;
   }
 

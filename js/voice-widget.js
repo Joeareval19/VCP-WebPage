@@ -29,7 +29,15 @@
   var PII_PATTERNS = [
     { re: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, tag: "[redacted-email]" },
     { re: /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, tag: "[redacted-phone]" },
-    { re: /\b(?:my name is|i'?m|this is)\s+[A-Z][a-zA-Z'-]+(?:\s+[A-Z][a-zA-Z'-]+)?/gi, tag: "$&".replace(/[A-Z][a-zA-Z'-]+(?:\s+[A-Z][a-zA-Z'-]+)?$/, "[redacted-name]") },
+    // Capture the lead-in phrase as $1 so the replacement is a literal
+    // template string, not a function call — an earlier version called
+    // .replace() at array-definition time against the literal 2-char
+    // string "$&" (no match, no-op), so names were never actually redacted.
+    // No /i flag: case-insensitivity would let [A-Z] match lowercase words
+    // too (e.g. "this is Miguel from Vegas" would swallow "from" into the
+    // name), so capitalized lead-in variants are spelled out explicitly
+    // instead of relying on case-folding.
+    { re: /\b(my name is|My name is|i'?m|I'?m|this is|This is)\s+([A-Z][a-zA-Z'-]+)(?:\s+([A-Z][a-zA-Z'-]+))?/g, tag: "$1 [redacted-name]" },
   ];
 
   function redact(text) {
@@ -134,6 +142,7 @@
     this.open = false;
     this.history = []; // reset every session — no cross-session memory
     this.recognition = null;
+    this.finishTimer = null;
 
     this.trigger.addEventListener("click", this.toggle.bind(this));
     this.closeBtn.addEventListener("click", this.endSession.bind(this));
@@ -144,6 +153,7 @@
   };
 
   VoiceWidget.prototype.startSession = function () {
+    if (this.finishTimer) { clearTimeout(this.finishTimer); this.finishTimer = null; }
     this.open = true;
     this.history = [];
     this.sessionId = makeSessionId(); // fresh per open — no cross-session identity, per spec
@@ -153,6 +163,7 @@
   };
 
   VoiceWidget.prototype.endSession = function () {
+    if (this.finishTimer) { clearTimeout(this.finishTimer); this.finishTimer = null; }
     if (this.recognition) { try { this.recognition.abort(); } catch (e) {} }
     window.speechSynthesis && window.speechSynthesis.cancel();
 
@@ -244,7 +255,14 @@
         var audio = new Audio(URL.createObjectURL(blob));
         audio.onended = function () { self.listen(); };
         audio.onerror = function () { self.listen(); };
-        audio.play();
+        // play() returns a Promise that rejects on autoplay-policy blocks;
+        // an unhandled rejection here left the session stranded in
+        // "speaking" forever, since neither onended nor onerror fire when
+        // playback never starts.
+        var playResult = audio.play();
+        if (playResult && typeof playResult.catch === "function") {
+          playResult.catch(function () { self.speakWithBrowserTts(question); });
+        }
       })
       .catch(function () {
         self.speakWithBrowserTts(question);
@@ -284,18 +302,54 @@
         }
       });
     };
-    recognition.onerror = function () { self.setState("idle"); };
+    recognition.onerror = function (event) {
+      self.setState("idle");
+      // "no-speech"/"aborted" are transient (visitor paused, or we aborted
+      // it ourselves on close) — just re-listen. Permission-related errors
+      // need an explicit retry affordance instead of silently re-arming
+      // the mic, since the browser won't re-prompt automatically and a
+      // silent retry would just error again in a loop.
+      if (event.error === "no-speech" || event.error === "aborted") {
+        self.listen();
+      } else {
+        self.renderMicError(event.error);
+      }
+    };
     recognition.onend = function () {
       if (self.trigger.getAttribute("data-state") === "listening") self.setState("idle");
     };
     recognition.start();
   };
 
+  VoiceWidget.prototype.renderMicError = function (errorCode) {
+    var wrap = document.createElement("div");
+    wrap.className = "vcp-voice-consent"; // reuse the consent layout — notice + single action button
+    var notice = document.createElement("p");
+    notice.className = "vcp-voice-consent__notice";
+    notice.textContent = errorCode === "not-allowed" || errorCode === "service-not-allowed"
+      ? "Microphone access was blocked. Allow microphone access for this site, then try again."
+      : "Didn't catch that. Want to try again?";
+    wrap.appendChild(notice);
+
+    var retryBtn = document.createElement("button");
+    retryBtn.type = "button";
+    retryBtn.className = "vcp-btn vcp-btn--silver vcp-btn--sm";
+    retryBtn.textContent = "Try again";
+    var self = this;
+    retryBtn.addEventListener("click", function () { self.listen(); });
+    wrap.appendChild(retryBtn);
+
+    this.body.appendChild(wrap);
+  };
+
   VoiceWidget.prototype.finishSession = function () {
     this.addLine("assistant", "Thanks — that's really helpful. Closing this out now.");
     this.setState("idle");
     var self = this;
-    setTimeout(function () { self.endSession(); }, 1600);
+    this.finishTimer = setTimeout(function () {
+      self.finishTimer = null;
+      self.endSession();
+    }, 1600);
   };
 
   document.addEventListener("DOMContentLoaded", function () {

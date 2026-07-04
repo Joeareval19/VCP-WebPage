@@ -16,10 +16,13 @@
  * not a task that needs a large model.
  */
 
+const rateLimit = require("./_rate-limit.js");
+
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.1-8b-instant";
 const MAX_HISTORY_TURNS = 12; // 6 visitor + 6 assistant lines — matches the widget's MAX_TURNS safety cap
 const MAX_LINE_LENGTH = 1000; // guards against a single runaway transcript line inflating the prompt
+const MAX_PER_MINUTE = 20; // matches api/tts.js — one real session makes ~6 calls to this endpoint
 
 const SYSTEM_PROMPT = [
   "You are a brief, friendly QA assistant collecting voice feedback about a website from an anonymous visitor.",
@@ -34,6 +37,11 @@ const SYSTEM_PROMPT = [
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  if (!rateLimit.allow(req, MAX_PER_MINUTE)) {
+    res.status(429).json({ error: "Too many requests" });
     return;
   }
 

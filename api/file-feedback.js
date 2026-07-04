@@ -18,12 +18,15 @@
  * narrower, ticket-filing-only scope, kept separate on purpose.
  */
 
+const rateLimit = require("./_rate-limit.js");
+
 const REPO_OWNER = "Joeareval19";
 const REPO_NAME = "VCP-WebPage";
 const PROJECT_ID = "PVT_kwHOBdoj_c4BcT54";
 const STATUS_FIELD_ID = "PVTSSF_lAHOBdoj_c4BcT54zhW9rGs";
 const PENDING_OPTION_ID = "945c8a59";
 const CATEGORY_DIGIT = "7"; // Site-wide / Platform — see wiki/VCP AI Workflow/Spec Categories.md
+const MAX_PER_MINUTE = 5; // this fires at most once per session (on close), unlike tts/next-turn's per-turn calls
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.1-8b-instant";
@@ -95,6 +98,11 @@ function bodyFor(summary, pageContext, sessionId) {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  if (!rateLimit.allow(req, MAX_PER_MINUTE)) {
+    res.status(429).json({ error: "Too many requests" });
     return;
   }
 
