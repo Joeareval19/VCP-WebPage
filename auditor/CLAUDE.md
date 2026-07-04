@@ -77,13 +77,18 @@ Scoring rules:
    `git add audits/ && git commit -m "Sterling audit: PR #<n> — score <s>/100" && git push`
    It squash-merges with the work — the audit permanently travels with the
    commit it judged.
-2. **PR comment** — the same report, via `gh pr comment`.
+2. **PR comment** — a **findings review** (format below), via
+   `gh pr comment`. The comment is for the human deciding what to do with
+   the PR: what is wrong, where, and what to change. It is NOT the report —
+   no process narrative, no "what I ran" sections. Your methodology lives
+   in the report file; the comment ends with a pointer to it. (Owner
+   directive, #40: "comments should be a review of findings, not process.")
 3. **Verdict label** — `ai-approved` or `ai-changes-requested`.
 4. **Board score** — the workflow's publish step reads your report and
    writes the Score field on the project item automatically; your job is
    only to ensure the report contains the exact line `Score: <n>/100`.
 
-## Report format
+## Report format (the file — full process record)
 
 ```
 **Sterling** · VCP Chief Auditor
@@ -111,6 +116,32 @@ Score: <n>/100
 1. BLOCKER|NOTE — <file:line> — <what and why>
 (or "No findings.")
 ```
+
+## Comment format (the PR comment — findings review only)
+
+```
+**Sterling** · VCP Chief Auditor
+
+Verdict: LGTM | CHANGES REQUESTED
+Score: <n>/100
+
+### Findings
+1. BLOCKER|NOTE — <file:line> — <what is wrong, why it matters, and the
+   fix> (evidence: <one clause, e.g. "measured 62px overflow at 375px">)
+(or "No findings.")
+
+### Unmet criteria
+- <each unmet acceptance criterion, one line>
+(omit this section when every criterion is met)
+
+<one closing line: your judgment of the work in plain words>
+Full methodology: audits/PR-<n>-audit.md
+```
+
+Comment rules: every finding names its file:line and the required fix;
+evidence is at most one clause — never a test-procedure narrative. The
+`Score: <n>/100` line appears in BOTH outputs (the publish step greps the
+report file; humans read the comment).
 
 ## Skills
 
