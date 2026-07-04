@@ -136,26 +136,56 @@ jobs:
           }
 
       # Sterling wrote `Score: <n>/100` in audits/PR-<n>-audit.md and pushed it
-      # to the PR branch. Publish that score to the board item's Score field.
-      - name: Publish score to board
+      # to the PR branch. Publish the audit results everywhere review happens:
+      # the color-coded `review` label on the PR, a brief summary comment on
+      # the linked issue, and the board item's Score field (#24).
+      - name: Publish audit results
         shell: powershell
         env:
           GH_TOKEN: ""
         run: |
+          # Publish-only step - never inherit the runner's Stop preference:
+          # git/gh stderr under 2>&1 raises NativeCommandError and crashed
+          # this step on every run (same disease as #19, found on PR #22).
+          $ErrorActionPreference = "Continue"
           $p = "${{ steps.t.outputs.number }}"
           git pull origin HEAD 2>&1 | Out-Null
+          $global:LASTEXITCODE = 0
           $report = "audits/PR-$p-audit.md"
-          if (-not (Test-Path $report)) { Write-Host "No report file - skipping score publish"; exit 0 }
-          $m = Select-String -Path $report -Pattern 'Score:\s*(\d+)\s*/\s*100' | Select-Object -First 1
-          if (-not $m) { Write-Host "No score line found - skipping"; exit 0 }
-          $score = [int]$m.Matches[0].Groups[1].Value
+          if (-not (Test-Path $report)) { Write-Host "No report file - skipping publish"; exit 0 }
+          $mScore = Select-String -Path $report -Pattern 'Score:\s*(\d+)\s*/\s*100' | Select-Object -First 1
+          $mVerdict = Select-String -Path $report -Pattern 'Verdict:\s*(.+)' | Select-Object -First 1
+          if (-not $mScore -or -not $mVerdict) { Write-Host "No Verdict/Score line found - skipping publish"; exit 0 }
+          $score = [int]$mScore.Matches[0].Groups[1].Value
+          $verdict = $mVerdict.Matches[0].Groups[1].Value.Trim()
+
+          # Verdict label on the PR. `review` is ONE repo-wide label: its
+          # color tracks the LATEST audit verdict (green pass / red fail),
+          # so two PRs cannot show different colors at the same time.
+          $color = "B60205"
+          if ($verdict -match 'LGTM') { $color = "0E8A16" }
+          gh label create review --repo Joeareval19/VCP-WebPage --color $color --description "AI audit verdict: green = high-trust pass, red = failed" 2>&1 | Out-Null
+          $global:LASTEXITCODE = 0
+          gh label edit review --repo Joeareval19/VCP-WebPage --color $color 2>&1 | Out-Null
+          $global:LASTEXITCODE = 0
+          gh pr edit $p --repo Joeareval19/VCP-WebPage --add-label review 2>&1 | Out-Null
+          $global:LASTEXITCODE = 0
+          Write-Host "review label -> $color ($verdict)"
+
           # find the linked issue from the PR body (Closes #N)
           $body = gh pr view $p --repo Joeareval19/VCP-WebPage --json body --jq '.body'
-          if ($body -match '[Cc]loses?\s+#(\d+)') { $n = $Matches[1] } else { Write-Host "No linked issue - skipping"; exit 0 }
+          if ($body -match '[Cc]loses?\s+#(\d+)') { $n = $Matches[1] } else { Write-Host "No linked issue - skipping comment + score"; exit 0 }
+
+          # Brief audit summary on the ticket - one comment per audit run
+          $comment = "**Sterling audit** - PR #${p}: $verdict, $score/100.`nChecked: machine checks (CI/lint), spec acceptance criteria, stress tests, integrity sweep, security.`nHow: exercised on the PR branch, diffed against main. Full report: audits/PR-$p-audit.md (PR branch)."
+          gh issue comment $n --repo Joeareval19/VCP-WebPage --body $comment
+          $global:LASTEXITCODE = 0
+
           $issueId = gh api repos/Joeareval19/VCP-WebPage/issues/$n --jq '.node_id'
           $itemId = gh api graphql -f query="mutation { addProjectV2ItemById(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", contentId: \`"$issueId\`"}) { item { id } } }" --jq '.data.addProjectV2ItemById.item.id'
           gh api graphql -f query="mutation { updateProjectV2ItemFieldValue(input: {projectId: \`"PVT_kwHOBdoj_c4BcT54\`", itemId: \`"$itemId\`", fieldId: \`"PVTF_lAHOBdoj_c4BcT54zhXDFyA\`", value: {number: $score}}) { projectV2Item { id } } }" | Out-Null
           Write-Host "Board item for issue #$n scored: $score/100"
+          exit 0
 
       - name: Report failure on the PR
         if: failure()
