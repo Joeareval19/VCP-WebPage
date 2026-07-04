@@ -7,16 +7,11 @@
  * get more specific (the "contextual grinding down" from the spec).
  *
  * STT uses the browser-native Web Speech API (SpeechRecognition) directly.
- * TTS calls api/tts.js, a serverless proxy to ElevenLabs (keeps the API key
- * server-side) — falls back to the browser's built-in speechSynthesis if
- * that proxy is unreachable, so the widget works even before/without the
- * backend deployed. The one deliberately mocked piece left is nextTurn(),
- * which stands in for the eventual LLM call that will pick follow-up
- * questions (issue #43's "voice/LLM architecture" question is resolved for
- * TTS; the conversation-logic LLM call is still a follow-up). Swapping
- * nextTurn()'s body for a fetch() to a real backend endpoint is the only
- * change needed once that lands; everything else here (widget chrome,
- * session lifecycle, redaction, ticket filing) is real.
+ * TTS calls api/tts.js (ElevenLabs proxy); conversation logic calls
+ * api/next-turn.js (Groq proxy) — both keep their API keys server-side
+ * and both fall back to a local, non-LLM stand-in if the endpoint is
+ * unreachable (e.g. backend not yet deployed, or a transient failure), so
+ * the widget degrades gracefully instead of breaking mid-session.
  */
 (function () {
   "use strict";
@@ -45,11 +40,12 @@
     return out;
   }
 
-  // ---- Mocked conversation engine ------------------------------------
-  // Stands in for the real LLM call. Picks a canned follow-up based on
-  // simple keyword matching against the visitor's last reply, so the UI
-  // demonstrably "grinds down" from vague to specific during a demo.
-  function nextTurn(history) {
+  // ---- Conversation engine --------------------------------------------
+  // Real path: api/next-turn.js (Groq). Fallback path (used only if that
+  // endpoint is unreachable): canned follow-ups via keyword matching
+  // against the visitor's last reply, so a backend outage degrades the
+  // conversation's specificity rather than breaking the session outright.
+  function nextTurnFallback(history) {
     var lastVisitorLine = "";
     for (var i = history.length - 1; i >= 0; i--) {
       if (history[i].role === "visitor") { lastVisitorLine = history[i].text.toLowerCase(); break; }
@@ -78,17 +74,53 @@
     return { done: false, question: "Anything else on your mind about the page, or is that everything for now?" };
   }
 
-  // ---- Summary + ticket draft ------------------------------------------
-  function buildSummary(history) {
-    var visitorLines = history.filter(function (h) { return h.role === "visitor"; }).map(function (h) { return h.text; });
-    var redactedQuotes = visitorLines.map(redact);
-    return {
-      quotes: redactedQuotes,
-      // Real summarization (likes/dislikes/suggestions extraction) is the
-      // LLM's job once wired up — this pass just carries the redacted
-      // transcript through so the plumbing is provable end to end.
-      raw_transcript: history.map(function (h) { return h.role + ": " + redact(h.text); }).join("\n"),
-    };
+  function fetchNextTurn(history) {
+    if (history.length === 0) {
+      return Promise.resolve({ done: false, question: OPENING_QUESTION });
+    }
+    if (history.filter(function (h) { return h.role === "visitor"; }).length >= MAX_TURNS) {
+      return Promise.resolve({ done: true });
+    }
+    return fetch("/api/next-turn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ history: history }),
+    })
+      .then(function (resp) {
+        if (!resp.ok) throw new Error("next-turn status " + resp.status);
+        return resp.json();
+      })
+      .catch(function () {
+        return nextTurnFallback(history);
+      });
+  }
+
+  // ---- Ticket filing ---------------------------------------------------
+  // Redaction happens here, client-side, before the transcript ever leaves
+  // the browser — api/file-feedback.js (which does the real LLM
+  // summarization + gh issue create) only ever sees already-redacted text.
+  function redactedTranscript(history) {
+    return history.map(function (h) { return h.role + ": " + redact(h.text); }).join("\n");
+  }
+
+  function fileFeedback(history, pageContext, sessionId) {
+    return fetch("/api/file-feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transcript: redactedTranscript(history),
+        pageContext: pageContext,
+        sessionId: sessionId,
+      }),
+    })
+      .then(function (resp) { return resp.json(); })
+      .catch(function (err) { return { filed: false, reason: err.message }; });
+  }
+
+  function makeSessionId() {
+    // Opaque, not tied to visitor identity — per spec's content model
+    // (session_id: "opaque, not tied to visitor identity").
+    return "vf-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
   }
 
   // ---- Widget state machine -------------------------------------------
@@ -114,6 +146,7 @@
   VoiceWidget.prototype.startSession = function () {
     this.open = true;
     this.history = [];
+    this.sessionId = makeSessionId(); // fresh per open — no cross-session identity, per spec
     this.trigger.setAttribute("data-open", "true");
     this.panel.setAttribute("data-open", "true");
     this.renderConsent();
@@ -123,14 +156,19 @@
     if (this.recognition) { try { this.recognition.abort(); } catch (e) {} }
     window.speechSynthesis && window.speechSynthesis.cancel();
 
-    if (this.history.length > 0) {
-      var summary = buildSummary(this.history);
-      // Filing the redacted summary as a Pending ticket happens server-side
-      // in the real build (the client should never hold a GitHub token).
-      // For this pass, log what WOULD be filed so the pipeline is visible
-      // and testable without a backend.
-      // eslint-disable-next-line no-console
-      console.log("[voice-widget] session ended — would file as Pending ticket:", summary);
+    // Only file when the visitor actually said something — a session where
+    // only the opening question was ever spoken has no feedback to extract.
+    var hasVisitorReply = this.history.some(function (h) { return h.role === "visitor"; });
+    if (hasVisitorReply) {
+      fileFeedback(this.history, window.location.pathname, this.sessionId).then(function (result) {
+        if (result.filed) {
+          // eslint-disable-next-line no-console
+          console.log("[voice-widget] filed feedback as " + result.issueUrl);
+        } else {
+          // eslint-disable-next-line no-console
+          console.log("[voice-widget] feedback not filed:", result.reason || result.error || "unknown");
+        }
+      });
     }
 
     this.open = false;
@@ -164,7 +202,10 @@
 
   VoiceWidget.prototype.arm = function () {
     this.body.innerHTML = "";
-    this.askQuestion(nextTurn(this.history).question);
+    var self = this;
+    fetchNextTurn(this.history).then(function (turn) {
+      self.askQuestion(turn.question);
+    });
   };
 
   VoiceWidget.prototype.addLine = function (role, text) {
@@ -234,12 +275,14 @@
       self.addLine("visitor", transcript);
       self.setState("thinking");
 
-      var turn = nextTurn(self.history);
-      if (turn.done) {
-        self.finishSession();
-      } else {
-        self.askQuestion(turn.question);
-      }
+      fetchNextTurn(self.history).then(function (turn) {
+        if (!self.open) return; // session was closed while the request was in flight
+        if (turn.done) {
+          self.finishSession();
+        } else {
+          self.askQuestion(turn.question);
+        }
+      });
     };
     recognition.onerror = function () { self.setState("idle"); };
     recognition.onend = function () {
