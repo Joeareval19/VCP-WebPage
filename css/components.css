@@ -373,6 +373,9 @@
 /* === Section heading === */
 .vcp-section-heading {
   display: flex;
+  /* long headings drop the hairline rule to its own row at phone widths
+     instead of pushing it past the viewport */
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-3);
   margin-bottom: 38px;
@@ -560,6 +563,10 @@
 .vcp-prose p:last-child { margin-bottom: 0; }
 
 .vcp-prose table {
+  /* block + overflow-x: wide tables scroll inside themselves instead of
+     escaping phone viewports (PR #36 audit, BLOCKER 1b) */
+  display: block;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   margin: var(--space-4) 0;
@@ -682,6 +689,9 @@
 
 .vcp-detail-header h1 {
   font-size: var(--fs-56);
+  /* Long unbroken tokens (e.g. bracketed placeholders) must wrap, not
+     force horizontal scroll at phone widths (PR #36 audit, BLOCKER 1a) */
+  overflow-wrap: anywhere;
 }
 
 .vcp-detail-header__thesis {
@@ -727,6 +737,8 @@
 
 .vcp-footer__links {
   display: flex;
+  /* five wing links must wrap at phone widths, not widen the page */
+  flex-wrap: wrap;
   gap: var(--space-4);
   list-style: none;
   margin: 0;
