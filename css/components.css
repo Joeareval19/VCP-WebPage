@@ -182,6 +182,26 @@
   color: var(--text-soft);
 }
 
+/* Interactive filter chip — button variant of .vcp-tag for client-side
+   filter rows (tag filters, category toggles). */
+.vcp-tag--filter {
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.vcp-tag--filter:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.vcp-tag--filter[aria-pressed="true"] {
+  background: var(--silver-metal);
+  border-color: transparent;
+  color: var(--on-silver);
+  font-weight: 600;
+}
+
 /* === Card === */
 .vcp-card {
   position: relative;
