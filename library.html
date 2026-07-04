@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library — VCP</title>
+<meta name="description" content="VCP Library — the repository of finished, citable white papers, published as they are completed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  /* Library-page layout only — components live in css/components.css */
+  .library-header { margin-bottom: var(--space-6); }
+  .library-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .library-controls__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .library-controls__sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .library-controls__sort select {
+    background: rgba(11, 12, 14, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-14);
+    padding: 8px 14px;
+    border-radius: var(--radius);
+  }
+  .library-controls__sort select:hover,
+  .library-controls__sort select:focus { border-color: rgba(255, 255, 255, 0.28); }
+  #paper-list { list-style: none; margin: 0; padding: 0; }
+  #paper-empty { margin-top: var(--space-4); }
+  @media (max-width: 900px) {
+    h1 { font-size: var(--fs-56); }
+    .vcp-nav { flex-wrap: wrap; }
+    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
+    .library-controls { flex-direction: column; align-items: flex-start; }
+    .vcp-paper__actions { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <div class="vcp-nav__brand">
+    <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </div>
+  <ul class="vcp-nav__links">
+    <li><a href="/research">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library" aria-current="page">Library</a></li>
+    <li><a href="/#about">About</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ============ HEADER ============ -->
+  <header class="library-header" style="padding-top: var(--space-6);">
+    <p class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Library</p>
+    <h1 class="sheen-text" style="font-size: var(--fs-56);">White papers</h1>
+    <p style="max-width: 62ch; margin-top: var(--space-3);">The repository of finished, citable documents VCP has published — filter by topic or sort by date to find what you need.</p>
+  </header>
+
+  <!-- ============ CONTROLS: tag filter + sort ============ -->
+  <section aria-label="Filter and sort papers">
+    <div class="library-controls">
+      <div class="library-controls__chips" id="tag-chips" role="group" aria-label="Filter by tag">
+        <!-- Populated by js/library.js -->
+      </div>
+      <div class="library-controls__sort">
+        <label class="label-caps" for="sort-select">Sort</label>
+        <select id="sort-select" aria-label="Sort papers by date">
+          <option value="date-desc" selected>Newest first</option>
+          <option value="date-asc">Oldest first</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ============ PAPER LIST ============ -->
+    <div id="paper-list" aria-live="polite">
+      <!-- Populated by js/library.js from data/papers.json -->
+    </div>
+    <p id="paper-empty" class="text-muted" hidden>No papers match the selected tags.</p>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <ul class="vcp-footer__links">
+    <li><a href="/research">Research</a></li>
+    <li><a href="/projects">Projects</a></li>
+    <li><a href="/library">Library</a></li>
+  </ul>
+  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent</div>
+</footer>
+
+</div>
+
+<script src="js/library.js"></script>
+</body>
+</html>
