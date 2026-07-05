@@ -38,7 +38,7 @@ Score: 98/100
 - Telemetry tables as anon with data present: 0 rows readable; anon writes to all four service-role tables → RLS violation.
 
 ### Integrity sweep
-- True diff vs `origin/main`: exactly 4 files, 126 insertions / 3 deletions. No existing file other than `js/telemetry.js` touched.
+- True diff vs `origin/main`: 4 code/schema files, 126 insertions / 3 deletions, plus one wiki note (`wiki/Site Platform/Site Database.md`, commit 87493aa, landed mid-audit and reviewed: pure documentation, its claims match my live measurements; issue #60 carries the required backlink comment). No existing file other than `js/telemetry.js` touched.
 - All three migrations are purely additive (`create table` / `create index` / `create policy` only — zero ALTERs of existing tables); `70002_site_metadata.sql` untouched, so every existing record and writer is unaffected by construction.
 - `js/telemetry.js` consumers: all 8 site pages include it; the diff changes only the key constant and a comment — the fail-silent contract, the `vcpTrack` hook, and the empty-key guard are unchanged. Activation verified live: the shipped key authenticates and can do nothing beyond the telemetry contract.
 - Writers verified against schema: `agent-dispatch/relay.js` (five capture shapes) and `.github/workflows/agent-review.yml` (audit POST incl. the `CHANGES REQUESTED` → `CHANGES_REQUESTED` mapping) — both start succeeding with no code change, as the ticket claims.
