@@ -26,6 +26,7 @@ Humans decide **what** to build and **whether it shipped well**. Everything betw
 - [[The Three Systems]] — the state/how/why split that everything sits on
 - [[Ticket Lifecycle]] — the four board columns and what moves cards
 - [[Agent Dispatch Pipeline]] — how a card drag becomes a working agent
+- [[Board Integrity Sweep]] — the scheduled safety net that catches what the webhook path misses
 - [[Review Gate]] — why agents never merge, and how approval works
 - [[Worker Fleet and Scaling]] — the runners, the subscription constraint, how we grow
 - [[Team Onboarding]] — how new humans join with zero setup ceremony
