@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP — Vegas Consulting Partners</title>
-<meta name="description" content="Vegas Consulting Partners publishes what it builds as it happens: projects, research, and white papers, in the open.">
+<meta name="description" content="Jose Ernesto Arevalo, founder of Vegas Consulting Partners. Projects, research, and white papers, published in the open as they happen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,44 +13,148 @@
 <link rel="stylesheet" href="css/components.css">
 <style>
   /* Landing-page layout only — components live in css/components.css.
-     Four-beat snapshot (#55): hero, wings, about, footer. Open composition:
-     text on graphite, no panels; whitespace carries the rhythm. */
+     Person-led format (#62): hero with portrait over a circular silver
+     accent, numbered selected-work band, quote band, connect band. */
   h1, h2, h3 { text-wrap: balance; }
 
   .hero {
-    padding: var(--space-8) 0;
-    max-width: 62ch;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-6);
+    align-items: center;
+    padding: var(--space-7) 0 var(--space-8);
   }
-  .hero h1 { margin-bottom: var(--space-4); }
-  .hero-lede {
-    font-family: var(--font-display);
-    font-size: var(--fs-40);
-    line-height: 1.15;
-    color: var(--silver-bright);
+  .hero-name {
+    font-size: clamp(3rem, 7.5vw, 6rem);
+    line-height: 1.02;
     margin: 0 0 var(--space-4);
-    text-wrap: balance;
+    overflow-wrap: anywhere;
   }
-  .hero-sub { max-width: 52ch; text-wrap: pretty; }
+  .hero-name span { display: block; }
+  .hero-role {
+    margin: 0 0 var(--space-4);
+  }
+  .hero-intro { max-width: 46ch; text-wrap: pretty; margin: 0; }
   .hero-actions { margin-top: var(--space-5); }
 
-  .landing-section { margin-bottom: var(--space-8); }
-  .landing-section > h2 { margin-bottom: var(--space-6); }
+  /* Portrait over a circular brushed-silver accent (the format's cutout).
+     The image is optional until assets/jose.jpg exists: onerror flips the
+     block to its styled empty state — never a broken-image glyph. */
+  .portrait {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+    justify-self: end;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .portrait::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 54%;
+    transform: translate(-50%, -50%);
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+    border-radius: var(--radius-pill);
+    background: var(--silver-panel);
+    opacity: 0.9;
+  }
+  .portrait img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: grayscale(1) contrast(1.05);
+  }
+  .portrait--empty img { display: none; }
+  .portrait--empty::after {
+    content: 'portrait · add assets/jose.jpg';
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    letter-spacing: 0.1em;
+    color: var(--on-silver);
+    padding-bottom: 46%;
+  }
 
-  .wing-grid {
+  .landing-section { margin-bottom: var(--space-8); }
+
+  /* Selected work: left rail + three numbered columns */
+  .work-band {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--space-6);
+  }
+  .work-rail p { margin: var(--space-3) 0 var(--space-4); text-wrap: pretty; }
+  .work-cols {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-6);
   }
-  .wing h3 { margin-bottom: var(--space-2); }
-  .wing p { margin: 0 0 var(--space-3); max-width: 62ch; text-wrap: pretty; }
+  .work-col__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-14);
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    display: block;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--space-3);
+  }
+  .work-col h3 { margin-bottom: var(--space-2); }
+  .work-col p { margin: 0 0 var(--space-3); max-width: 40ch; text-wrap: pretty; }
 
-  .about-block { max-width: 62ch; }
-  .about-block p { text-wrap: pretty; }
-  .about-contact {
+  .quote-band { max-width: 34ch; }
+  .quote-band p {
+    font-family: var(--font-display);
+    font-size: var(--fs-40);
+    line-height: 1.18;
+    color: var(--silver-bright);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Let's connect: rows + hairline-boxed CTA */
+  .connect-band {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-6);
+    align-items: stretch;
+  }
+  .connect-rows { list-style: none; margin: var(--space-4) 0 0; padding: 0; }
+  .connect-rows li {
     display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-top: var(--space-5);
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-14);
+  }
+  .connect-rows li:last-child { border-bottom: 1px solid var(--line); }
+  .connect-box {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    transition: border-color var(--dur-med) var(--ease);
+  }
+  .connect-box:hover { border-color: rgba(255, 255, 255, 0.32); }
+  .connect-box p {
+    font-family: var(--font-display);
+    font-size: var(--fs-28);
+    line-height: 1.2;
+    color: var(--silver-bright);
+    margin: 0;
+    text-wrap: balance;
   }
 
   .placeholder-note {
@@ -61,11 +165,13 @@
   }
 
   @media (max-width: 900px) {
-    h1 { font-size: var(--fs-56); }
-    .hero { padding: var(--space-7) 0; }
-    .hero-lede { font-size: var(--fs-28); }
+    .hero { grid-template-columns: 1fr; padding: var(--space-6) 0 var(--space-7); }
+    .hero-name { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+    .portrait { justify-self: start; max-width: 300px; }
     .landing-section { margin-bottom: var(--space-7); }
-    .wing-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .work-band { grid-template-columns: 1fr; }
+    .work-cols { grid-template-columns: 1fr; }
+    .connect-band { grid-template-columns: 1fr; }
     .vcp-nav { flex-wrap: wrap; }
     .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
   }
@@ -93,50 +199,72 @@
 
 <main>
 
-  <!-- Beat 1: hero — open text on graphite, no panel -->
+  <!-- Beat 1: the person -->
   <header class="hero">
-    <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-5);">Vegas Consulting Partners</p>
-    <h1 class="sheen-text">VCP</h1>
-    <p class="hero-lede">The work, out in the open.</p>
-    <p class="hero-sub">VCP is a consulting practice that publishes what it builds as it happens: the projects, the research, the finished papers. This site is the working record, kept honest because the work itself lives here.</p>
-    <div class="hero-actions">
-      <a class="vcp-btn vcp-btn--silver" href="#wings">Explore the work</a>
+    <div>
+      <h1 class="hero-name"><span>Jose Ernesto</span><span class="sheen-text">Arevalo</span></h1>
+      <p class="hero-role label-caps label-caps--wide">Founder · Vegas Consulting Partners</p>
+      <p class="hero-intro">I build companies and publish the work as it happens: the projects, the research, the papers, all of it here in the open.</p>
+      <div class="hero-actions">
+        <a class="vcp-btn vcp-btn--silver" href="#work">Explore the work</a>
+      </div>
+    </div>
+    <div class="portrait" id="portrait">
+      <img src="assets/jose.jpg" alt="Jose Ernesto Arevalo" onerror="document.getElementById('portrait').classList.add('portrait--empty')">
     </div>
   </header>
 
-  <!-- Beat 2: the three wings — open blocks, no cards -->
-  <section class="landing-section" id="wings">
-    <h2>The work</h2>
-    <div class="wing-grid">
-      <article class="wing">
-        <h3>Research</h3>
-        <p>Open questions and running notes: what VCP is studying, and what it's learning along the way.</p>
-        <a class="vcp-link" href="/research.html">Read the research</a>
-      </article>
-      <article class="wing">
-        <h3>Projects</h3>
-        <p>Every engagement and internal build, indexed, each with its own breakout.</p>
-        <a class="vcp-link" href="/projects.html">See the projects</a>
-      </article>
-      <article class="wing">
-        <h3>Library</h3>
-        <p>Finished, citable white papers, published as they're completed.</p>
-        <a class="vcp-link" href="/library.html">Browse the library</a>
-      </article>
+  <!-- Beat 2: selected work — the one deliberately numbered sequence -->
+  <section class="landing-section" id="work">
+    <div class="work-band">
+      <div class="work-rail">
+        <span class="vcp-tag--caps label-caps">Selected work</span>
+        <p>Three wings, one record. Everything VCP does lands in one of these.</p>
+        <a class="vcp-link" href="/intent.html">Read the intent</a>
+      </div>
+      <div class="work-cols">
+        <article class="work-col">
+          <span class="work-col__num">01</span>
+          <h3>Research</h3>
+          <p>Open questions and running notes: what's being studied, and what it's teaching us.</p>
+          <a class="vcp-link" href="/research.html">Read the research</a>
+        </article>
+        <article class="work-col">
+          <span class="work-col__num">02</span>
+          <h3>Projects</h3>
+          <p>Every engagement and internal build, indexed, each with its own breakout.</p>
+          <a class="vcp-link" href="/projects.html">See the projects</a>
+        </article>
+        <article class="work-col">
+          <span class="work-col__num">03</span>
+          <h3>Library</h3>
+          <p>Finished, citable white papers, published as they're completed.</p>
+          <a class="vcp-link" href="/library.html">Browse the library</a>
+        </article>
+      </div>
     </div>
   </section>
 
-  <!-- Beat 3: about — the company in plain words, then the person -->
+  <!-- Beat 3: the line the whole site stands on -->
+  <section class="landing-section quote-band">
+    <p>Nothing here was done quickly. That is the point.</p>
+  </section>
+
+  <!-- Beat 4: let's connect -->
   <section class="landing-section" id="about">
-    <h2>About</h2>
-    <div class="about-block">
-      <p>VCP works in public. Most firms keep a polished page and a private archive; here they're the same thing. What we're building, what we're studying, and what we've finished all live on this site, current by default.</p>
-      <!-- First-person beat: written ONLY from Jose's notes (input gate, ticket #55) -->
-      <p>I'm Jose. <span class="placeholder-note">[placeholder: this introduction is written from Jose's own notes, posted on ticket #55]</span></p>
-      <div class="about-contact">
-        <span class="vcp-status-dot"></span>
-        <span style="font-size: var(--fs-14); color: var(--text-soft);">Contact channel <span class="placeholder-note">[placeholder]</span></span>
+    <div class="connect-band">
+      <div>
+        <span class="vcp-tag--caps label-caps">Let's connect</span>
+        <ul class="connect-rows">
+          <li><span style="color: var(--text-muted);">Email</span><span>Contact channel <span class="placeholder-note">[placeholder]</span></span></li>
+          <li><span style="color: var(--text-muted);">Socials</span><a class="vcp-link" href="/socials.html">Every channel, one page</a></li>
+          <li><span style="color: var(--text-muted);">Location</span><span>Las Vegas · Global</span></li>
+        </ul>
       </div>
+      <a class="connect-box" href="/projects.html">
+        <p>See everything VCP is building.</p>
+        <span class="vcp-link" style="border: none;">View the projects →</span>
+      </a>
     </div>
   </section>
 
