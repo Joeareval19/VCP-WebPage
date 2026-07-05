@@ -1,9 +1,9 @@
 /*
  * Best-effort per-IP rate limiting shared by every voice-widget endpoint
- * (tts.js, next-turn.js, file-feedback.js) — each is an unauthenticated
- * public endpoint that spends real money/quota per call (ElevenLabs
- * credits, Groq tokens, GitHub API calls), so an unthrottled proxy is a
- * standing abuse/cost risk regardless of how narrow its own logic is.
+ * (next-turn.js, file-feedback.js) — each is an unauthenticated public
+ * endpoint that spends real money/quota per call (Groq tokens, GitHub API
+ * calls, Supabase writes), so an unthrottled proxy is a standing
+ * abuse/cost risk regardless of how narrow its own logic is.
  *
  * Deliberately in-memory, not a real distributed limiter: Vercel Functions
  * are stateless across cold starts and can run on multiple concurrent

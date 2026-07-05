@@ -1,6 +1,6 @@
 /*
- * Vercel Function — generates the assistant's next question in a voice
- * feedback session, replacing the mocked keyword-matching stand-in that
+ * Vercel Function — generates the assistant's next question in a voice-to-
+ * spec intake session, replacing the mocked keyword-matching stand-in that
  * used to live client-side (js/voice-widget.js's old nextTurn()).
  *
  * Exists so GROQ_API_KEY never reaches client-side JS (public repo —
@@ -8,6 +8,14 @@
  * the transcript so far ({ history }) and gets back either the next
  * question to ask, or a signal that the session has reached a natural,
  * specific conclusion (per issue #43's session-end criteria).
+ *
+ * Revised 2026-07-05 (issue #43 amended spec): this is no longer a general
+ * "what do you like/dislike" feedback interview — it's scoped to extract
+ * a well-defined scope of work (why/what/acceptance-criteria/out-of-scope),
+ * the same shape a human produces via /vcp-spec's own interrogation, just
+ * adapted for a spoken, one-turn-at-a-time conversation. Output is
+ * text-only (see js/voice-widget.js) — this endpoint's questions are never
+ * spoken aloud, only rendered.
  *
  * Config: set GROQ_API_KEY in Vercel project env vars (never commit it).
  * Groq's API is OpenAI-compatible chat completions — see
@@ -22,15 +30,13 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.1-8b-instant";
 const MAX_HISTORY_TURNS = 12; // 6 visitor + 6 assistant lines — matches the widget's MAX_TURNS safety cap
 const MAX_LINE_LENGTH = 1000; // guards against a single runaway transcript line inflating the prompt
-const MAX_PER_MINUTE = 20; // matches api/tts.js — one real session makes ~6 calls to this endpoint
+const MAX_PER_MINUTE = 20; // one real session makes ~6 calls to this endpoint
 
 const SYSTEM_PROMPT = [
-  "You are a brief, friendly QA assistant collecting voice feedback about a website from an anonymous visitor.",
-  "Your job: start broad, then ask sharper follow-up questions that dig from vague impressions into specific,",
-  "actionable detail (e.g. which element, what about it, what a fix might look like).",
-  "Ask exactly ONE question per turn. Keep questions short (one sentence) since they will be spoken aloud.",
-  "If the visitor indicates they're done, or the conversation has reached a natural and specific conclusion",
-  "(you have at least one concrete, specific piece of feedback), respond with exactly the token DONE instead of a question.",
+  "You are an intake assistant that turns a website visitor's spoken idea, request, or piece of feedback into a well-defined scope of work — the same shape a human would produce answering: why does this matter, what exactly should be built or changed, how would you know it's done (acceptance criteria), and what's explicitly out of scope.",
+  "Your job: start broad, then ask sharper follow-up questions that dig from a vague idea into specific, actionable detail — who is affected, what the current behavior is versus the desired behavior, what a concrete 'done' looks like, and whether anything should be explicitly excluded.",
+  "Ask exactly ONE question per turn. Keep questions short (one or two sentences) — this is a spoken conversation, not a written form.",
+  "You have enough for a scope of work once you can state, even roughly: why this matters, what should change, and at least one concrete acceptance criterion. Once you have that, or the visitor indicates they're done, respond with exactly the token DONE instead of a question.",
   "Never ask for personally identifying information. Never repeat a question already asked in this transcript.",
 ].join(" ");
 

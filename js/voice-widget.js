@@ -6,20 +6,26 @@
  * turns ARE fed back to the conversation engine so follow-up questions can
  * get more specific (the "contextual grinding down" from the spec).
  *
- * STT uses the browser-native Web Speech API (SpeechRecognition) directly.
- * TTS calls api/tts.js (ElevenLabs proxy); conversation logic calls
- * api/next-turn.js (Groq proxy) — both keep their API keys server-side
- * and both fall back to a local, non-LLM stand-in if the endpoint is
- * unreachable (e.g. backend not yet deployed, or a transient failure), so
- * the widget degrades gracefully instead of breaking mid-session.
+ * Voice IN, text OUT (revised 2026-07-05 — see issue #43's amended spec):
+ * the visitor speaks via the browser-native Web Speech API
+ * (SpeechRecognition); the assistant's questions/responses render as text
+ * in the widget's transcript panel only — no TTS, no audio output of any
+ * kind. api/tts.js and the ElevenLabs integration are retired.
+ *
+ * Conversation logic calls api/next-turn.js (Groq proxy), which keeps its
+ * API key server-side and falls back to a local, non-LLM stand-in if the
+ * endpoint is unreachable, so the widget degrades gracefully instead of
+ * breaking mid-session. The conversation is framed to extract a scope of
+ * work (why/what/acceptance-criteria/out-of-scope), not generic
+ * likes/dislikes — see api/next-turn.js's system prompt.
  */
 (function () {
   "use strict";
 
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var supportsVoice = !!(SpeechRecognition && window.speechSynthesis);
+  var supportsVoice = !!SpeechRecognition; // no speechSynthesis dependency — output is text-only
 
-  var OPENING_QUESTION = "Thanks for stopping by. What's one thing you liked or disliked about this page?";
+  var OPENING_QUESTION = "Thanks for stopping by. What's one idea, request, or piece of feedback you'd like to turn into a scope of work?";
   var MAX_TURNS = 6; // safety cap so a session can't run forever if "done" detection misses
 
   // ---- PII redaction -------------------------------------------------
@@ -68,18 +74,18 @@
     if (turnCount >= MAX_TURNS) return { done: true };
 
     if (/\b(nav|navigation|menu)\b/.test(lastVisitorLine)) {
-      return { done: false, question: "Got it — was that about how the nav looks, or how it behaves (e.g. hard to find something)?" };
+      return { done: false, question: "Got it — who runs into this, and what should happen instead once it's fixed?" };
     }
     if (/\b(slow|loading|lag|performance)\b/.test(lastVisitorLine)) {
-      return { done: false, question: "Noted. Was that on a specific page, or the whole site generally?" };
+      return { done: false, question: "Noted. Is this on a specific page, and what would 'fast enough' look like?" };
     }
     if (/\b(color|colour|dark|silver|design|look)\b/.test(lastVisitorLine)) {
-      return { done: false, question: "Interesting — is there a specific section where that stood out most?" };
+      return { done: false, question: "Interesting — which section, and what would you change about it specifically?" };
     }
     if (turnCount === 1) {
-      return { done: false, question: "Thanks — is there anything specific you'd change about it, even a small thing?" };
+      return { done: false, question: "Got it. What would you consider 'done' here — how would you know this was fixed or built?" };
     }
-    return { done: false, question: "Anything else on your mind about the page, or is that everything for now?" };
+    return { done: false, question: "Anything that should explicitly stay out of scope for this, or is that everything for now?" };
   }
 
   function fetchNextTurn(history) {
@@ -111,7 +117,7 @@
     return history.map(function (h) { return h.role + ": " + redact(h.text); }).join("\n");
   }
 
-  function fileFeedback(history, pageContext, sessionId) {
+  function fileFeedback(history, pageContext, sessionId, durationMs) {
     return fetch("/api/file-feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -119,6 +125,7 @@
         transcript: redactedTranscript(history),
         pageContext: pageContext,
         sessionId: sessionId,
+        durationMs: durationMs,
       }),
     })
       .then(function (resp) { return resp.json(); })
@@ -143,16 +150,13 @@
   // it never reads as a fixed repeating loop no matter how long you watch
   // it — the randomization IS the "liquid" quality, not just slowness.
   //
-  // Active (speaking/listening): a Web Audio AnalyserNode reads real
-  // amplitude off whichever audio is actually flowing (TTS playback via
-  // ElevenLabs, or the visitor's own mic) and maps loudness directly to
-  // how extreme the blob shape / scale gets, sampled every animation
-  // frame — this is the literal "liquid shifting on sound input."
-  // Honest limitation: the browser's built-in speechSynthesis fallback
-  // (used when the ElevenLabs proxy is unreachable) exposes no audio
-  // stream to analyze, so that fallback path keeps the idle randomized
-  // motion instead of being sound-reactive — there's no Web API for tapping
-  // SpeechSynthesisUtterance's output.
+  // Active (listening): a Web Audio AnalyserNode reads real amplitude off
+  // the visitor's own mic input and maps loudness directly to how extreme
+  // the blob shape/scale gets, sampled every animation frame — this is
+  // the literal "liquid shifting on sound input." There is no assistant
+  // audio to react to (output is text-only, see issue #43's amended spec)
+  // — the "speaking" state keeps idle randomized motion rather than faking
+  // audio-reactivity for audio that doesn't exist.
   function LiquidBall(el) {
     this.el = el;
     this.idleTimer = null;
@@ -292,6 +296,7 @@
     this.open = true;
     this.history = [];
     this.sessionId = makeSessionId(); // fresh per open — no cross-session identity, per spec
+    this.startedAt = Date.now();
     this.trigger.setAttribute("data-open", "true");
     this.panel.setAttribute("data-open", "true");
     this.renderConsent();
@@ -300,21 +305,21 @@
   VoiceWidget.prototype.endSession = function () {
     if (this.finishTimer) { clearTimeout(this.finishTimer); this.finishTimer = null; }
     if (this.recognition) { try { this.recognition.abort(); } catch (e) {} }
-    window.speechSynthesis && window.speechSynthesis.cancel();
     this.stopMicVisualizer();
     this.liquid.startIdle(); // resume ambient motion — the ball keeps living outside a session too
 
     // Only file when the visitor actually said something — a session where
-    // only the opening question was ever spoken has no feedback to extract.
+    // only the opening question was ever spoken has no scope of work to extract.
     var hasVisitorReply = this.history.some(function (h) { return h.role === "visitor"; });
     if (hasVisitorReply) {
-      fileFeedback(this.history, window.location.pathname, this.sessionId).then(function (result) {
+      var durationMs = this.startedAt ? Date.now() - this.startedAt : null;
+      fileFeedback(this.history, window.location.pathname, this.sessionId, durationMs).then(function (result) {
         if (result.filed) {
           // eslint-disable-next-line no-console
-          console.log("[voice-widget] filed feedback as " + result.issueUrl);
+          console.log("[voice-widget] filed as " + result.issueUrl);
         } else {
           // eslint-disable-next-line no-console
-          console.log("[voice-widget] feedback not filed:", result.reason || result.error || "unknown");
+          console.log("[voice-widget] not filed:", result.reason || result.error || "unknown");
         }
       });
     }
@@ -370,55 +375,23 @@
     if (this.statusState) this.statusState.textContent = state;
   };
 
+  // Text-only output: the assistant's question renders in the transcript
+  // panel, the ball keeps its idle randomized motion (no audio to react
+  // to — see issue #43's amended spec, output is voice-in/text-out with
+  // no TTS of any kind), and the mic re-arms almost immediately. The
+  // brief pause is just enough for a visitor to actually read the
+  // question before the mic comes back — see READ_PAUSE_MS below.
+  var READ_PAUSE_MS = 900;
+
   VoiceWidget.prototype.askQuestion = function (question) {
     this.addLine("assistant", question);
-    this.setState("speaking");
-    var self = this;
-
-    // ElevenLabs via the serverless proxy (api/tts.js) — falls back to the
-    // browser's built-in speechSynthesis if the proxy is unreachable or
-    // not yet configured (e.g. local dev with no ELEVENLABS_API_KEY set),
-    // so the widget stays fully usable before/without the backend.
-    fetch("/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: question }),
-    })
-      .then(function (resp) {
-        if (!resp.ok) throw new Error("tts proxy status " + resp.status);
-        return resp.blob();
-      })
-      .then(function (blob) {
-        var audio = new Audio(URL.createObjectURL(blob));
-        // Real audio element -> the liquid ball reacts to its actual
-        // playback amplitude for as long as it's speaking.
-        self.liquid.startAudioReactive(audio);
-        audio.onended = function () { self.liquid.startIdle(); self.listen(); };
-        audio.onerror = function () { self.liquid.startIdle(); self.listen(); };
-        // play() returns a Promise that rejects on autoplay-policy blocks;
-        // an unhandled rejection here left the session stranded in
-        // "speaking" forever, since neither onended nor onerror fire when
-        // playback never starts.
-        var playResult = audio.play();
-        if (playResult && typeof playResult.catch === "function") {
-          playResult.catch(function () { self.liquid.startIdle(); self.speakWithBrowserTts(question); });
-        }
-      })
-      .catch(function () {
-        self.speakWithBrowserTts(question);
-      });
-  };
-
-  VoiceWidget.prototype.speakWithBrowserTts = function (question) {
-    var self = this;
-    // speechSynthesis exposes no audio stream for Web Audio to tap (see
-    // LiquidBall's header note) — idle randomized motion is the honest
-    // fallback here, not fake audio-reactivity.
+    this.setState("speaking"); // kept as a distinct state for the status label, even with no audio
     this.liquid.startIdle();
-    var utter = new SpeechSynthesisUtterance(question);
-    utter.onend = function () { self.listen(); };
-    utter.onerror = function () { self.listen(); }; // TTS failure shouldn't strand the session
-    window.speechSynthesis.speak(utter);
+    var self = this;
+    setTimeout(function () {
+      if (!self.open) return; // session closed during the pause
+      self.listen();
+    }, READ_PAUSE_MS);
   };
 
   VoiceWidget.prototype.listen = function () {

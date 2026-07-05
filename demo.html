@@ -366,13 +366,13 @@
       <span class="vcp-section-heading__num">09</span>
       <h2>Voice feedback widget</h2>
     </div>
-    <p style="color: var(--text-muted); font-size: var(--fs-14); margin-bottom: var(--space-4); max-width: 60ch;">Fixed bottom-right on every page (issue #43). Static here for illustration — the live version morphs continuously with slow, randomized timing at rest, and reacts to real TTS/mic audio amplitude while a session is active; see js/voice-widget.js's LiquidBall for the interactive build.</p>
+    <p style="color: var(--text-muted); font-size: var(--fs-14); margin-bottom: var(--space-4); max-width: 60ch;">Fixed bottom-right on every page (issue #43). Voice in, text out — no TTS, no audio output of any kind. Static here for illustration — the live version morphs continuously with slow, randomized timing at rest, and reacts to the visitor's own mic amplitude while listening; see js/voice-widget.js's LiquidBall for the interactive build.</p>
     <div class="demo-grid-2">
       <div class="vcp-card"><div class="vcp-card__body" style="padding: 32px; display: flex; align-items: center; gap: var(--space-4);">
         <button type="button" class="vcp-voice-trigger" style="position: static; flex-shrink: 0;" aria-label="Give voice feedback about this page"></button>
         <div>
           <div class="vcp-tag--caps label-caps" style="margin-bottom: 8px;">Trigger — idle</div>
-          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: 0;">Liquid-motion ball: randomized organic shape/position at rest (no fixed loop), audio-reactive while speaking/listening. Static here since demo.html doesn't load voice-widget.js; <code>prefers-reduced-motion</code> disables all motion on the live page too.</p>
+          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: 0;">Liquid-motion ball: randomized organic shape/position at rest (no fixed loop), audio-reactive to the visitor's mic while listening. Static here since demo.html doesn't load voice-widget.js; <code>prefers-reduced-motion</code> disables all motion on the live page too.</p>
         </div>
       </div></div>
       <div class="vcp-card"><div class="vcp-card__body" style="padding: 0; overflow: hidden;">
