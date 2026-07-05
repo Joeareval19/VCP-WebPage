@@ -187,8 +187,6 @@
     .work-band { grid-template-columns: 1fr; }
     .work-cols { grid-template-columns: 1fr; }
     .connect-band { grid-template-columns: 1fr; }
-    .vcp-nav { flex-wrap: wrap; }
-    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
   }
 </style>
 </head>
@@ -202,7 +200,12 @@
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
   </a>
-  <ul class="vcp-nav__links">
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="/" aria-current="page">Home</a></li>
     <li><a href="/intent.html">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
@@ -302,6 +305,7 @@
 
 </div>
 
+<script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>

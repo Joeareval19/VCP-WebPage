@@ -70,8 +70,6 @@
     .intent-closing-grid { grid-template-columns: 1fr; }
     h1 { font-size: var(--fs-56); }
     .intent-header { padding-top: var(--space-5); }
-    .vcp-nav { flex-wrap: wrap; }
-    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
     .intent-header__framing { font-size: var(--fs-20); }
   }
 </style>
@@ -86,7 +84,12 @@
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
   </a>
-  <ul class="vcp-nav__links">
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="/">Home</a></li>
     <li><a href="/intent.html" aria-current="page">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
@@ -248,6 +251,7 @@
 
 </div>
 
+<script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
