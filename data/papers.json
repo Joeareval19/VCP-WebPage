@@ -1,0 +1,57 @@
+[
+  {
+    "slug": "ai-native-consulting-delivery",
+    "title": "[PLACEHOLDER] AI-Native Consulting Delivery: Rebuilding the Engagement Model Around Agent Fleets",
+    "abstract": "A framework for restructuring consulting delivery around parallel AI agent fleets rather than linear staffing pyramids. Covers ticket decomposition, review-gate discipline, and where human judgment remains the bottleneck by design.",
+    "date": "2026-06-18",
+    "tags": ["AI", "operations", "consulting-model"],
+    "reading_time": "14 min read",
+    "pages": 22,
+    "file": "/assets/papers/placeholder.pdf",
+    "related_project": null
+  },
+  {
+    "slug": "vegas-tech-corridor-map",
+    "title": "[PLACEHOLDER] Mapping the Vegas Tech Corridor: Capital, Talent, and Gaps",
+    "abstract": "A survey of Las Vegas's emerging technology sector — funding flows, talent migration patterns, and the specific gaps a locally rooted consulting practice is positioned to fill. Includes a comparison against Austin and Phoenix at equivalent growth stages.",
+    "date": "2026-05-02",
+    "tags": ["market-research", "Las-Vegas", "economics"],
+    "reading_time": "9 min read",
+    "pages": 16,
+    "file": "/assets/papers/placeholder.pdf",
+    "related_project": null
+  },
+  {
+    "slug": "ticket-driven-development-case-study",
+    "title": "[PLACEHOLDER] Ticket-Driven Development as a Governance Layer for Autonomous Agents",
+    "abstract": "How pairing GitHub Issues, a dependency waterfall, and a review-gate board turns loosely supervised AI agents into an auditable production pipeline. Written as a running case study of VCP's own build process.",
+    "date": "2026-04-11",
+    "tags": ["AI", "governance", "case-study"],
+    "reading_time": "11 min read",
+    "pages": 18,
+    "file": "/assets/papers/placeholder.pdf",
+    "related_project": "agent-dispatch-pipeline"
+  },
+  {
+    "slug": "small-firm-financial-modeling",
+    "title": "[PLACEHOLDER] Financial Modeling for Single-Practitioner and Small-Team Consulting Firms",
+    "abstract": "A practical modeling approach for firms too small for enterprise FP&A tooling but too complex for spreadsheet guesswork — cash runway, utilization rate, and pipeline-weighted revenue forecasting in one reusable template.",
+    "date": "2026-02-27",
+    "tags": ["finance", "operations", "small-business"],
+    "reading_time": "7 min read",
+    "pages": 12,
+    "file": "/assets/papers/placeholder.pdf",
+    "related_project": null
+  },
+  {
+    "slug": "open-in-public-transparency-model",
+    "title": "[PLACEHOLDER] The Open-in-Public Transparency Model: Publishing Work as the Record",
+    "abstract": "Why VCP publishes its projects, research, and papers as they are produced rather than after the fact, and what that discipline costs and returns — trust velocity, recruiting signal, and the operational overhead of always being publish-ready.",
+    "date": "2025-12-09",
+    "tags": ["strategy", "transparency", "brand"],
+    "reading_time": "6 min read",
+    "pages": 10,
+    "file": "/assets/papers/placeholder.pdf",
+    "related_project": null
+  }
+]

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — VCP</title>
+<meta name="description" content="Every VCP engagement and internal build, indexed — each with its own detail breakout.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  /* Projects index layout only — components live in css/components.css */
+  .projects-header { padding: var(--space-6) 0 var(--space-5); max-width: 62ch; }
+  .projects-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-5) 0 var(--space-6); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  .project-card .vcp-card__body { display: flex; flex-direction: column; height: 100%; }
+  .project-card p { flex: 1; }
+  .project-card__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+  .projects-empty { padding: var(--space-6) 0; text-align: center; color: var(--text-muted); display: none; }
+  @media (max-width: 900px) {
+    .projects-grid { grid-template-columns: 1fr; }
+    h1 { font-size: var(--fs-56); }
+    .vcp-nav { flex-wrap: wrap; }
+    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <div class="vcp-nav__brand">
+    <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </div>
+  <ul class="vcp-nav__links">
+    <li><a href="/intent.html">The Intent</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/projects.html" aria-current="page">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/socials.html">Socials</a></li>
+    <li><a href="/index.html#about">About</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ============ HEADER ============ -->
+  <header class="projects-header">
+    <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-4);">Projects</p>
+    <h1>Index &amp; breakouts</h1>
+    <p style="margin-top: var(--space-3);">Every engagement and internal build VCP has taken on, indexed here — each with its own detail breakout covering timeline, moat, and business model.</p>
+  </header>
+
+  <!-- ============ FILTERS ============ -->
+  <div class="projects-filters" role="group" aria-label="Filter projects by status">
+    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="all" aria-pressed="true">All</button>
+    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Active" aria-pressed="false">Active</button>
+    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Completed" aria-pressed="false">Completed</button>
+    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Incubating" aria-pressed="false">Incubating</button>
+  </div>
+
+  <!-- ============ PROJECT GRID ============ -->
+  <section aria-live="polite">
+    <div class="projects-grid" id="projects-grid">
+      <!-- Rendered from data/projects.json by js/projects-index.js -->
+    </div>
+    <p class="projects-empty" id="projects-empty">No projects match this filter.</p>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <ul class="vcp-footer__links">
+    <li><a href="/intent.html">The Intent</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/socials.html">Socials</a></li>
+  </ul>
+  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent</div>
+</footer>
+
+</div>
+
+<script src="js/projects-data.js"></script>
+<script src="js/projects-index.js"></script>
+</body>
+</html>

@@ -182,6 +182,29 @@
   color: var(--text-soft);
 }
 
+/* Interactive filter chip — button variant of .vcp-tag for client-side
+   filter rows (tag filters, category toggles, sort controls). Single
+   canonical component: research.html, library.html, and projects.html
+   all filter/sort UI reconciled onto this one class during integration
+   (three independent parallel builds each proposed their own name). */
+.vcp-tag--filter {
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.vcp-tag--filter:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.vcp-tag--filter[aria-pressed="true"] {
+  background: var(--silver-metal);
+  border-color: transparent;
+  color: var(--on-silver);
+  font-weight: 600;
+}
+
 /* === Card === */
 .vcp-card {
   position: relative;
@@ -350,6 +373,9 @@
 /* === Section heading === */
 .vcp-section-heading {
   display: flex;
+  /* long headings drop the hairline rule to its own row at phone widths
+     instead of pushing it past the viewport */
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-3);
   margin-bottom: 38px;
@@ -486,6 +512,197 @@
   box-shadow: 0 0 12px rgba(232, 235, 239, 0.5);
 }
 
+/* === Paper row (Library list entry) === */
+.vcp-paper {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  transition: background var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease);
+  scroll-margin-top: 110px;
+  border-radius: var(--radius);
+}
+
+.vcp-paper:last-child { border-bottom: 1px solid var(--line); }
+
+.vcp-paper__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-28);
+}
+
+.vcp-paper__abstract {
+  max-width: 68ch;
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vcp-paper__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.vcp-paper__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Deep-link target highlight — fades out on its own */
+.vcp-paper--highlight {
+  background: rgba(205, 210, 217, 0.08);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+/* === Rich text prose (overview / business model bodies) === */
+.vcp-prose p { margin: 0 0 var(--space-3); }
+.vcp-prose p:last-child { margin-bottom: 0; }
+
+.vcp-prose table {
+  /* block + overflow-x: wide tables scroll inside themselves instead of
+     escaping phone viewports (PR #36 audit, BLOCKER 1b) */
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  font-size: var(--fs-14);
+}
+
+.vcp-prose caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.vcp-prose th, .vcp-prose td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.vcp-prose th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.vcp-prose td { color: var(--text-soft); font-weight: 300; }
+
+/* === Timeline (project detail) — vertical milestone list with silver hairline === */
+.vcp-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vcp-timeline::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 5px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--line-strong), var(--line) 88%, transparent);
+}
+
+.vcp-timeline__item {
+  position: relative;
+  padding: 0 0 var(--space-5) 34px;
+}
+
+.vcp-timeline__item:last-child { padding-bottom: 0; }
+
+.vcp-timeline__dot {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-pill);
+  background: var(--silver-metal);
+  box-shadow: 0 0 0 3px var(--bg), 0 0 12px rgba(232, 235, 239, 0.35);
+}
+
+.vcp-timeline__date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.vcp-timeline__title {
+  margin: 4px 0 4px;
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  color: var(--silver-bright);
+  font-weight: 500;
+}
+
+.vcp-timeline__note {
+  margin: 0;
+  font-size: var(--fs-14);
+  color: var(--text-soft);
+}
+
+/* === Highlighted panel (Moat section) === */
+.vcp-panel {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: 30px 32px;
+  background:
+    radial-gradient(120% 140% at 8% 0%, rgba(206, 212, 220, 0.12), transparent 55%),
+    var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-highlight), var(--shadow-float);
+}
+
+.vcp-panel__label {
+  margin-bottom: var(--space-3);
+}
+
+/* === Detail page header (project/topic/paper breakouts) === */
+.vcp-detail-header {
+  padding: var(--space-6) 0 var(--space-5);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-6);
+}
+
+.vcp-detail-header__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.vcp-detail-header h1 {
+  font-size: var(--fs-56);
+  /* Long unbroken tokens (e.g. bracketed placeholders) must wrap, not
+     force horizontal scroll at phone widths (PR #36 audit, BLOCKER 1a) */
+  overflow-wrap: anywhere;
+}
+
+.vcp-detail-header__thesis {
+  max-width: 60ch;
+  font-family: var(--font-display);
+  font-size: var(--fs-28);
+  font-style: italic;
+  color: var(--text-soft);
+  margin-top: var(--space-3);
+}
+
 /* === Footer === */
 .vcp-footer {
   border-top: 1px solid var(--line);
@@ -520,6 +737,8 @@
 
 .vcp-footer__links {
   display: flex;
+  /* five wing links must wrap at phone widths, not widen the page */
+  flex-wrap: wrap;
   gap: var(--space-4);
   list-style: none;
   margin: 0;
