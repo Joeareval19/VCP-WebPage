@@ -8,9 +8,9 @@
   "use strict";
 
   var SUPABASE_URL = "https://qaorlbgrkpldcatyntlw.supabase.co";
-  // Paste the project's publishable/anon key here (Dashboard -> Settings ->
-  // API keys). Empty string = telemetry silently disabled.
-  var SUPABASE_ANON_KEY = "";
+  // Publishable key: public-by-design, INSERT-only under RLS (verified
+  // 2026-07-05 — anon SELECT returns zero rows). Empty string = disabled.
+  var SUPABASE_ANON_KEY = "sb_publishable_MZQT-cWL_j0X4KNdqx4mDA_MgTqy073";
 
   if (!SUPABASE_ANON_KEY || !window.fetch) {
     // Still expose the widget hook so #43's code can call it unconditionally.
