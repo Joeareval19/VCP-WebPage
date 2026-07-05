@@ -8,7 +8,7 @@ brand
 
 ## Users
 
-Visitors arriving cold from a link — potential clients, collaborators, and readers of the research. Their job: understand what VCP is and who Jose is in one calm read, then decide whether to go deeper into a wing (Research / Projects / Library). Secondary users: Jose and the agent fleet, who inherit this context on every build.
+Visitors arriving cold from a link — potential clients, collaborators, and readers of the research. Their job: understand what VCP is and who Jose is in one calm read, then decide whether to go deeper into a wing (Research / Portfolio / Library). Secondary users: Jose and the agent fleet, who inherit this context on every build.
 
 ## Product Purpose
 

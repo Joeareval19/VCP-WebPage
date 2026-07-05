@@ -40,7 +40,7 @@
   function renderHeader(project) {
     return (
       '<header class="vcp-detail-header">' +
-        '<p class="detail-back"><a class="vcp-link" href="projects.html">&larr; All projects</a></p>' +
+        '<p class="detail-back"><a class="vcp-link" href="projects.html">&larr; Portfolio</a></p>' +
         (project.logo
           ? '<span class="vcp-logo-chip vcp-logo-chip--lg" style="margin-top: var(--space-4);"><img src="' + escapeHtml(project.logo) + '" alt=""></span>'
           : '') +
@@ -165,7 +165,7 @@
   }
 
   function renderProject(project) {
-    document.title = project.name + ' — VCP Projects';
+    document.title = project.name + ' — VCP Portfolio';
 
     // Each section that actually has content takes the next number starting
     // at 01 (the site convention, see demo.html), so minimal entries never
@@ -194,7 +194,7 @@
     root.innerHTML =
       '<div class="detail-notfound">' +
         '<p>This project could not be found.</p>' +
-        '<p><a class="vcp-link" href="projects.html">&larr; Back to all projects</a></p>' +
+        '<p><a class="vcp-link" href="projects.html">&larr; Back to the portfolio</a></p>' +
       '</div>';
   }
 
