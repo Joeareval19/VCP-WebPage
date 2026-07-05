@@ -19,6 +19,11 @@
   /* Full brushed-silver panel (swatches, media accents) */
   --silver-panel: linear-gradient(140deg, #FBFCFD 0%, #D6DBE1 34%, #9AA1AB 62%, #C3C9D1 82%, #F0F2F5 100%);
   --on-silver: #15171B;
+  /* Unlit metal for the Penrose loader body (issue #71) */
+  --metal-dark: #33373D;
+  --metal-mid: #5C626B;
+  /* Veil behind fixed overlays (loader) */
+  --scrim: rgba(11, 12, 14, 0.78);
 
   /* Text */
   --text: #E8EAED;

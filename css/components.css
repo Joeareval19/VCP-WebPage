@@ -828,3 +828,40 @@ html.vcp-dip--out::after {
   html.vcp-dip::before,
   html.vcp-dip::after { display: none; }
 }
+
+/* ── Penrose loader — "Quicksilver" (issue #71) ─────────────────────
+   Loading placeholder for internal navigation OUTSIDE the top nav
+   (nav tabs + brand use the title dip above). js/page-loader.js
+   injects .vcp-loader as a fixed overlay on click; the sheen
+   circulates through the tri-bar (SMIL gradient rotation in the SVG)
+   until the destination page replaces the document.
+   .vcp-loader--inline renders the same figure in the page flow
+   (component reference in demo.html). */
+.vcp-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9000; /* beneath the title dip (9999) — paths never overlap */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease);
+  pointer-events: none;
+}
+
+.vcp-loader.is-on { opacity: 1; }
+
+.vcp-loader svg {
+  width: 72px;
+  height: 72px;
+}
+
+.vcp-loader--inline {
+  position: static;
+  inset: auto;
+  display: inline-flex;
+  background: none;
+  opacity: 1;
+  z-index: auto;
+}
