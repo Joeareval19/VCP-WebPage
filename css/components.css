@@ -837,10 +837,23 @@ html.vcp-dip--out::after {
    until the destination page replaces the document.
    .vcp-loader--inline renders the same figure in the page flow
    (component reference in demo.html). */
+/* Pre-paint veil: the destination's inline <head> snippet stamps
+   html.vcp-loading before first paint; js/page-loader.js then mounts
+   .vcp-loader and drops this class the same frame (identical scrim,
+   seamless swap). */
+html.vcp-loading::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--scrim);
+  pointer-events: none;
+}
+
 .vcp-loader {
   position: fixed;
   inset: 0;
-  z-index: 9000; /* beneath the title dip (9999) — paths never overlap */
+  z-index: 9001; /* beneath the title dip (9999) — paths never overlap */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -851,6 +864,7 @@ html.vcp-dip--out::after {
 }
 
 .vcp-loader.is-on { opacity: 1; }
+.vcp-loader.is-instant { transition: none; }
 
 .vcp-loader svg {
   width: 72px;
