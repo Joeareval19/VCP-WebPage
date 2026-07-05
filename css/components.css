@@ -760,7 +760,22 @@
 
 /* === Voice feedback widget (issue #43) === */
 
-/* Trigger — liquid-motion ball, fixed bottom-right on every page.
+/* Widget root — the single draggable anchor point. Both the trigger ball
+   and the panel position themselves relative to THIS element's --widget-x/
+   --widget-y (default: bottom-right corner, via the fallback values), not
+   independently, so dragging either one moves the same shared spot and
+   "bring it back to where it was originally" has one unambiguous target.
+   js/voice-widget.js sets these two custom properties; everything else
+   here is pure CSS layout off of them. */
+#vcp-voice-widget {
+  position: fixed;
+  right: var(--widget-x, var(--space-5));
+  bottom: var(--widget-y, var(--space-5));
+  z-index: var(--z-widget);
+}
+
+/* Trigger — liquid-motion ball, fixed bottom-right on every page by
+   default (drag to reposition — see #vcp-voice-widget above).
    Shape/position are NOT driven by a fixed @keyframes loop (a bare cycle
    always reads as a mechanically repeating pattern, no matter how slow) —
    js/voice-widget.js drives --liquid-radius/--liquid-bg-pos/--liquid-scale
@@ -769,15 +784,12 @@
    `transition` here is what makes each JS-set target arrive smoothly
    instead of jumping. */
 .vcp-voice-trigger {
-  position: fixed;
-  right: var(--space-5);
-  bottom: var(--space-5);
-  z-index: var(--z-widget);
+  position: relative;
   width: 60px;
   height: 60px;
   padding: 0;
   border: none;
-  cursor: pointer;
+  cursor: grab;
   background: var(--silver-panel);
   background-size: 220% 220%;
   box-shadow: var(--shadow-silver), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
@@ -790,6 +802,8 @@
               box-shadow var(--dur-med) var(--ease);
 }
 
+.vcp-voice-trigger:active { cursor: grabbing; }
+
 .vcp-voice-trigger:hover {
   box-shadow: var(--shadow-silver), 0 22px 48px -16px rgba(0, 0, 0, 0.78);
 }
@@ -801,12 +815,12 @@
 
 /* Shrinks + dims when the panel is open, staying visible as the panel's
    own "live" indicator rather than disappearing (open/close affordance
-   stays visually connected, per the spec). */
-.vcp-voice-trigger[data-open="true"] {
+   stays visually connected, per the spec). Not applied while minimized —
+   a minimized ball stays full-size, since it's the only visible affordance
+   at that point. */
+.vcp-voice-trigger[data-open="true"]:not([data-minimized="true"]) {
   width: 40px;
   height: 40px;
-  right: var(--space-4);
-  bottom: calc(var(--space-4) + 1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -817,11 +831,45 @@
   }
 }
 
-/* Panel — bottom-anchored, not full-screen */
+/* Reposition-reset control — a small "x" that appears above/beside the
+   ball on hover, ONLY once it's been dragged somewhere other than the
+   default corner (see js/voice-widget.js's hasCustomPosition tracking).
+   Clicking it snaps the widget back to the original bottom-right spot —
+   the one restore target for whatever state the ball/panel are in. */
+.vcp-voice-reset {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+#vcp-voice-widget[data-repositioned="true"] .vcp-voice-trigger:hover ~ .vcp-voice-reset,
+#vcp-voice-widget[data-repositioned="true"] .vcp-voice-reset:hover {
+  display: flex;
+}
+
+.vcp-voice-reset:hover { color: var(--text); border-color: var(--line-strong); }
+
+/* Panel — anchored just above the ball at whatever spot it's been dragged
+   to (see #vcp-voice-widget above), not full-screen. */
 .vcp-voice-panel {
-  position: fixed;
-  right: var(--space-5);
-  bottom: calc(var(--space-5) + 76px);
+  position: absolute;
+  right: 0;
+  bottom: 76px;
   z-index: var(--z-widget);
   width: min(360px, calc(100vw - var(--space-5) * 2));
   max-height: min(520px, calc(100vh - 140px));
@@ -846,6 +894,15 @@
   pointer-events: auto;
 }
 
+/* Minimized: session keeps running (mic/recognition untouched — see
+   VoiceWidget.prototype.setMinimized), only the panel visually collapses
+   away, leaving just the ball as the visible, draggable affordance. */
+.vcp-voice-panel[data-minimized="true"] {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  pointer-events: none;
+}
+
 .vcp-voice-panel__header {
   display: flex;
   align-items: center;
@@ -853,7 +910,33 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--line);
+  cursor: grab;
+  user-select: none;
 }
+
+.vcp-voice-panel__header:active { cursor: grabbing; }
+
+.vcp-voice-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.vcp-voice-panel__minimize {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--fs-16);
+  line-height: 1;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.vcp-voice-panel__minimize:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
 
 .vcp-voice-panel__title {
   font-family: var(--font-display);

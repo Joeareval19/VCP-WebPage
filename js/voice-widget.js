@@ -33,6 +33,25 @@
  * Supabase at all for turn-level durability — only file-feedback.js's
  * final vcp_voice_sessions write (summary + filed_issue) still needs the
  * service-role key, since that's a genuine cross-row upsert.
+ *
+ * Positioning, minimize, and cross-page persistence (added 2026-07-05):
+ * the widget's screen position is a single {right, bottom} pair (CSS
+ * custom properties --widget-x/--widget-y on #vcp-voice-widget) that both
+ * the ball and the panel anchor off of — dragging either one moves the
+ * same point (see components.css's #vcp-voice-widget comment for why this
+ * is one shared anchor, not two independent positions). Minimizing hides
+ * the panel WITHOUT ending the session — recognition/mic/history all keep
+ * running in the background, so a visitor can shrink the conversation out
+ * of the way mid-turn and reopen it later without losing progress; this is
+ * deliberately different from endSession(), which does tear all of that
+ * down. Position + open/minimized state persist across page navigations
+ * via sessionStorage (survives clicking a nav link, clears when the tab
+ * closes) — the conversation itself does NOT persist across pages, since
+ * a full page load already resets session_id/history by design (each page
+ * is its own session, per the spec's session model above); carrying only
+ * the chrome state forward means a visitor doesn't have to re-drag or
+ * re-open the widget on every single page, without pretending a
+ * conversation about one page continues to make sense on another.
  */
 (function () {
   "use strict";
@@ -42,6 +61,30 @@
 
   var OPENING_QUESTION = "Thanks for stopping by. What's one idea, request, or piece of feedback you'd like to turn into a scope of work?";
   var MAX_TURNS = 6; // safety cap so a session can't run forever if "done" detection misses
+
+  // ---- Chrome state persistence (position, open/minimized) -------------
+  // sessionStorage, not localStorage: this is meant to survive a page
+  // navigation within one visit, not outlive the tab — a returning visitor
+  // days later should see the default corner, not wherever they last left
+  // it. Wrapped in try/catch: sessionStorage can throw in some
+  // privacy-mode/third-party-context configurations, and losing this
+  // convenience should never break the widget itself.
+  var STORAGE_KEY = "vcp-voice-widget-chrome";
+
+  function loadChromeState() {
+    try {
+      var raw = window.sessionStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveChromeState(state) {
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {} // best-effort — see function header comment
+  }
 
   // ---- PII redaction -------------------------------------------------
   // Pattern-based only for this pass (see issue #43 open questions — an
@@ -325,34 +368,185 @@
   function VoiceWidget(root) {
     this.root = root;
     this.trigger = root.querySelector(".vcp-voice-trigger");
+    this.resetBtn = root.querySelector(".vcp-voice-reset");
     this.panel = root.querySelector(".vcp-voice-panel");
+    this.panelHeader = root.querySelector(".vcp-voice-panel__header");
     this.body = root.querySelector(".vcp-voice-panel__body");
     this.statusState = root.querySelector(".vcp-voice-status__state");
     this.closeBtn = root.querySelector(".vcp-voice-panel__close");
+    this.minimizeBtn = root.querySelector(".vcp-voice-panel__minimize");
     this.open = false;
+    this.minimized = false;
     this.history = []; // reset every session — no cross-session memory
     this.recognition = null;
     this.finishTimer = null;
     this.liquid = new LiquidBall(this.trigger);
     this.liquid.startIdle(); // motion runs at all times, session open or not
 
+    this.initPosition();
+    this.initDrag(this.trigger);
+    this.initDrag(this.panelHeader);
+
+    // Click, not the drag gesture, opens/closes — see initDrag's own
+    // comment for how a real drag suppresses the click that would
+    // otherwise fire on pointerup.
     this.trigger.addEventListener("click", this.toggle.bind(this));
     this.closeBtn.addEventListener("click", this.endSession.bind(this));
+    this.minimizeBtn.addEventListener("click", this.toggleMinimize.bind(this));
+    this.resetBtn.addEventListener("click", this.resetPosition.bind(this));
+
+    // Restore whatever open/minimized state the visitor left this page in
+    // (see the file header comment on cross-page persistence) — a fresh
+    // conversation still starts either way, since history/session_id are
+    // never carried across a page load.
+    var savedState = loadChromeState();
+    if (savedState.open) {
+      this.startSession();
+      if (savedState.minimized) this.setMinimized(true);
+    }
   }
 
   VoiceWidget.prototype.toggle = function () {
     if (this.open) { this.endSession(); } else { this.startSession(); }
   };
 
+  // ---- Position: single shared anchor for ball + panel ------------------
+  // { right: null, bottom: null } means "use components.css's default
+  // --space-5 corner" — there's no separate default-position constant
+  // because null already IS the default, both here and in applyPosition.
+  VoiceWidget.prototype.initPosition = function () {
+    var saved = loadChromeState().position;
+    this.position = saved || { right: null, bottom: null };
+    this.applyPosition();
+  };
+
+  VoiceWidget.prototype.applyPosition = function () {
+    if (this.position.right == null || this.position.bottom == null) {
+      this.root.style.removeProperty("--widget-x");
+      this.root.style.removeProperty("--widget-y");
+      this.root.removeAttribute("data-repositioned");
+    } else {
+      this.root.style.setProperty("--widget-x", this.position.right + "px");
+      this.root.style.setProperty("--widget-y", this.position.bottom + "px");
+      this.root.setAttribute("data-repositioned", "true"); // reveals the hover reset control — see components.css
+    }
+  };
+
+  VoiceWidget.prototype.resetPosition = function () {
+    this.position = { right: null, bottom: null };
+    this.applyPosition();
+    this.persistChromeState();
+  };
+
+  VoiceWidget.prototype.persistChromeState = function () {
+    saveChromeState({
+      open: this.open,
+      minimized: this.minimized,
+      position: (this.position.right == null) ? null : this.position,
+    });
+  };
+
+  // A single pointer-drag implementation shared by the ball and the panel
+  // header — both move the SAME this.position (see components.css's
+  // #vcp-voice-widget comment for why there's one shared anchor, not two).
+  // Distinguishes a real drag from a click by distance moved: a drag under
+  // ~4px is almost certainly an imprecise click, not an intentional
+  // reposition, and letting the trigger's click handler fire normally in
+  // that case keeps "click the ball to open it" working exactly as before.
+  var DRAG_THRESHOLD_PX = 4;
+
+  VoiceWidget.prototype.initDrag = function (handleEl) {
+    var self = this;
+    var startX, startY, startRight, startBottom, dragged, pointerId;
+
+    function onPointerMove(e) {
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+      if (!dragged && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
+        dragged = true;
+      }
+      if (!dragged) return;
+      // right/bottom are measured from the viewport's right/bottom edges,
+      // matching the CSS custom properties they feed — moving the pointer
+      // right/down means SHRINKING the distance from those edges.
+      self.position = {
+        right: Math.max(0, startRight - dx),
+        bottom: Math.max(0, startBottom - dy),
+      };
+      self.applyPosition();
+    }
+
+    function onPointerUp(e) {
+      handleEl.releasePointerCapture(pointerId);
+      handleEl.removeEventListener("pointermove", onPointerMove);
+      handleEl.removeEventListener("pointerup", onPointerUp);
+      if (dragged) {
+        // Suppress the click that a browser fires after pointerup even
+        // after a real drag — without this, dragging the ball would also
+        // toggle the panel open/closed as an unwanted side effect.
+        var suppressClick = function (ce) { ce.stopPropagation(); ce.preventDefault(); handleEl.removeEventListener("click", suppressClick, true); };
+        handleEl.addEventListener("click", suppressClick, true);
+        self.persistChromeState();
+      }
+    }
+
+    handleEl.addEventListener("pointerdown", function (e) {
+      if (e.button !== undefined && e.button !== 0) return; // left click / primary touch only
+      // The panel header contains the minimize/close buttons — a pointerdown
+      // that starts on one of THOSE should never arm the drag at all, or
+      // setPointerCapture on the header could interfere with the button's
+      // own click in some browsers even though the distance stays under
+      // DRAG_THRESHOLD_PX. (Not a concern for the trigger ball itself,
+      // which has no interactive children.)
+      if (e.target.closest && e.target.closest("button") && e.target.closest("button") !== handleEl) return;
+      startX = e.clientX;
+      startY = e.clientY;
+      var rect = self.root.getBoundingClientRect();
+      startRight = window.innerWidth - rect.right;
+      startBottom = window.innerHeight - rect.bottom;
+      dragged = false;
+      pointerId = e.pointerId;
+      handleEl.setPointerCapture(pointerId);
+      handleEl.addEventListener("pointermove", onPointerMove);
+      handleEl.addEventListener("pointerup", onPointerUp);
+    });
+  };
+
+  // ---- Minimize: hide the panel, keep the session alive -----------------
+  // Deliberately NOT endSession() — recognition/mic/history/Supabase turn
+  // inserts all keep running exactly as before. This is a visibility
+  // toggle on the panel only, so a visitor can tuck the conversation out
+  // of the way mid-turn (e.g. to read something else on the page) and
+  // come back to find it exactly where they left it.
+  VoiceWidget.prototype.toggleMinimize = function () {
+    this.setMinimized(!this.minimized);
+  };
+
+  VoiceWidget.prototype.setMinimized = function (minimized) {
+    this.minimized = minimized;
+    if (minimized) {
+      this.panel.setAttribute("data-minimized", "true");
+      this.trigger.setAttribute("data-minimized", "true");
+    } else {
+      this.panel.removeAttribute("data-minimized");
+      this.trigger.removeAttribute("data-minimized");
+    }
+    this.persistChromeState();
+  };
+
   VoiceWidget.prototype.startSession = function () {
     if (this.finishTimer) { clearTimeout(this.finishTimer); this.finishTimer = null; }
     this.open = true;
+    this.minimized = false;
     this.history = [];
     this.sessionId = makeSessionId(); // fresh per open — no cross-session identity, per spec
     this.startedAt = Date.now();
     this.trigger.setAttribute("data-open", "true");
+    this.trigger.removeAttribute("data-minimized");
     this.panel.setAttribute("data-open", "true");
+    this.panel.removeAttribute("data-minimized");
     this.renderConsent();
+    this.persistChromeState();
   };
 
   VoiceWidget.prototype.endSession = function () {
@@ -382,11 +576,15 @@
     }
 
     this.open = false;
+    this.minimized = false;
     this.history = [];
     this.trigger.removeAttribute("data-open");
     this.trigger.removeAttribute("data-state");
+    this.trigger.removeAttribute("data-minimized");
     this.panel.removeAttribute("data-open");
+    this.panel.removeAttribute("data-minimized");
     this.body.innerHTML = "";
+    this.persistChromeState(); // clears the saved open/minimized flags — a genuinely ended session shouldn't reopen on the next page
   };
 
   VoiceWidget.prototype.renderConsent = function () {
