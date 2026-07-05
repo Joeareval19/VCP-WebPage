@@ -14,16 +14,9 @@
   var allProjects = [];
 
   function cardHtml(project) {
-    var clientTag = project.client
-      ? escapeHtml(project.client)
-      : 'Confidential';
     return (
       '<article class="vcp-card project-card">' +
         '<div class="vcp-card__body">' +
-          '<div class="project-card__tags">' +
-            '<span class="vcp-tag vcp-tag--dot">' + escapeHtml(project.status) + '</span>' +
-            '<span class="vcp-tag">' + clientTag + '</span>' +
-          '</div>' +
           (project.logo
             ? '<span class="vcp-logo-chip" style="margin-bottom: var(--space-3);"><img src="' + escapeHtml(project.logo) + '" alt="" loading="lazy"></span>'
             : '') +

@@ -41,10 +41,6 @@
     return (
       '<header class="vcp-detail-header">' +
         '<p class="detail-back"><a class="vcp-link" href="projects.html">&larr; All projects</a></p>' +
-        '<div class="vcp-detail-header__meta" style="margin-top: var(--space-4);">' +
-          '<span class="vcp-tag vcp-tag--dot">' + escapeHtml(project.status) + '</span>' +
-          '<span class="vcp-tag">' + escapeHtml(project.client || 'Confidential') + '</span>' +
-        '</div>' +
         (project.logo
           ? '<span class="vcp-logo-chip vcp-logo-chip--lg" style="margin-top: var(--space-4);"><img src="' + escapeHtml(project.logo) + '" alt=""></span>'
           : '') +
@@ -171,8 +167,9 @@
   function renderProject(project) {
     document.title = project.name + ' — VCP Projects';
 
-    // Header is 01; each section that actually has content takes the next
-    // number, so minimal entries never show gaps in the numbering.
+    // Each section that actually has content takes the next number starting
+    // at 01 (the site convention, see demo.html), so minimal entries never
+    // show gaps in the numbering.
     var sectionDefs = [
       { blank: isBlank(project.overview), render: renderOverview },
       { blank: isBlank(project.timeline), render: renderTimeline },
@@ -183,7 +180,7 @@
     ];
 
     var sections = [renderHeader(project)];
-    var next = 2;
+    var next = 1;
     sectionDefs.forEach(function (def) {
       if (def.blank) return;
       sections.push(def.render(project, ('0' + next).slice(-2)));
