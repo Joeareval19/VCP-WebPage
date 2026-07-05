@@ -1,7 +1,7 @@
 /*
  * Vercel Function — turns a finished voice-to-spec session into a real
- * Pending ticket on the VCP Tracker, and records the session in Supabase.
- * The last step of issue #43's pipeline.
+ * Pending ticket on the VCP Tracker, and records the final session state
+ * in Supabase. The last step of issue #43's pipeline.
  *
  * Exists so GITHUB_TOKEN and SUPABASE_SERVICE_ROLE_KEY never reach
  * client-side JS (public repo — anything in browser code is visible to
@@ -10,10 +10,13 @@
  *   1. Extracts a structured scope of work via Groq (why/what/acceptance
  *      criteria/out-of-scope — NOT generic likes/dislikes, see issue #43's
  *      amended spec).
- *   2. Writes the session to Supabase's vcp_voice_sessions table (schema
- *      shipped in #52/#53) — this replaces the original design's "create a
- *      secret Gist" transcript-retention approach now that a real table
- *      exists for exactly this purpose.
+ *   2. Upserts the session into Supabase's vcp_voice_sessions table (schema
+ *      shipped in #52/#53), adding summary/status on top of whatever
+ *      transcript api/next-turn.js already persisted turn-by-turn — this is
+ *      the FINAL write in a session, not the only one (see next-turn.js's
+ *      durability requirement comment). Replaces the original design's
+ *      "create a secret Gist" transcript-retention approach now that a
+ *      real table exists for exactly this purpose.
  *   3. Files a GitHub issue and adds it to the VCP Tracker board with
  *      Status = Pending — mirroring what /vcp-spec does for human-filed
  *      specs (see .claude/skills/vcp-spec/SKILL.md).
@@ -89,21 +92,25 @@ function supabase(path, options) {
   }));
 }
 
-// Insert happens here (server-side, service-role key) rather than
-// client-side with the anon key: this endpoint already has everything
-// (transcript, extracted summary) in one place by the time it runs, so one
+// Upsert, not insert: api/next-turn.js already writes (and overwrites) this
+// session's row after every turn (issue #43's durability requirement), so
+// by the time a session ends cleanly the row almost always already exists.
+// This call is the FINAL upsert — it adds summary/status, on top of
+// whatever transcript next-turn.js's last call already persisted. Server-
+// side, service-role key throughout: this endpoint already has everything
+// (transcript, extracted scope) in one place by the time it runs, so one
 // write here is simpler than an anon INSERT from the client followed by a
-// separate privileged UPDATE for summary/filed_issue. See the file header
-// for why one consistent credential/code path was chosen over splitting it.
+// separate privileged UPDATE. See the file header for why one consistent
+// credential/code path was chosen over splitting it.
 async function recordVoiceSession(fields) {
-  const resp = await supabase("/vcp_voice_sessions", {
+  const resp = await supabase("/vcp_voice_sessions?on_conflict=session_id", {
     method: "POST",
-    headers: { Prefer: "return=representation" },
+    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
     body: JSON.stringify(fields),
   });
   if (!resp.ok) {
     const detail = await resp.text().catch(function () { return ""; });
-    throw new Error("Supabase insert failed: " + detail);
+    throw new Error("Supabase upsert failed: " + detail);
   }
   const rows = await resp.json();
   return rows[0];
@@ -184,8 +191,12 @@ module.exports = async function handler(req, res) {
     res.status(400).json({ error: "transcript exceeds " + MAX_TRANSCRIPT_LENGTH + " characters" });
     return;
   }
-  if (!sessionId || typeof sessionId !== "string") {
-    res.status(400).json({ error: "Missing required field: sessionId" });
+  if (!sessionId || typeof sessionId !== "string" || sessionId.length > 100) {
+    res.status(400).json({ error: "Missing or invalid required field: sessionId" });
+    return;
+  }
+  if (pageContext !== undefined && (typeof pageContext !== "string" || pageContext.length > 500)) {
+    res.status(400).json({ error: "pageContext must be a string under 500 characters" });
     return;
   }
 

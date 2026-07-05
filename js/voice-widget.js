@@ -88,17 +88,28 @@
     return { done: false, question: "Anything that should explicitly stay out of scope for this, or is that everything for now?" };
   }
 
-  function fetchNextTurn(history) {
+  // Redaction happens here, client-side, before ANYTHING leaves the browser
+  // — both api/next-turn.js (which now persists every turn to Supabase,
+  // see issue #43's durability requirement) and api/file-feedback.js only
+  // ever see already-redacted text. Structure-preserving (returns the same
+  // {role, text} shape) so it can feed either the chat-messages array
+  // next-turn needs or be flattened into file-feedback's transcript string.
+  function redactedHistory(history) {
+    return history.map(function (h) { return { role: h.role, text: redact(h.text) }; });
+  }
+
+  function fetchNextTurn(history, sessionId, pageContext) {
     if (history.length === 0) {
       return Promise.resolve({ done: false, question: OPENING_QUESTION });
     }
     if (history.filter(function (h) { return h.role === "visitor"; }).length >= MAX_TURNS) {
       return Promise.resolve({ done: true });
     }
+    var safeHistory = redactedHistory(history);
     return fetch("/api/next-turn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ history: history }),
+      body: JSON.stringify({ history: safeHistory, sessionId: sessionId, pageContext: pageContext }),
     })
       .then(function (resp) {
         if (!resp.ok) throw new Error("next-turn status " + resp.status);
@@ -110,11 +121,8 @@
   }
 
   // ---- Ticket filing ---------------------------------------------------
-  // Redaction happens here, client-side, before the transcript ever leaves
-  // the browser — api/file-feedback.js (which does the real LLM
-  // summarization + gh issue create) only ever sees already-redacted text.
   function redactedTranscript(history) {
-    return history.map(function (h) { return h.role + ": " + redact(h.text); }).join("\n");
+    return redactedHistory(history).map(function (h) { return h.role + ": " + h.text; }).join("\n");
   }
 
   function fileFeedback(history, pageContext, sessionId, durationMs) {
@@ -356,7 +364,7 @@
   VoiceWidget.prototype.arm = function () {
     this.body.innerHTML = "";
     var self = this;
-    fetchNextTurn(this.history).then(function (turn) {
+    fetchNextTurn(this.history, this.sessionId, window.location.pathname).then(function (turn) {
       self.askQuestion(turn.question);
     });
   };
@@ -426,9 +434,9 @@
       var transcript = event.results[0][0].transcript;
       self.addLine("visitor", transcript);
       self.setState("thinking");
-      self.liquid.startIdle(); // brief "thinking" gap between mic close and next TTS start
+      self.liquid.startIdle(); // brief "thinking" gap between mic close and the next question rendering
 
-      fetchNextTurn(self.history).then(function (turn) {
+      fetchNextTurn(self.history, self.sessionId, window.location.pathname).then(function (turn) {
         if (!self.open) return; // session was closed while the request was in flight
         if (turn.done) {
           self.finishSession();
