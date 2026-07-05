@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
 <style>
   /* Demo-page layout only — components live in css/components.css */
   .demo-section { margin-bottom: 112px; }
@@ -360,6 +361,16 @@
     </div>
   </section>
 
+  <!-- ============ 10 PAGE TRANSITION ============ -->
+  <section class="demo-section" id="page-transition" style="margin-top: 112px;">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">10</span>
+      <h2>Page transition — title dip</h2>
+    </div>
+    <p class="text-muted" style="font-size: var(--fs-14); max-width: 62ch;">Clicking a nav tab dips to black (<code>--dur-dip-in</code>), the destination's serif title breathes alone for a beat, then a slow fade-away (<code>--dur-dip-out</code>) reveals the page. The real navigation loads hidden behind the black. Honors <code>prefers-reduced-motion</code>; anchors and external links are unaffected. Component: <code>html.vcp-dip</code> in components.css + <code>js/page-dip.js</code>.</p>
+    <button class="vcp-btn vcp-btn--silver" id="dip-preview" style="margin-top: 18px;">Preview the dip</button>
+  </section>
+
 </main>
 
 <footer class="vcp-footer">
@@ -372,6 +383,20 @@
 
 </div>
 
+<script defer src="js/page-dip.js"></script>
 <script defer src="js/telemetry.js"></script>
+<script>
+/* Demo-only: run one full dip cycle in place (no navigation). */
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('dip-preview').addEventListener('click', function () {
+    var r = document.documentElement;
+    r.setAttribute('data-dip-title', 'Research');
+    r.classList.add('vcp-dip', 'vcp-dip--in');
+    setTimeout(function () { r.classList.remove('vcp-dip--in'); r.classList.add('vcp-dip--hold'); }, 360);
+    setTimeout(function () { r.classList.remove('vcp-dip--hold'); r.classList.add('vcp-dip--out'); }, 1050);
+    setTimeout(function () { r.classList.remove('vcp-dip', 'vcp-dip--out'); r.removeAttribute('data-dip-title'); }, 2300);
+  });
+});
+</script>
 </body>
 </html>
