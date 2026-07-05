@@ -55,34 +55,29 @@
     content: '';
     position: absolute;
     left: 50%;
-    top: 54%;
+    top: 42%;
     transform: translate(-50%, -50%);
-    width: min(100%, 340px);
+    width: min(84%, 330px);
     aspect-ratio: 1;
     border-radius: var(--radius-pill);
     background: var(--silver-panel);
     opacity: 0.9;
   }
-  /* A plain JPG can't carry the cut-out transparency of the reference,
-     so the photo is clipped INTO the circle, slightly inset so the
-     brushed-silver ring stays visible as a rim (PR #63 audit, finding 1).
-     If a transparent PNG lands later, this can graduate to a true cutout. */
+  /* True cutout (the reference composition): assets/jose.png carries
+     real transparency, so the person stands in front of the circle,
+     bottom-anchored, head and shoulders breaking the circle's edge. */
   .portrait img {
     position: absolute;
+    bottom: 0;
     left: 50%;
-    top: 54%;
-    transform: translate(-50%, -50%);
-    width: min(94%, 320px);
-    aspect-ratio: 1;
+    transform: translateX(-50%);
+    width: min(100%, 400px);
     height: auto;
-    border-radius: var(--radius-pill);
-    object-fit: cover;
-    object-position: center;
     filter: grayscale(1) contrast(1.05);
   }
   .portrait--empty img { display: none; }
   .portrait--empty::after {
-    content: 'portrait · add assets/jose.jpg';
+    content: 'portrait · add assets/jose.png';
     position: relative;
     font-family: var(--font-mono);
     font-size: var(--fs-12);
@@ -219,7 +214,7 @@
       </div>
     </div>
     <div class="portrait" id="portrait">
-      <img src="assets/jose.jpg" alt="Jose Ernesto Arevalo" onerror="document.getElementById('portrait').classList.add('portrait--empty')">
+      <img src="assets/jose.png" alt="Jose Ernesto Arevalo" onerror="document.getElementById('portrait').classList.add('portrait--empty')">
     </div>
   </header>
 
