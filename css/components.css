@@ -755,7 +755,14 @@
 
 /* === Voice feedback widget (issue #43) === */
 
-/* Trigger — liquid-motion ball, fixed bottom-right on every page */
+/* Trigger — liquid-motion ball, fixed bottom-right on every page.
+   Shape/position are NOT driven by a fixed @keyframes loop (a bare cycle
+   always reads as a mechanically repeating pattern, no matter how slow) —
+   js/voice-widget.js drives --liquid-radius/--liquid-bg-pos/--liquid-scale
+   directly: randomized easing timings at idle, real Web Audio amplitude
+   data while the assistant is speaking or the visitor is talking. The
+   `transition` here is what makes each JS-set target arrive smoothly
+   instead of jumping. */
 .vcp-voice-trigger {
   position: fixed;
   right: var(--space-5);
@@ -765,17 +772,20 @@
   height: 60px;
   padding: 0;
   border: none;
-  border-radius: var(--radius-pill);
   cursor: pointer;
   background: var(--silver-panel);
   background-size: 220% 220%;
   box-shadow: var(--shadow-silver), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
-  animation: vcp-voice-liquid var(--dur-ambient) ease-in-out infinite;
-  transition: transform var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease);
+  border-radius: var(--liquid-radius, 50%);
+  background-position: var(--liquid-bg-pos, 50% 50%);
+  transform: scale(var(--liquid-scale, 1));
+  transition: border-radius var(--liquid-dur, 2600ms) ease-in-out,
+              background-position var(--liquid-dur, 2600ms) ease-in-out,
+              transform 120ms ease-out,
+              box-shadow var(--dur-med) var(--ease);
 }
 
 .vcp-voice-trigger:hover {
-  transform: translateY(-2px) scale(1.04);
   box-shadow: var(--shadow-silver), 0 22px 48px -16px rgba(0, 0, 0, 0.78);
 }
 
@@ -794,25 +804,11 @@
   bottom: calc(var(--space-4) + 1px);
 }
 
-@keyframes vcp-voice-liquid {
-  0%   { background-position: 0% 50%;   border-radius: 46% 54% 60% 40% / 55% 45% 55% 45%; }
-  25%  { background-position: 50% 100%; border-radius: 58% 42% 45% 55% / 45% 55% 45% 55%; }
-  50%  { background-position: 100% 50%; border-radius: 40% 60% 54% 46% / 60% 40% 60% 40%; }
-  75%  { background-position: 50% 0%;   border-radius: 54% 46% 40% 60% / 48% 52% 48% 52%; }
-  100% { background-position: 0% 50%;   border-radius: 46% 54% 60% 40% / 55% 45% 55% 45%; }
-}
-
-/* Listening/speaking states pulse faster than the ambient idle loop, so the
-   ball visibly communicates "active" without a separate icon/label. */
-.vcp-voice-trigger[data-state="listening"],
-.vcp-voice-trigger[data-state="speaking"] {
-  animation-duration: calc(var(--dur-ambient) / 4);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .vcp-voice-trigger {
-    animation: none;
-    border-radius: var(--radius-pill);
+    transition: box-shadow var(--dur-med) var(--ease);
+    border-radius: var(--radius-pill) !important;
+    transform: none !important;
   }
 }
 

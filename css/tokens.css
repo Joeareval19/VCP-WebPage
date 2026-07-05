@@ -67,8 +67,11 @@
      under reduced-motion for snappy-but-instant transitions, whereas a
      looping animation needs its @keyframes suppressed outright, not sped
      up to 0ms (which would flash rather than stop). See the
-     prefers-reduced-motion block below. */
-  --dur-ambient: 3400ms;
+     prefers-reduced-motion block below. Slow and unhurried at idle — the
+     JS-driven randomization in js/voice-widget.js varies the actual cycle
+     length per-loop around this baseline, so it never reads as a fixed,
+     mechanically repeating cycle the way a bare CSS @keyframes loop does. */
+  --dur-ambient: 9000ms;
 
   /* Stacking context scale — every fixed/sticky element picks a rung here
      instead of an inline magic number. */

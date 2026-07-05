@@ -131,6 +131,139 @@
     return "vf-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
   }
 
+  // ---- Liquid ball motion ----------------------------------------------
+  // Two modes, both driving the same 3 CSS custom properties (border-radius
+  // shape, background-position, scale) so the CSS `transition` on those
+  // properties (components.css) is what actually renders the smooth
+  // morphing — this class only ever picks *targets*, never animates pixel
+  // values itself.
+  //
+  // Idle: randomized organic morphing, no audio involved. Each cycle picks
+  // a new random-ish blob shape and a new random duration (2.2s-4.2s), so
+  // it never reads as a fixed repeating loop no matter how long you watch
+  // it — the randomization IS the "liquid" quality, not just slowness.
+  //
+  // Active (speaking/listening): a Web Audio AnalyserNode reads real
+  // amplitude off whichever audio is actually flowing (TTS playback via
+  // ElevenLabs, or the visitor's own mic) and maps loudness directly to
+  // how extreme the blob shape / scale gets, sampled every animation
+  // frame — this is the literal "liquid shifting on sound input."
+  // Honest limitation: the browser's built-in speechSynthesis fallback
+  // (used when the ElevenLabs proxy is unreachable) exposes no audio
+  // stream to analyze, so that fallback path keeps the idle randomized
+  // motion instead of being sound-reactive — there's no Web API for tapping
+  // SpeechSynthesisUtterance's output.
+  function LiquidBall(el) {
+    this.el = el;
+    this.idleTimer = null;
+    this.audioCtx = null;
+    this.analyser = null;
+    this.dataArray = null;
+    this.rafId = null;
+    this.sourceNode = null;
+  }
+
+  LiquidBall.prototype.randomBlob = function () {
+    // 4 corner radii + 4 for the second (vertical) axis, each wobbled
+    // independently within a band that always still reads as "blob," never
+    // a spike or a flat edge.
+    function r() { return 38 + Math.floor(Math.random() * 24); } // 38-62%
+    return r() + "% " + (100 - r()) + "% " + (100 - r()) + "% " + r() + "% / " +
+           r() + "% " + r() + "% " + (100 - r()) + "% " + (100 - r()) + "%";
+  };
+
+  LiquidBall.prototype.startIdle = function () {
+    this.stopAudioReactive();
+    if (this.idleTimer) return; // already running
+    // Respect the OS/browser-level motion preference at the JS level too —
+    // the CSS !important override already suppresses the visual effect,
+    // but running an indefinite setTimeout loop purely to compute values
+    // nobody will see is wasted work and the wrong semantics for "reduce
+    // motion" (it should mean less happening, not just less visible).
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var self = this;
+    function cycle() {
+      var duration = 2200 + Math.random() * 2000; // 2.2s-4.2s, different every time
+      self.el.style.setProperty("--liquid-dur", duration + "ms");
+      self.el.style.setProperty("--liquid-radius", self.randomBlob());
+      self.el.style.setProperty("--liquid-bg-pos", Math.floor(Math.random() * 100) + "% " + Math.floor(Math.random() * 100) + "%");
+      self.el.style.setProperty("--liquid-scale", (0.97 + Math.random() * 0.06).toFixed(3));
+      self.idleTimer = setTimeout(cycle, duration);
+    }
+    cycle();
+  };
+
+  LiquidBall.prototype.stopIdle = function () {
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
+  };
+
+  // source: an HTMLMediaElement (TTS playback) or a MediaStream (mic input).
+  LiquidBall.prototype.startAudioReactive = function (source) {
+    this.stopIdle();
+    this.stopAudioReactive(); // tear down any previous session's nodes first
+
+    // A visitor asking for reduced motion doesn't stop meaning that once
+    // audio starts — the shape-warping is still decorative motion, just
+    // driven by a different input. Skip the whole Web Audio graph.
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) { this.startIdle(); return; } // no Web Audio support — degrade to idle motion
+
+    try {
+      this.audioCtx = new AudioContextCtor();
+      this.sourceNode = source instanceof MediaStream
+        ? this.audioCtx.createMediaStreamSource(source)
+        : this.audioCtx.createMediaElementSource(source);
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 128;
+      this.analyser.smoothingTimeConstant = 0.75; // smooths frame-to-frame jitter without lagging the actual voice
+      this.sourceNode.connect(this.analyser);
+      // MediaElementSource redirects the element's output through the Web
+      // Audio graph — reconnect to actual speakers or TTS playback goes silent.
+      if (!(source instanceof MediaStream)) this.analyser.connect(this.audioCtx.destination);
+      this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    } catch (e) {
+      this.startIdle(); // Web Audio setup can fail (e.g. already-connected source) — never let that break the widget
+      return;
+    }
+
+    var self = this;
+    function tick() {
+      self.analyser.getByteFrequencyData(self.dataArray);
+      var sum = 0;
+      for (var i = 0; i < self.dataArray.length; i++) sum += self.dataArray[i];
+      var level = sum / self.dataArray.length / 255; // 0..1 average loudness this frame
+
+      // Louder -> larger scale + more extreme blob distortion; quiet moments
+      // relax back toward a gentler shape, so the ball visibly "breathes"
+      // with the actual audio rather than pulsing on a fixed timer.
+      self.el.style.setProperty("--liquid-dur", "90ms"); // near-instant response to each frame's level
+      self.el.style.setProperty("--liquid-scale", (1 + level * 0.22).toFixed(3));
+      var spread = 30 + level * 40; // more level = more extreme corner variance
+      function r() { return Math.max(20, Math.min(80, 50 + (Math.random() * 2 - 1) * spread)); }
+      self.el.style.setProperty("--liquid-radius",
+        Math.round(r()) + "% " + Math.round(100 - r()) + "% " + Math.round(100 - r()) + "% " + Math.round(r()) + "% / " +
+        Math.round(r()) + "% " + Math.round(r()) + "% " + Math.round(100 - r()) + "% " + Math.round(100 - r()) + "%");
+
+      self.rafId = requestAnimationFrame(tick);
+    }
+    tick();
+  };
+
+  LiquidBall.prototype.stopAudioReactive = function () {
+    if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+    if (this.sourceNode) { try { this.sourceNode.disconnect(); } catch (e) {} this.sourceNode = null; }
+    if (this.analyser) { try { this.analyser.disconnect(); } catch (e) {} this.analyser = null; }
+    if (this.audioCtx) { try { this.audioCtx.close(); } catch (e) {} this.audioCtx = null; }
+    this.dataArray = null;
+  };
+
+  LiquidBall.prototype.destroy = function () {
+    this.stopIdle();
+    this.stopAudioReactive();
+  };
+
   // ---- Widget state machine -------------------------------------------
   function VoiceWidget(root) {
     this.root = root;
@@ -143,6 +276,8 @@
     this.history = []; // reset every session — no cross-session memory
     this.recognition = null;
     this.finishTimer = null;
+    this.liquid = new LiquidBall(this.trigger);
+    this.liquid.startIdle(); // motion runs at all times, session open or not
 
     this.trigger.addEventListener("click", this.toggle.bind(this));
     this.closeBtn.addEventListener("click", this.endSession.bind(this));
@@ -166,6 +301,8 @@
     if (this.finishTimer) { clearTimeout(this.finishTimer); this.finishTimer = null; }
     if (this.recognition) { try { this.recognition.abort(); } catch (e) {} }
     window.speechSynthesis && window.speechSynthesis.cancel();
+    this.stopMicVisualizer();
+    this.liquid.startIdle(); // resume ambient motion — the ball keeps living outside a session too
 
     // Only file when the visitor actually said something — a session where
     // only the opening question was ever spoken has no feedback to extract.
@@ -253,15 +390,18 @@
       })
       .then(function (blob) {
         var audio = new Audio(URL.createObjectURL(blob));
-        audio.onended = function () { self.listen(); };
-        audio.onerror = function () { self.listen(); };
+        // Real audio element -> the liquid ball reacts to its actual
+        // playback amplitude for as long as it's speaking.
+        self.liquid.startAudioReactive(audio);
+        audio.onended = function () { self.liquid.startIdle(); self.listen(); };
+        audio.onerror = function () { self.liquid.startIdle(); self.listen(); };
         // play() returns a Promise that rejects on autoplay-policy blocks;
         // an unhandled rejection here left the session stranded in
         // "speaking" forever, since neither onended nor onerror fire when
         // playback never starts.
         var playResult = audio.play();
         if (playResult && typeof playResult.catch === "function") {
-          playResult.catch(function () { self.speakWithBrowserTts(question); });
+          playResult.catch(function () { self.liquid.startIdle(); self.speakWithBrowserTts(question); });
         }
       })
       .catch(function () {
@@ -271,6 +411,10 @@
 
   VoiceWidget.prototype.speakWithBrowserTts = function (question) {
     var self = this;
+    // speechSynthesis exposes no audio stream for Web Audio to tap (see
+    // LiquidBall's header note) — idle randomized motion is the honest
+    // fallback here, not fake audio-reactivity.
+    this.liquid.startIdle();
     var utter = new SpeechSynthesisUtterance(question);
     utter.onend = function () { self.listen(); };
     utter.onerror = function () { self.listen(); }; // TTS failure shouldn't strand the session
@@ -287,11 +431,29 @@
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
+    // Web Speech API's SpeechRecognition doesn't expose the raw mic stream
+    // it's transcribing from, so a second, independent getUserMedia() call
+    // is what actually feeds the liquid ball while listening. This is a
+    // real, honest limitation, not a shortcut: the browser prompts for mic
+    // permission once (both APIs share the same permission grant), but
+    // recognition.start() and this stream are technically two separate
+    // consumers of the microphone hardware.
     var self = this;
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        self.micStream = stream;
+        self.liquid.startAudioReactive(stream);
+      }).catch(function () {
+        self.liquid.startIdle(); // mic access denied for the visualizer specifically — recognition may still work
+      });
+    }
+
     recognition.onresult = function (event) {
+      self.stopMicVisualizer();
       var transcript = event.results[0][0].transcript;
       self.addLine("visitor", transcript);
       self.setState("thinking");
+      self.liquid.startIdle(); // brief "thinking" gap between mic close and next TTS start
 
       fetchNextTurn(self.history).then(function (turn) {
         if (!self.open) return; // session was closed while the request was in flight
@@ -303,6 +465,7 @@
       });
     };
     recognition.onerror = function (event) {
+      self.stopMicVisualizer();
       self.setState("idle");
       // "no-speech"/"aborted" are transient (visitor paused, or we aborted
       // it ourselves on close) — just re-listen. Permission-related errors
@@ -312,6 +475,7 @@
       if (event.error === "no-speech" || event.error === "aborted") {
         self.listen();
       } else {
+        self.liquid.startIdle();
         self.renderMicError(event.error);
       }
     };
@@ -319,6 +483,18 @@
       if (self.trigger.getAttribute("data-state") === "listening") self.setState("idle");
     };
     recognition.start();
+  };
+
+  // Releases the getUserMedia() stream opened purely for the ball's
+  // visualizer — recognition.start()'s own internal mic usage is separate
+  // and stops itself via recognition.abort()/onend. Without this, the
+  // browser's mic-in-use indicator would stay lit after the visitor
+  // finishes speaking, which is both wrong and a real privacy signal.
+  VoiceWidget.prototype.stopMicVisualizer = function () {
+    if (this.micStream) {
+      this.micStream.getTracks().forEach(function (t) { t.stop(); });
+      this.micStream = null;
+    }
   };
 
   VoiceWidget.prototype.renderMicError = function (errorCode) {
