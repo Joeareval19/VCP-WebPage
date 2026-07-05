@@ -18,6 +18,21 @@
  * breaking mid-session. The conversation is framed to extract a scope of
  * work (why/what/acceptance-criteria/out-of-scope), not generic
  * likes/dislikes — see api/next-turn.js's system prompt.
+ *
+ * Durability (revised 2026-07-05, reconciled with issue #60/[70005]): every
+ * turn is inserted directly into Supabase's vcp_voice_turns table from the
+ * BROWSER, using the same publishable anon key js/telemetry.js already
+ * exposes (INSERT-only under RLS — the anon role can never read/change/
+ * delete). This replaced an earlier version of this file that had
+ * api/next-turn.js upsert the growing transcript server-side via a
+ * privileged SUPABASE_SERVICE_ROLE_KEY — a different session independently
+ * shipped this simpler client-direct-insert design (one row per utterance,
+ * joined by session_id) while that work was in flight, and it's the better
+ * approach: no server round-trip or privileged key needed just to persist
+ * a turn. api/next-turn.js and api/file-feedback.js no longer touch
+ * Supabase at all for turn-level durability — only file-feedback.js's
+ * final vcp_voice_sessions write (summary + filed_issue) still needs the
+ * service-role key, since that's a genuine cross-row upsert.
  */
 (function () {
   "use strict";
@@ -90,15 +105,15 @@
 
   // Redaction happens here, client-side, before ANYTHING leaves the browser
   // — both api/next-turn.js (which now persists every turn to Supabase,
-  // see issue #43's durability requirement) and api/file-feedback.js only
-  // ever see already-redacted text. Structure-preserving (returns the same
-  // {role, text} shape) so it can feed either the chat-messages array
-  // next-turn needs or be flattened into file-feedback's transcript string.
+  // see api/file-feedback.js) never sees raw visitor text. Structure-
+  // preserving (returns the same {role, text} shape) so it can feed either
+  // the chat-messages array next-turn needs or be flattened into
+  // file-feedback's transcript string.
   function redactedHistory(history) {
     return history.map(function (h) { return { role: h.role, text: redact(h.text) }; });
   }
 
-  function fetchNextTurn(history, sessionId, pageContext) {
+  function fetchNextTurn(history) {
     if (history.length === 0) {
       return Promise.resolve({ done: false, question: OPENING_QUESTION });
     }
@@ -109,7 +124,7 @@
     return fetch("/api/next-turn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ history: safeHistory, sessionId: sessionId, pageContext: pageContext }),
+      body: JSON.stringify({ history: safeHistory }),
     })
       .then(function (resp) {
         if (!resp.ok) throw new Error("next-turn status " + resp.status);
@@ -144,6 +159,36 @@
     // Opaque, not tied to visitor identity — per spec's content model
     // (session_id: "opaque, not tied to visitor identity").
     return "vf-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ---- Per-turn durability (vcp_voice_turns, issue #60/[70005]) --------
+  // Same Supabase project + publishable anon key js/telemetry.js already
+  // uses — INSERT-only under RLS, so this is safe to call unconditionally
+  // from the browser. Fire-and-forget: a write failure here must never
+  // interrupt the actual conversation (matches telemetry.js's own
+  // fail-silent contract). Text is redacted before this is ever called —
+  // see addLine below.
+  var SUPABASE_URL = "https://qaorlbgrkpldcatyntlw.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_MZQT-cWL_j0X4KNdqx4mDA_MgTqy073";
+
+  function insertVoiceTurn(sessionId, turnIndex, role, text, pageContext) {
+    if (!window.fetch) return;
+    fetch(SUPABASE_URL + "/rest/v1/vcp_voice_turns", {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        session_id: sessionId,
+        turn_index: turnIndex,
+        role: role,
+        text: text,
+        page_context: pageContext,
+      }),
+    }).catch(function () {}); // fail-silent — see function header comment
   }
 
   // ---- Liquid ball motion ----------------------------------------------
@@ -368,7 +413,7 @@
   VoiceWidget.prototype.arm = function () {
     this.body.innerHTML = "";
     var self = this;
-    fetchNextTurn(this.history, this.sessionId, window.location.pathname).then(function (turn) {
+    fetchNextTurn(this.history).then(function (turn) {
       self.askQuestion(turn.question);
     });
   };
@@ -377,9 +422,13 @@
     this.history.push({ role: role, text: text });
     var line = document.createElement("div");
     line.className = "vcp-voice-line vcp-voice-line--" + role;
-    line.textContent = text;
+    line.textContent = text; // visitor sees their own real words, unredacted — redaction is a storage/filing concern, not a display one
     this.body.appendChild(line);
     this.body.scrollTop = this.body.scrollHeight;
+
+    // Durable per-turn write — redacted before it ever leaves the browser,
+    // same contract as the eventual vcp_voice_sessions/file-feedback write.
+    insertVoiceTurn(this.sessionId, this.history.length - 1, role, redact(text), window.location.pathname);
   };
 
   VoiceWidget.prototype.setState = function (state) {
@@ -440,7 +489,7 @@
       self.setState("thinking");
       self.liquid.startIdle(); // brief "thinking" gap between mic close and the next question rendering
 
-      fetchNextTurn(self.history, self.sessionId, window.location.pathname).then(function (turn) {
+      fetchNextTurn(self.history).then(function (turn) {
         if (!self.open) return; // session was closed while the request was in flight
         if (turn.done) {
           self.finishSession();
