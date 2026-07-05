@@ -60,14 +60,14 @@ function reasonOf(e) {
 // (supabase-key.txt next to this file, same convention as webhook-secret.txt
 // — never in git). Missing key or a failed POST logs WARN and never blocks
 // the pipeline: the relay must keep working with Supabase down.
-const SUPABASE_URL = "https://mgcczsxviukraxonnljm.supabase.co";
+const SUPABASE_URL = "https://qaorlbgrkpldcatyntlw.supabase.co";
 let SUPABASE_KEY = "";
 try { SUPABASE_KEY = fs.readFileSync(path.join(__dirname, "supabase-key.txt"), "utf8").trim(); } catch {}
 
 function capture(eventType, fields) {
   if (!SUPABASE_KEY) { log(`WARN capture skipped (no supabase-key.txt): ${eventType}`); return; }
   const row = Object.assign({ source: "relay", event_type: eventType }, fields);
-  fetch(`${SUPABASE_URL}/rest/v1/pipeline_events`, {
+  fetch(`${SUPABASE_URL}/rest/v1/vcp_pipeline_events`, {
     method: "POST",
     headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" },
     body: JSON.stringify(row),
