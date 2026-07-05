@@ -6,12 +6,17 @@
     "status": "Active",
     "client": "VCP build",
     "website": "https://www.caneycloud.com/",
-    "overview": "<p>CaneyCloud is a hotel operating system built for Venezuelan hospitality — posadas, boutique hotels, hostels, and cabins. It brings reservations, WhatsApp sales, payments, and invoicing into a single platform, replacing the scattered spreadsheets, chat groups, and disconnected payment systems small operators run on today.</p>",
+    "logo": "assets/logos/caneycloud.png",
+    "overview": "<p>CaneyCloud is a hotel operating system built for Venezuelan hospitality — posadas, boutique hotels, hostels, glamping, and apartment-hotels. It brings reservations, WhatsApp sales, payments, and invoicing into a single platform, replacing the scattered spreadsheets, chat groups, and disconnected payment systems small operators run on today.</p><p>The product covers the whole operating loop: a drag-and-drop reservation calendar synced against Booking.com, Airbnb, Expedia and direct channels; a point of sale for restaurant, minibar, tours and spa; operational inventory; dynamic pricing driven by occupancy and demand; and an AI-assisted WhatsApp agent that answers with the hotel's own context while the team keeps control.</p>",
     "timeline": null,
-    "moat": null,
-    "business_model": null,
+    "moat": "<p>Built Venezuela-first, where global PMS vendors don't reach: dual-currency operation (USD and VES) with SENIAT-compatible fiscal invoicing, channel sync designed for zero overbooking across OTAs and direct sales, and WhatsApp — the channel Venezuelan hotels actually sell on — treated as a first-class sales surface with AI assistance under team oversight.</p>",
+    "business_model": "<p>SaaS subscription for hospitality operators. Hotels start on a free tier — up to two users, no credit card — and grow into paid plans as the team and property scale.</p>",
     "specifics": {
-      "Website": "https://www.caneycloud.com/"
+      "Website": "https://www.caneycloud.com/",
+      "Market": "Posadas, boutique hotels, hostels, glamping — Venezuela",
+      "Product": "PMS + channel manager + POS + WhatsApp AI agent",
+      "Channels": "Booking.com, Airbnb, Expedia + direct",
+      "Billing": "USD & VES, SENIAT-compatible invoicing"
     },
     "related": null
   },
@@ -22,12 +27,17 @@
     "status": "Active",
     "client": "VCP build",
     "website": "https://vamosavenezuela.com/",
-    "overview": "<p>VamosaVenezuela is a travel guide and trip-planning platform for Venezuelan tourism. It curates places to stay, dining, and activities across the country's regions — from Los Roques to Mérida to Canaima — with destination guides, sample itineraries, and planning tools.</p>",
+    "logo": "assets/logos/vamosavenezuela.svg",
+    "overview": "<p>VamosaVenezuela is a travel guide and trip-planning platform for Venezuelan tourism. It curates places to stay, dining, and activities across eight regions — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — plus landscape categories from beaches and islands to tepuis and jungle.</p><p>Beyond destination guides, the platform ships real planning tools: an interactive map, flight search, sample trips, and a custom itinerary builder. Every destination carries an editorial safety rating, so travelers know what to expect before they commit.</p>",
     "timeline": null,
-    "moat": null,
-    "business_model": null,
+    "moat": "<p>Editorial curation plus a per-destination safety-rating system — a trust layer no generic travel site offers for Venezuela. The content depth across all eight regions, hidden gems included, is the kind of ground-truth coverage a competitor can't scrape together quickly.</p>",
+    "business_model": "<p>Audience-first: the platform builds traffic through curated destination content, with flight search and stay/experience listings as the natural referral and booking surfaces to monetize as the audience grows.</p>",
     "specifics": {
-      "Website": "https://vamosavenezuela.com/"
+      "Website": "https://vamosavenezuela.com/",
+      "Coverage": "8 regions + landscape categories across Venezuela",
+      "Content": "Destinations, stays, gastronomy, experiences, itineraries",
+      "Safety": "Per-destination editorial risk ratings",
+      "Tools": "Interactive map, flight search, itinerary builder"
     },
     "related": null
   },
@@ -38,6 +48,7 @@
     "status": "Incubating",
     "client": "VCP build",
     "website": null,
+    "logo": null,
     "overview": "<p>PIPA Database is an early-stage internal build, still in incubation. The name is a working title, and the public write-up will land here once the project is further along.</p>",
     "timeline": null,
     "moat": null,

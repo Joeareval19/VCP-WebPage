@@ -24,6 +24,9 @@
             '<span class="vcp-tag vcp-tag--dot">' + escapeHtml(project.status) + '</span>' +
             '<span class="vcp-tag">' + clientTag + '</span>' +
           '</div>' +
+          (project.logo
+            ? '<span class="vcp-logo-chip" style="margin-bottom: var(--space-3);"><img src="' + escapeHtml(project.logo) + '" alt="" loading="lazy"></span>'
+            : '') +
           '<h3 class="vcp-card__title">' + escapeHtml(project.name) + '</h3>' +
           '<p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">' + escapeHtml(project.one_liner) + '</p>' +
           '<div class="project-card__links">' +

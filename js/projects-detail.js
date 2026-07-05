@@ -45,6 +45,9 @@
           '<span class="vcp-tag vcp-tag--dot">' + escapeHtml(project.status) + '</span>' +
           '<span class="vcp-tag">' + escapeHtml(project.client || 'Confidential') + '</span>' +
         '</div>' +
+        (project.logo
+          ? '<span class="vcp-logo-chip vcp-logo-chip--lg" style="margin-top: var(--space-4);"><img src="' + escapeHtml(project.logo) + '" alt=""></span>'
+          : '') +
         '<h1 class="sheen-text">' + escapeHtml(project.name) + '</h1>' +
         '<p class="vcp-detail-header__thesis">' + escapeHtml(project.one_liner) + '</p>' +
       '</header>'
