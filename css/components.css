@@ -752,3 +752,79 @@
 }
 
 .vcp-footer__links a:hover { color: var(--silver-bright); }
+
+/* === Page transition: title dip (issue #57) === */
+/* The overlay renders as pseudo-elements on <html> so the inline pre-paint
+   snippet in each page's <head> can show it before first paint — no DOM
+   element required. States: .vcp-dip--in (origin page, dip to black),
+   .vcp-dip--hold (destination, set pre-paint), .vcp-dip--out (slow
+   cinematic fade-away). Driven by js/page-dip.js. */
+html.vcp-dip::before,
+html.vcp-dip::after {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+html.vcp-dip::before {
+  content: 'Entering';
+  background: var(--bg);
+  padding-bottom: 13rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+html.vcp-dip::after {
+  content: attr(data-dip-title);
+  padding-top: 1rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 1.1;
+  background: var(--silver-sheen);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+html.vcp-dip--in::before {
+  animation: vcp-dip-fade-in var(--dur-dip-in) var(--ease) both;
+}
+html.vcp-dip--in::after {
+  animation: vcp-dip-fade-in var(--dur-dip-in) var(--ease) both,
+             vcp-dip-breathe 1800ms var(--ease) both;
+}
+
+/* Destination: negative delay continues the breathe where the origin page
+   handed off (~340ms after click, see js/page-dip.js). */
+html.vcp-dip--hold::after {
+  animation: vcp-dip-breathe 1800ms var(--ease) -340ms both;
+}
+
+html.vcp-dip--out::before {
+  animation: vcp-dip-fade-out var(--dur-dip-out) var(--ease) both;
+}
+html.vcp-dip--out::after {
+  animation: vcp-dip-fade-out var(--dur-dip-out) var(--ease) both,
+             vcp-dip-breathe 1800ms var(--ease) -1040ms both;
+}
+
+@keyframes vcp-dip-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vcp-dip-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes vcp-dip-breathe {
+  from { transform: scale(0.97); letter-spacing: 0.02em; }
+  to   { transform: scale(1.03); letter-spacing: 0.06em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.vcp-dip::before,
+  html.vcp-dip::after { display: none; }
+}

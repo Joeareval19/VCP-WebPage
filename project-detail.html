@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
 <style>
   /* Project detail layout only — components live in css/components.css */
   .detail-section { margin-bottom: var(--space-7); }
@@ -74,6 +75,7 @@
 
 <script src="js/projects-data.js"></script>
 <script src="js/projects-detail.js"></script>
+<script defer src="js/page-dip.js"></script>
 <script defer src="js/telemetry.js"></script>
 </body>
 </html>
