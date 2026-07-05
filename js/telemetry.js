@@ -161,7 +161,7 @@
   // ---- engaged time (#64): counts only visible + recently-active time ----
   // A 5s tick accrues engaged ms only while the tab is visible AND there was
   // human input in the last 30s — an idle open tab accrues nothing.
-  var lastActivity = Date.now();
+  var lastActivity = 0; // no input yet — an untouched tab accrues nothing
   function noteActivity() { lastActivity = Date.now(); }
   ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(function (t) {
     window.addEventListener(t, noteActivity, { passive: true });
@@ -220,6 +220,7 @@
   try {
     new PerformanceObserver(function (list) {
       list.getEntries().forEach(function (en) {
+        if (!en.interactionId) return; // hover/pointer noise, not an interaction
         if (inpMs === null || en.duration > inpMs) inpMs = Math.round(en.duration);
       });
     }).observe({ type: "event", buffered: true, durationThreshold: 40 });
@@ -266,9 +267,9 @@
       var now = Date.now();
       clicks.push({ t: now, x: ev.clientX, y: ev.clientY });
       clicks = clicks.filter(function (c) { return now - c.t <= 700; });
-      if (clicks.length >= 3 &&
-          Math.abs(clicks[0].x - ev.clientX) <= 30 &&
-          Math.abs(clicks[0].y - ev.clientY) <= 30) {
+      if (clicks.length >= 3 && clicks.every(function (c) {
+        return Math.abs(c.x - ev.clientX) <= 30 && Math.abs(c.y - ev.clientY) <= 30;
+      })) {
         clicks = [];
         event("interaction", "rage_click", null, {
           tag: ev.target && ev.target.tagName ? ev.target.tagName.toLowerCase() : null,
