@@ -32,10 +32,17 @@
  * (privileged, server-only) across two different credentials.
  *
  * Config: set GITHUB_TOKEN, GROQ_API_KEY, SUPABASE_SERVICE_ROLE_KEY in
- * Vercel project env vars — never commit any of them. GITHUB_TOKEN can
- * revert to a fine-grained PAT (Issues: write, Contents: read) now that
- * Gist creation is no longer needed — the classic-PAT-with-gist-scope
- * requirement from the original design no longer applies.
+ * Vercel project env vars — never commit any of them. GITHUB_TOKEN MUST be
+ * a CLASSIC personal access token with `repo` + `project` scopes — NOT
+ * fine-grained. Confirmed against GitHub's own docs and verified live
+ * (2026-07-05): fine-grained PATs cannot access Projects v2 boards owned
+ * by a personal user account at all (only organization-owned boards have
+ * a fine-grained "Projects" permission) — a fine-grained token with every
+ * repo permission correctly set still gets a FORBIDDEN GraphQL error on
+ * addProjectV2ItemById against this repo's board, since the VCP Tracker
+ * is owned by Joeareval19 (a user), not an org. `repo` covers Issues +
+ * Contents; `project` is the classic scope that actually reaches a
+ * personal-account board.
  */
 
 const rateLimit = require("./_rate-limit.js");
@@ -278,17 +285,18 @@ module.exports = async function handler(req, res) {
     const issue = await createResp.json();
 
     // 4. Add to the VCP Tracker board as Pending (mirrors /vcp-spec Step 4).
-    // GITHUB_TOKEN needs the `Projects: Read and write` fine-grained PAT
-    // permission for this — a SEPARATE scope from `Issues: Read and write`
-    // (step 3's requirement). A token with only Issues access creates the
-    // issue fine but silently fails here with a FORBIDDEN GraphQL error —
-    // "silently" being the exact bug this boardWarning check fixes: the
-    // previous version only ever checked for a truthy itemId and never
-    // inspected addItem.errors, so a token missing Projects access left
-    // issues correctly filed but permanently invisible on the board with
-    // zero indication anything had gone wrong (discovered via manual
-    // end-to-end testing, 2026-07-05 — issue #80 filed successfully but
-    // never appeared on the VCP Tracker).
+    // GITHUB_TOKEN needs the classic PAT `project` scope for this — see the
+    // file header for why a fine-grained PAT can never do this (personal-
+    // account Projects v2 boards have no fine-grained permission at all,
+    // confirmed against GitHub's docs and live testing). A token missing
+    // this scope creates the issue fine but silently fails here with a
+    // FORBIDDEN GraphQL error — "silently" being the exact bug this
+    // boardWarning check fixes: the previous version only ever checked for
+    // a truthy itemId and never inspected addItem.errors, so a token
+    // missing `project` scope left issues correctly filed but permanently
+    // invisible on the board with zero indication anything had gone wrong
+    // (discovered via manual end-to-end testing, 2026-07-05 — issue #80
+    // filed successfully but never appeared on the VCP Tracker).
     const addItem = await ghGraphQL(
       'mutation { addProjectV2ItemById(input: {projectId: "' + PROJECT_ID + '", contentId: "' + issue.node_id + '"}) { item { id } } }'
     );
