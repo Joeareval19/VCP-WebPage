@@ -43,13 +43,13 @@
     }
   });
 
-  /* Origin side — nav tabs only (.vcp-nav__links), plain left-clicks on
-     same-origin page links. Anchors, external links, modified clicks, and
-     the current page all navigate natively. */
+  /* Origin side — nav tabs (.vcp-nav__links) and the brand home link,
+     plain left-clicks on same-origin page links. Anchors, external links,
+     modified clicks, and the current page all navigate natively. */
   document.addEventListener('click', function (e) {
     if (reduced.matches || e.defaultPrevented || e.button !== 0 ||
         e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var link = e.target.closest ? e.target.closest('.vcp-nav__links a') : null;
+    var link = e.target.closest ? e.target.closest('.vcp-nav__links a, a.vcp-nav__brand') : null;
     if (!link || link.hasAttribute('aria-current') || link.hasAttribute('target')) return;
     var href = link.getAttribute('href') || '';
     if (!href || href.charAt(0) === '#') return;
@@ -58,7 +58,11 @@
     if (url.pathname === window.location.pathname) return;
 
     e.preventDefault();
-    var title = (link.textContent || '').trim();
+    /* Brand link's textContent is wordmark + tagline mashed together —
+       dip with the wordmark alone. */
+    var title = link.classList.contains('vcp-nav__brand')
+      ? 'VCP'
+      : (link.textContent || '').trim();
     try { sessionStorage.setItem(KEY, title); } catch (err) {}
     root.setAttribute('data-dip-title', title);
     root.classList.add('vcp-dip', 'vcp-dip--in');
