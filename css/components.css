@@ -836,8 +836,10 @@ html.vcp-dip--out::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
+  align-self: flex-start;
   height: 44px;
+  min-width: 44px;
+  padding: 0 var(--space-2);
   border-radius: var(--radius);
   background: var(--silver-bright);
   border: 1px solid var(--line);
@@ -845,13 +847,17 @@ html.vcp-dip--out::after {
   overflow: hidden;
 }
 .vcp-logo-chip img {
-  width: 72%;
-  height: 72%;
+  height: 66%;
+  width: auto;
+  max-width: 110px;
   object-fit: contain;
   display: block;
 }
 .vcp-logo-chip--lg {
-  width: 64px;
   height: 64px;
+  min-width: 64px;
   border-radius: var(--radius-lg);
+}
+.vcp-logo-chip--lg img {
+  max-width: 170px;
 }

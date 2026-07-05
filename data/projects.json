@@ -48,7 +48,7 @@
     "status": "Incubating",
     "client": "VCP build",
     "website": null,
-    "logo": null,
+    "logo": "assets/logos/pipa.png",
     "overview": "<p>PIPA Database is an early-stage internal build, still in incubation. The name is a working title, and the public write-up will land here once the project is further along.</p>",
     "timeline": null,
     "moat": null,
