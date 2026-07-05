@@ -4,57 +4,191 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP — Vegas Consulting Partners</title>
-<meta name="description" content="Vegas Consulting Partners — a consulting practice publishing its projects, research, and white papers in the open.">
+<meta name="description" content="Jose Ernesto Arevalo, founder of Vegas Consulting Partners. Projects, research, and white papers, published in the open as they happen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
+<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
-  /* Landing-page layout only — components live in css/components.css */
-  .landing-section { margin-bottom: var(--space-7); }
-  .wing-grid, .featured-grid {
+  /* Landing-page layout only — components live in css/components.css.
+     Person-led format (#62): hero with portrait over a circular silver
+     accent, numbered selected-work band, quote band, connect band. */
+  h1, h2, h3 { text-wrap: balance; }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-6);
+    align-items: center;
+    padding: var(--space-7) 0 var(--space-8);
+  }
+  .hero-name {
+    font-size: clamp(3rem, 7.5vw, 6rem);
+    line-height: 1.02;
+    margin: 0 0 var(--space-4);
+    overflow-wrap: anywhere;
+  }
+  .hero-name span { display: block; }
+  .hero-role {
+    margin: 0 0 var(--space-4);
+  }
+  .hero-intro { max-width: 46ch; text-wrap: pretty; margin: 0; }
+  .hero-actions { margin-top: var(--space-5); }
+
+  /* Portrait over a circular brushed-silver accent (the format's cutout).
+     The image is optional until assets/jose.jpg exists: onerror flips the
+     block to its styled empty state — never a broken-image glyph. */
+  .portrait {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+    justify-self: end;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .portrait::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(84%, 330px);
+    aspect-ratio: 1;
+    border-radius: var(--radius-pill);
+    background: var(--silver-panel);
+    opacity: 0.9;
+  }
+  /* True cutout (the reference composition): assets/jose.png carries
+     real transparency, so the person stands in front of the circle,
+     bottom-anchored, head and shoulders breaking the circle's edge. */
+  .portrait img {
+    position: absolute;
+    bottom: 0;
+    left: 58%;
+    transform: translateX(-50%);
+    width: min(100%, 400px);
+    height: auto;
+    filter: grayscale(1) contrast(1.05);
+  }
+  .portrait--empty img { display: none; }
+  .portrait--empty::after {
+    content: 'portrait · add assets/jose.png';
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    letter-spacing: 0.1em;
+    color: var(--on-silver);
+    padding-bottom: 46%;
+  }
+
+  .landing-section { margin-bottom: var(--space-8); }
+
+  /* Selected work: left rail + three numbered columns */
+  .work-band {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--space-6);
+  }
+  .work-rail p { margin: var(--space-3) 0 var(--space-4); text-wrap: pretty; }
+  .work-cols {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
-  .wing-card .vcp-card__body {
+  .work-col__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-14);
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    display: block;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--space-3);
+  }
+  .work-col h3 { margin-bottom: var(--space-2); }
+  .work-col p { margin: 0 0 var(--space-3); max-width: 40ch; text-wrap: pretty; }
+
+  .quote-band { max-width: 34ch; }
+  .quote-band p {
+    font-family: var(--font-display);
+    font-size: var(--fs-40);
+    line-height: 1.18;
+    color: var(--silver-bright);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Let's connect: rows + hairline-boxed CTA */
+  .connect-band {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-6);
+    align-items: stretch;
+  }
+  .connect-rows { list-style: none; margin: var(--space-4) 0 0; padding: 0; }
+  .connect-rows li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-14);
+  }
+  .connect-rows li:last-child { border-bottom: 1px solid var(--line); }
+  .connect-box {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
     display: flex;
     flex-direction: column;
-    height: 100%;
-  }
-  .wing-card p { flex: 1; }
-  .latest-list { list-style: none; margin: 0; padding: 0; }
-  .latest-list li {
-    display: flex;
-    align-items: baseline;
+    justify-content: space-between;
     gap: var(--space-4);
-    padding: var(--space-4) 0;
-    border-top: 1px solid var(--line);
+    transition: border-color var(--dur-med) var(--ease);
   }
-  .latest-list li:last-child { border-bottom: 1px solid var(--line); }
-  .latest-list__title {
-    flex: 1;
+  .connect-box:hover { border-color: var(--line-hover); }
+  .connect-box p {
     font-family: var(--font-display);
-    font-size: var(--fs-20);
+    font-size: var(--fs-28);
+    line-height: 1.2;
     color: var(--silver-bright);
+    margin: 0;
+    text-wrap: balance;
   }
-  .about-block { max-width: 62ch; }
+
+  .wa-link { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .wa-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--silver);
+    transition: fill var(--dur-fast) var(--ease);
+  }
+  .wa-link:hover .wa-icon { fill: var(--silver-bright); }
+
   .placeholder-note {
     font-family: var(--font-mono);
     font-size: var(--fs-12);
-    color: var(--text-faint);
+    color: var(--text-soft);
     letter-spacing: 0.1em;
   }
+
   @media (max-width: 900px) {
-    .wing-grid, .featured-grid { grid-template-columns: 1fr; }
-    h1 { font-size: var(--fs-56); }
-    .vcp-hero { padding: var(--space-6) var(--space-4); }
+    .hero { grid-template-columns: 1fr; padding: var(--space-6) 0 var(--space-7); }
+    .hero-name { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+    .portrait { justify-self: start; max-width: 300px; }
+    .landing-section { margin-bottom: var(--space-7); }
+    .work-band { grid-template-columns: 1fr; }
+    .work-cols { grid-template-columns: 1fr; }
+    .connect-band { grid-template-columns: 1fr; }
     .vcp-nav { flex-wrap: wrap; }
     .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
-    .latest-list li { flex-wrap: wrap; gap: var(--space-2); }
-    .latest-list__title { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -63,177 +197,89 @@
 <div class="container" style="padding-top: var(--space-3);">
 
 <nav class="vcp-nav" aria-label="Primary">
-  <div class="vcp-nav__brand">
+  <a class="vcp-nav__brand" href="/">
     <span class="vcp-nav__wordmark sheen-text">VCP</span>
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
-  </div>
+  </a>
   <ul class="vcp-nav__links">
+    <li><a href="/" aria-current="page">Home</a></li>
     <li><a href="/intent.html">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
     <li><a href="/projects.html">Projects</a></li>
     <li><a href="/library.html">Library</a></li>
     <li><a href="/socials.html">Socials</a></li>
-    <li><a href="#about">About</a></li>
   </ul>
 </nav>
 
 <main>
 
-  <!-- ============ HERO ============ -->
-  <header class="landing-section" style="padding-top: var(--space-6);">
-    <div class="vcp-hero">
-      <div class="vcp-hero__content">
-        <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-5);">Vegas Consulting Partners</p>
-        <h1 class="sheen-text">VCP</h1>
-        <!-- Content slot: positioning statement + subtext (Jose supplies) -->
-        <p style="font-family: var(--font-display); font-size: var(--fs-28); color: var(--silver-bright); margin: var(--space-4) 0 var(--space-2); line-height: 1.3;">A consulting practice that builds in the open. <span class="placeholder-note">[placeholder]</span></p>
-        <p style="max-width: 52ch;">Every project, research topic, and white paper VCP produces is published here — the work itself is the record. <span class="placeholder-note">[placeholder — Jose supplies]</span></p>
-        <div class="vcp-hero__actions">
-          <a class="vcp-btn vcp-btn--silver" href="#wings">Explore the work</a>
-        </div>
+  <!-- Beat 1: the person -->
+  <header class="hero">
+    <div>
+      <h1 class="hero-name"><span>Jose Ernesto</span><span class="sheen-text">Arevalo</span></h1>
+      <p class="hero-role label-caps label-caps--wide">Founder · Vegas Consulting Partners</p>
+      <p class="hero-intro">I build companies and publish the work as it happens: the projects, the research, the papers, all of it here in the open.</p>
+      <div class="hero-actions">
+        <a class="vcp-btn vcp-btn--silver" href="#work">Explore the work</a>
       </div>
+    </div>
+    <div class="portrait" id="portrait">
+      <img src="assets/jose.png" alt="Jose Ernesto Arevalo" onerror="document.getElementById('portrait').classList.add('portrait--empty')">
     </div>
   </header>
 
-  <!-- ============ 01 THE THREE WINGS ============ -->
-  <section class="landing-section" id="wings">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">01</span>
-      <h2>The work</h2>
-    </div>
-    <div class="wing-grid">
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Research</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 topics</span>
-          </div>
-          <h3 class="vcp-card__title">Topics &amp; summaries</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">Open research topics with running summaries — what VCP is studying and what it has learned so far.</p>
-          <a class="vcp-link" href="/research.html">Enter research →</a>
-        </div>
-      </article>
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Projects</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 projects</span>
-          </div>
-          <h3 class="vcp-card__title">Index &amp; breakouts</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">Every engagement and internal build, indexed — each with its own detail breakout.</p>
-          <a class="vcp-link" href="/projects.html">Enter projects →</a>
-        </div>
-      </article>
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Library</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 papers</span>
-          </div>
-          <h3 class="vcp-card__title">White papers</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">The repository of finished, citable documents — published as they are completed.</p>
-          <a class="vcp-link" href="/library.html">Enter library →</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ 02 FEATURED PROJECTS ============ -->
-  <!-- Content slot: Jose picks the featured projects -->
-  <section class="landing-section" id="featured">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">02</span>
-      <h2>Featured projects</h2>
-      <span class="placeholder-note">[content slot — Jose selects]</span>
-    </div>
-    <div class="featured-grid">
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Active</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot one</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the first featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Active</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot two</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the second featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Planned</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot three</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the third featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ 03 LATEST RESEARCH & PAPERS ============ -->
-  <section class="landing-section" id="latest">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">03</span>
-      <h2>Latest research &amp; papers</h2>
-      <span class="placeholder-note">[fills as content publishes]</span>
-    </div>
-    <ul class="latest-list">
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Research</span>
-        <span class="latest-list__title">Most recent research topic <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/research.html">Read →</a>
-      </li>
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Paper</span>
-        <span class="latest-list__title">Most recent white paper <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/library.html">Read →</a>
-      </li>
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Research</span>
-        <span class="latest-list__title">Second most recent research topic <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/research.html">Read →</a>
-      </li>
-    </ul>
-  </section>
-
-  <!-- ============ 04 ABOUT VCP ============ -->
-  <!-- Content slot: Jose supplies the About copy + contact channels -->
-  <section class="landing-section" id="about">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">04</span>
-      <h2>About VCP</h2>
-      <span class="placeholder-note">[content slot — Jose supplies]</span>
-    </div>
-    <div class="about-block">
-      <p>Vegas Consulting Partners is a consulting practice that operates in public: the projects it takes on, the research it runs, and the white papers it writes are published here as an open repository. <span class="placeholder-note">[placeholder]</span></p>
-      <p>The missions and incentives the company is on — why it works this way, and what it is building toward. <span class="placeholder-note">[placeholder — Jose supplies]</span></p>
-      <div class="vcp-hero__actions" style="margin-top: var(--space-4);">
-        <span class="vcp-status-dot"></span>
-        <span style="font-size: var(--fs-14); color: var(--text-soft);">Contact channel <span class="placeholder-note">[placeholder]</span></span>
+  <!-- Beat 2: selected work — the one deliberately numbered sequence -->
+  <section class="landing-section" id="work">
+    <div class="work-band">
+      <div class="work-rail">
+        <span class="vcp-tag--caps label-caps">Selected work</span>
+        <p>Three wings, one record. Everything VCP does lands in one of these.</p>
+        <a class="vcp-link" href="/intent.html">Read the intent</a>
       </div>
+      <div class="work-cols">
+        <article class="work-col">
+          <span class="work-col__num">01</span>
+          <h3>Research</h3>
+          <p>Open questions and running notes: what's being studied, and what it's teaching us.</p>
+          <a class="vcp-link" href="/research.html">Read the research</a>
+        </article>
+        <article class="work-col">
+          <span class="work-col__num">02</span>
+          <h3>Projects</h3>
+          <p>Every engagement and internal build, indexed, each with its own breakout.</p>
+          <a class="vcp-link" href="/projects.html">See the projects</a>
+        </article>
+        <article class="work-col">
+          <span class="work-col__num">03</span>
+          <h3>Library</h3>
+          <p>Finished, citable white papers, published as they're completed.</p>
+          <a class="vcp-link" href="/library.html">Browse the library</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beat 3: the line the whole site stands on -->
+  <section class="landing-section quote-band">
+    <p>Nothing here was done quickly. That is the point.</p>
+  </section>
+
+  <!-- Beat 4: let's connect -->
+  <section class="landing-section" id="connect">
+    <div class="connect-band">
+      <div>
+        <span class="vcp-tag--caps label-caps">Let's connect</span>
+        <ul class="connect-rows">
+          <li><span style="color: var(--text-muted);">WhatsApp</span><a class="vcp-link wa-link" href="https://wa.me/16466752101" rel="noopener" target="_blank"><svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>+1 646 675 2101</span></a></li>
+          <li><span style="color: var(--text-muted);">Socials</span><a class="vcp-link" href="/socials.html">Every channel, one page</a></li>
+          <li><span style="color: var(--text-muted);">Location</span><span>Caracas, Venezuela · Miami, United States</span></li>
+        </ul>
+      </div>
+      <a class="connect-box" href="/projects.html">
+        <p>See everything VCP is building.</p>
+        <span class="vcp-link" style="border: none;">View the projects →</span>
+      </a>
     </div>
   </section>
 
@@ -256,6 +302,8 @@
 
 </div>
 
+<script defer src="js/page-dip.js"></script>
+<script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
 
 <!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->

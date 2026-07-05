@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
+<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
   /* Demo-page layout only — components live in css/components.css */
   .demo-section { margin-bottom: 112px; }
@@ -28,11 +30,11 @@
 <div class="container" style="padding-top: var(--space-3);">
 
 <nav class="vcp-nav" aria-label="Primary">
-  <div class="vcp-nav__brand">
+  <a class="vcp-nav__brand" href="/">
     <span class="vcp-nav__wordmark sheen-text">VCP</span>
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
-  </div>
+  </a>
   <ul class="vcp-nav__links">
     <li><a href="#cards" aria-current="page">Work</a></li>
     <li><a href="#cards">Research</a></li>
@@ -266,6 +268,11 @@
         <p style="font-family: var(--font-display); font-size: 27px; line-height: 1.34; color: #F2F3F5; margin: 0; font-weight: 400;">A single, deliberate umbrella where every venture, idea and page reflects one standard — elegance with intent.</p>
       </div></div>
     </div>
+    <div class="label-caps label-caps--wide" style="margin: 34px 0 18px;">Media banner (issue #69)</div>
+    <div class="vcp-media-banner">
+      <span class="vcp-media-banner__label">Banner image</span>
+    </div>
+    <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Full-content-width horizontal image holder. Ships as a striped placeholder frame; a real image drops in as a single <code>&lt;img&gt;</code> child (covers the frame).</p>
   </section>
 
   <!-- ============ 08 PROJECT DETAIL ELEMENTS ============ -->
@@ -393,6 +400,45 @@
     </div>
   </section>
 
+  <!-- ============ 10 PAGE TRANSITION ============ -->
+  <section class="demo-section" id="page-transition" style="margin-top: 112px;">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">10</span>
+      <h2>Page transition — title dip</h2>
+    </div>
+    <p class="text-muted" style="font-size: var(--fs-14); max-width: 62ch;">Clicking a nav tab dips to black (<code>--dur-dip-in</code>), the destination's serif title breathes alone for a beat, then a slow fade-away (<code>--dur-dip-out</code>) reveals the page. The real navigation loads hidden behind the black. Honors <code>prefers-reduced-motion</code>; anchors and external links are unaffected. Component: <code>html.vcp-dip</code> in components.css + <code>js/page-dip.js</code>.</p>
+    <button class="vcp-btn vcp-btn--silver" id="dip-preview" style="margin-top: 18px;">Preview the dip</button>
+  </section>
+
+  <!-- ============ 11 PENROSE LOADER ============ -->
+  <section class="demo-section" id="penrose-loader" style="margin-top: 112px;">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">11</span>
+      <h2>Loading indicator — Penrose quicksilver</h2>
+    </div>
+    <p class="text-muted" style="font-size: var(--fs-14); max-width: 62ch;">Clicking an internal link outside the top nav populates a Penrose tri-bar over a veil (<code>--scrim</code>); the sheen sweeps while navigation fires behind it, then the destination blurs into focus as the veil lifts. The top nav keeps the title dip; the two never fire together. Under <code>prefers-reduced-motion</code> navigation is native and immediate. Component: <code>.vcp-loader</code> in components.css + <code>js/page-loader.js</code>.</p>
+    <div class="vcp-loader vcp-loader--inline" role="img" aria-label="Penrose loading indicator" style="margin-top: 18px;">
+      <svg viewBox="-100 -125 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="vcp-loader-sheen-demo" x1="-110" y1="0" x2="110" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" style="stop-color: var(--metal-dark)"/>
+            <stop offset="0.35" style="stop-color: var(--metal-mid)"/>
+            <stop offset="0.52" style="stop-color: var(--silver-bright)"/>
+            <stop offset="0.62" style="stop-color: var(--silver)"/>
+            <stop offset="0.8" style="stop-color: var(--metal-dark)"/>
+            <stop offset="1" style="stop-color: var(--metal-dark)"/>
+            <animateTransform attributeName="gradientTransform" type="rotate" from="0 0 -25" to="360 0 -25" dur="2.6s" repeatCount="indefinite"/>
+          </linearGradient>
+        </defs>
+        <g fill="url(#vcp-loader-sheen-demo)" stroke="var(--bg)" stroke-width="2">
+          <path d="M -65.82 50 L 86.6 50 L 76.21 32 L 55.43 32 L 10.39 -46 L 0 -28 L 34.64 32 L -55.43 32 Z"/>
+          <path transform="rotate(120)" d="M -65.82 50 L 86.6 50 L 76.21 32 L 55.43 32 L 10.39 -46 L 0 -28 L 34.64 32 L -55.43 32 Z"/>
+          <path transform="rotate(240)" d="M -65.82 50 L 86.6 50 L 76.21 32 L 55.43 32 L 10.39 -46 L 0 -28 L 34.64 32 L -55.43 32 Z"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
 </main>
 
 <footer class="vcp-footer">
@@ -405,6 +451,21 @@
 
 </div>
 
+<script defer src="js/page-dip.js"></script>
+<script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
+<script>
+/* Demo-only: run one full dip cycle in place (no navigation). */
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('dip-preview').addEventListener('click', function () {
+    var r = document.documentElement;
+    r.setAttribute('data-dip-title', 'Research');
+    r.classList.add('vcp-dip', 'vcp-dip--in');
+    setTimeout(function () { r.classList.remove('vcp-dip--in'); r.classList.add('vcp-dip--hold'); }, 360);
+    setTimeout(function () { r.classList.remove('vcp-dip--hold'); r.classList.add('vcp-dip--out'); }, 1050);
+    setTimeout(function () { r.classList.remove('vcp-dip', 'vcp-dip--out'); r.removeAttribute('data-dip-title'); }, 2300);
+  });
+});
+</script>
 </body>
 </html>

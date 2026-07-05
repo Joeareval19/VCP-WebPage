@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
+<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
   /* Projects index layout only — components live in css/components.css */
   .projects-header { padding: var(--space-6) 0 var(--space-5); max-width: 62ch; }
@@ -37,18 +39,18 @@
 <div class="container" style="padding-top: var(--space-3);">
 
 <nav class="vcp-nav" aria-label="Primary">
-  <div class="vcp-nav__brand">
+  <a class="vcp-nav__brand" href="/">
     <span class="vcp-nav__wordmark sheen-text">VCP</span>
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
-  </div>
+  </a>
   <ul class="vcp-nav__links">
+    <li><a href="/">Home</a></li>
     <li><a href="/intent.html">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
     <li><a href="/projects.html" aria-current="page">Projects</a></li>
     <li><a href="/library.html">Library</a></li>
     <li><a href="/socials.html">Socials</a></li>
-    <li><a href="/index.html#about">About</a></li>
   </ul>
 </nav>
 
@@ -98,6 +100,8 @@
 
 <script src="js/projects-data.js"></script>
 <script src="js/projects-index.js"></script>
+<script defer src="js/page-dip.js"></script>
+<script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
 
 <!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->

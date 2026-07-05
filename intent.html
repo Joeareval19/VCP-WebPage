@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Intent — VCP</title>
-<meta name="description" content="The mission and vision behind Vegas Consulting Partners — why the projects, research, and writing exist.">
+<meta name="description" content="Who VCP is, what we're building, and why — the mission to help carry Venezuela to a first-world democratic standard.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
+<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
   /* Intent-page layout only — components live in css/components.css */
   .intent-section { margin-bottom: var(--space-7); }
@@ -29,14 +31,14 @@
   .intent-prose h3 {
     margin-top: 0;
   }
-  .intent-practice-list {
+  .intent-pillar-list {
     list-style: none;
-    margin: 0;
+    margin: var(--space-5) 0;
     padding: 0;
     display: grid;
     gap: var(--space-3);
   }
-  .intent-practice-list li {
+  .intent-pillar-list li {
     display: flex;
     align-items: baseline;
     gap: var(--space-3);
@@ -45,14 +47,14 @@
     border-radius: var(--radius);
     background: var(--glass-bg);
   }
-  .intent-practice-list__num {
+  .intent-pillar-list__num {
     font-family: var(--font-mono);
     font-size: var(--fs-12);
     color: var(--text-faint);
     letter-spacing: 0.1em;
     flex-shrink: 0;
   }
-  .intent-practice-list p { margin: 0; }
+  .intent-pillar-list p { margin: 0; }
   .intent-closing-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -63,16 +65,6 @@
     font-size: var(--fs-12);
     color: var(--text-faint);
     letter-spacing: 0.1em;
-  }
-  .placeholder-banner {
-    font-family: var(--font-mono);
-    font-size: var(--fs-12);
-    color: var(--text-faint);
-    letter-spacing: 0.08em;
-    padding: var(--space-3) var(--space-4);
-    border: 1px dashed var(--line-strong);
-    border-radius: var(--radius);
-    margin-bottom: var(--space-6);
   }
   @media (max-width: 900px) {
     .intent-closing-grid { grid-template-columns: 1fr; }
@@ -89,12 +81,13 @@
 <div class="container" style="padding-top: var(--space-3);">
 
 <nav class="vcp-nav" aria-label="Primary">
-  <div class="vcp-nav__brand">
+  <a class="vcp-nav__brand" href="/">
     <span class="vcp-nav__wordmark sheen-text">VCP</span>
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
-  </div>
+  </a>
   <ul class="vcp-nav__links">
+    <li><a href="/">Home</a></li>
     <li><a href="/intent.html" aria-current="page">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
     <li><a href="/projects.html">Projects</a></li>
@@ -106,89 +99,102 @@
 <main>
 
   <!-- ============================================================
-       PLACEHOLDER COPY NOTICE
-       Everything in the narrative body below is placeholder prose
-       written to prove out layout, typography, and rhythm for this
-       page. It is NOT final content. Jose supplies the real mission
-       and vision text, pull-quotes, and any supporting statements —
-       see issue #29's "Content placeholders (Jose supplies)" section.
+       DRAFT COPY NOTICE (issue #69)
+       The narrative below is draft prose written from the mission
+       context recorded on issue #69. It states the real mission —
+       it is NOT Jose's final wording. Every prose slot is marked
+       "awaiting Jose's verbatim copy"; Jose replaces the drafts
+       with his own words before this page is considered final.
        ============================================================ -->
 
   <!-- ============ HEADER ============ -->
   <header class="intent-section intent-header">
     <p class="kicker label-caps label-caps--wide">The Intent</p>
     <h1 class="sheen-text">Why VCP exists</h1>
-    <p class="intent-header__framing">One page, one mission — the reasoning that stands behind every project, research topic, and paper VCP publishes. <span class="placeholder-note">[PLACEHOLDER]</span></p>
+    <p class="intent-header__framing">Who we are, what we're building, and why — the mission that stands behind every project, paper, and page VCP publishes. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
   </header>
 
-  <div class="placeholder-banner">[PLACEHOLDER CONTENT] — the narrative below is scaffolding prose for layout and typography review. Jose supplies the final mission/vision copy before this page ships.</div>
+  <!-- ============ BANNER (image holder — Jose supplies the image) ============
+       When the real image drops in: add the <img> child AND remove both
+       aria-hidden and the label span, or the image's alt text stays hidden
+       from assistive tech (audit PR #73, finding 1). -->
+  <div class="intent-section vcp-media-banner" aria-hidden="true">
+    <span class="vcp-media-banner__label">Banner image</span>
+  </div>
 
-  <!-- ============ 01 THE MISSION ============ -->
-  <section class="intent-section" id="mission">
+  <!-- ============ 01 WHO WE ARE ============ -->
+  <section class="intent-section" id="who-we-are">
     <div class="vcp-section-heading">
       <span class="vcp-section-heading__num">01</span>
-      <h2>[PLACEHOLDER] The mission</h2>
+      <h2>Who we are</h2>
       <hr class="vcp-section-heading__rule">
     </div>
     <div class="intent-prose">
-      <p>VCP exists to do consulting work in the open — the projects it takes on, the research it runs, and the papers it publishes are the record, not a highlight reel assembled after the fact. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      <p>That means the mission isn't a slogan bolted onto a homepage; it's a constraint on how the work gets done. Every engagement is expected to produce something that can stand on its own once it's published: a project write-up, a research summary, or a finished paper that another firm — or another curious reader — could pick up and actually use. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      <p>This page is where that reasoning lives permanently, so the other three wings of the site — Projects, Research, and Library — always have a shared "why" to point back to instead of re-explaining themselves individually. <span class="placeholder-note">[PLACEHOLDER — Jose supplies final mission language]</span></p>
+      <p>VCP — Vegas Consulting Partners — is the company Jose built to carry one conviction into the world: that Venezuela can be developed from a third-world country into a first-world democratic torch. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+      <p>The work starts from a moral compass. Every venture, system, and paper VCP takes on is measured against a single standard — does it move Venezuela closer to zero corruption, abundance, opportunity, and safety. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+      <p>This page is the permanent record of that reasoning, so the other wings of the site — Projects, Research, and the Library — always have one shared "why" to point back to. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
     </div>
   </section>
 
-  <!-- ============ 02 PULL QUOTE ============ -->
+  <!-- ============ PULL QUOTE ============ -->
   <section class="intent-section vcp-pullquote" id="statement" aria-label="Mission statement">
-    <p class="sheen-text">Everything with intent. <span class="placeholder-note">[PLACEHOLDER]</span></p>
+    <p class="sheen-text">A first-world democratic torch. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
   </section>
 
-  <!-- ============ 03 THE VISION ============ -->
-  <section class="intent-section" id="vision">
+  <!-- ============ 02 WHAT WE'RE BUILDING ============ -->
+  <section class="intent-section" id="building">
     <div class="vcp-section-heading">
       <span class="vcp-section-heading__num">02</span>
-      <h2>[PLACEHOLDER] The vision</h2>
+      <h2>What we're building</h2>
       <hr class="vcp-section-heading__rule">
     </div>
     <div class="intent-prose">
-      <p>Long term, VCP is building toward a body of published work substantial enough that the site itself becomes a reason to work with the firm — the projects, the research, and the papers doing the persuading, not a sales page. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      <p>That shapes what gets taken on and what doesn't: work that can't eventually be written up honestly — as a project, a research thread, or a paper — is work that doesn't fit here, no matter how profitable it might be in isolation. <span class="placeholder-note">[PLACEHOLDER — Jose supplies final vision language]</span></p>
-      <blockquote class="vcp-quote">"A consulting practice that publishes its own record, and lets the record speak." <span class="placeholder-note">[PLACEHOLDER pull-quote]</span></blockquote>
-      <p>The vision is intentionally narrow: fewer engagements, each one documented well enough to be worth revisiting a year later. <span class="placeholder-note">[PLACEHOLDER]</span></p>
+      <p>VCP is building the infrastructure and systems that bring Venezuela's future forward — businesses, institutions, and tools designed to raise the country to the standard of Norway. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+      <ul class="intent-pillar-list">
+        <li>
+          <span class="intent-pillar-list__num">01</span>
+          <p>Business models — ventures designed to sustain the mission commercially, not depend on charity. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+        </li>
+        <li>
+          <span class="intent-pillar-list__num">02</span>
+          <p>Forecasts — where the country, the region, and the markets around them are heading. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+        </li>
+        <li>
+          <span class="intent-pillar-list__num">03</span>
+          <p>Philanthropic missions — detailed, funded, and measurable, not gestures. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+        </li>
+        <li>
+          <span class="intent-pillar-list__num">04</span>
+          <p>Forward-thinking insight — the reasoning that ties all of it together. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+        </li>
+      </ul>
+      <p>That thinking lives in a growing body of white papers. The finished, citable versions are published in the Library. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+      <a class="vcp-link" href="/library.html">Read the white papers →</a>
     </div>
   </section>
 
-  <!-- ============ 04 WHAT THIS MEANS IN PRACTICE ============ -->
-  <section class="intent-section" id="in-practice">
+  <!-- ============ 03 WHY ============ -->
+  <section class="intent-section" id="why">
     <div class="vcp-section-heading">
       <span class="vcp-section-heading__num">03</span>
-      <h2>What this means in practice</h2>
+      <h2>Why</h2>
       <hr class="vcp-section-heading__rule">
-      <span class="placeholder-note">[PLACEHOLDER]</span>
     </div>
-    <ul class="intent-practice-list">
-      <li>
-        <span class="intent-practice-list__num">01</span>
-        <p>Every engagement ships with a public write-up — no work happens that can't eventually be shown. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      </li>
-      <li>
-        <span class="intent-practice-list__num">02</span>
-        <p>Research is published as it develops, not only once it's "finished" — running summaries over polish. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      </li>
-      <li>
-        <span class="intent-practice-list__num">03</span>
-        <p>White papers are held to a citable standard — something another practitioner could reference, not marketing collateral. <span class="placeholder-note">[PLACEHOLDER]</span></p>
-      </li>
-    </ul>
+    <div class="intent-prose">
+      <p>Because Venezuela deserves the standard the first world takes for granted: zero corruption, abundance, opportunity, and safety. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+      <blockquote class="vcp-quote">"The future of Venezuela should be at the standard of Norway — nothing less." <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></blockquote>
+      <p>That future doesn't arrive by waiting. It gets built — system by system, venture by venture, paper by paper. VCP exists to do the building. <span class="placeholder-note">[awaiting Jose's verbatim copy]</span></p>
+    </div>
   </section>
 
-  <!-- ============ 05 CLOSING — THE MISSION IN PRACTICE ============ -->
+  <!-- ============ 04 CLOSING — THE INTENT IN PRACTICE ============ -->
   <section class="intent-section" id="explore">
     <div class="vcp-section-heading">
       <span class="vcp-section-heading__num">04</span>
-      <h2>The mission in practice</h2>
+      <h2>The intent in practice</h2>
       <hr class="vcp-section-heading__rule">
     </div>
-    <p class="intent-prose">The three wings below are where the mission above actually gets carried out — read the intent, then see it applied.</p>
+    <p class="intent-prose">The three wings below are where the intent above becomes work — read the why, then see it applied.</p>
     <div class="intent-closing-grid">
       <article class="vcp-card">
         <div class="vcp-card__body">
@@ -245,6 +251,8 @@
 
 </div>
 
+<script defer src="js/page-dip.js"></script>
+<script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
 
 <!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->

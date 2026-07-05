@@ -114,7 +114,7 @@
   box-shadow: var(--glass-highlight);
 }
 
-.vcp-btn--glass:hover { border-color: rgba(255, 255, 255, 0.32); }
+.vcp-btn--glass:hover { border-color: var(--line-hover); }
 
 /* Quiet: text with hairline underline */
 .vcp-btn--quiet {
@@ -250,6 +250,11 @@
   justify-content: center;
   position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Striped media-placeholder treatment, shared with .vcp-media-banner */
+.vcp-card__media,
+.vcp-media-banner {
   background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 11px, rgba(255, 255, 255, 0.015) 11px 22px);
 }
 
@@ -933,4 +938,185 @@
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+/* === Media banner (issue #69) === */
+/* Full-content-width horizontal image holder. Ships as a styled empty frame
+   (striped placeholder shared with .vcp-card__media above); dropping a real
+   image in is one child element: <img src="..." alt="...">. */
+.vcp-media-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* wide-banner proportions; component-local like .vcp-card__media's height */
+  height: clamp(180px, 22vw, 320px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.vcp-media-banner__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.vcp-media-banner > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* === Page transition: title dip (issue #57) === */
+/* The overlay renders as pseudo-elements on <html> so the inline pre-paint
+   snippet in each page's <head> can show it before first paint — no DOM
+   element required. States: .vcp-dip--in (origin page, dip to black),
+   .vcp-dip--hold (destination, set pre-paint), .vcp-dip--out (slow
+   cinematic fade-away). Driven by js/page-dip.js. */
+html.vcp-dip::before,
+html.vcp-dip::after {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+html.vcp-dip::before {
+  content: 'Entering';
+  background: var(--bg);
+  padding-bottom: 13rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+html.vcp-dip::after {
+  content: attr(data-dip-title);
+  padding-top: 1rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 1.1;
+  background: var(--silver-sheen);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+html.vcp-dip--in::before {
+  animation: vcp-dip-fade-in var(--dur-dip-in) var(--ease) both;
+}
+html.vcp-dip--in::after {
+  animation: vcp-dip-fade-in var(--dur-dip-in) var(--ease) both,
+             vcp-dip-breathe 1800ms var(--ease) both;
+}
+
+/* Destination: negative delay continues the breathe where the origin page
+   handed off (~340ms after click, see js/page-dip.js). */
+html.vcp-dip--hold::after {
+  animation: vcp-dip-breathe 1800ms var(--ease) -340ms both;
+}
+
+html.vcp-dip--out::before {
+  animation: vcp-dip-fade-out var(--dur-dip-out) var(--ease) both;
+}
+html.vcp-dip--out::after {
+  animation: vcp-dip-fade-out var(--dur-dip-out) var(--ease) both,
+             vcp-dip-breathe 1800ms var(--ease) -1040ms both;
+}
+
+@keyframes vcp-dip-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vcp-dip-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes vcp-dip-breathe {
+  from { transform: scale(0.97); letter-spacing: 0.02em; }
+  to   { transform: scale(1.03); letter-spacing: 0.06em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.vcp-dip::before,
+  html.vcp-dip::after { display: none; }
+}
+
+/* ── Penrose loader — "Quicksilver" (issue #71) ─────────────────────
+   Loading placeholder for internal navigation OUTSIDE the top nav
+   (nav tabs + brand use the title dip above). js/page-loader.js
+   injects .vcp-loader as a fixed overlay on click; the sheen
+   circulates through the tri-bar (SMIL gradient rotation in the SVG)
+   until the destination page replaces the document.
+   .vcp-loader--inline renders the same figure in the page flow
+   (component reference in demo.html). */
+/* Pre-paint veil: the destination's inline <head> snippet stamps
+   html.vcp-loading before first paint — veil up and page content
+   blurred until js/page-loader.js runs the reveal. */
+html.vcp-loading::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--scrim);
+  pointer-events: none;
+}
+
+/* Arriving page waits out of focus behind the veil... */
+html.vcp-loading .container { filter: blur(16px); }
+/* ...then blurs into place as the veil lifts (class swap in
+   page-loader.js reveal step). */
+html.vcp-loading--reveal .container {
+  filter: blur(0);
+  transition: filter 600ms var(--ease);
+}
+
+/* While html.vcp-loading carries the veil, the overlay element must
+   not stack a second scrim on top of it. */
+html.vcp-loading .vcp-loader { background: none; }
+
+.vcp-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9001; /* beneath the title dip (9999) — paths never overlap */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease);
+  pointer-events: none;
+}
+
+.vcp-loader.is-on { opacity: 1; }
+.vcp-loader.is-instant { transition: none; }
+
+/* Origin side: the triangle populates — pop over the darkening veil. */
+.vcp-loader.is-entering svg {
+  animation: vcp-loader-pop 320ms var(--ease) both;
+}
+@keyframes vcp-loader-pop {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.vcp-loader svg {
+  width: 72px;
+  height: 72px;
+}
+
+.vcp-loader--inline {
+  position: static;
+  inset: auto;
+  display: inline-flex;
+  background: none;
+  opacity: 1;
+  z-index: auto;
 }

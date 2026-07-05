@@ -19,6 +19,11 @@
   /* Full brushed-silver panel (swatches, media accents) */
   --silver-panel: linear-gradient(140deg, #FBFCFD 0%, #D6DBE1 34%, #9AA1AB 62%, #C3C9D1 82%, #F0F2F5 100%);
   --on-silver: #15171B;
+  /* Unlit metal for the Penrose loader body (issue #71) */
+  --metal-dark: #33373D;
+  --metal-mid: #5C626B;
+  /* Veil behind fixed overlays (loader) */
+  --scrim: rgba(11, 12, 14, 0.78);
 
   /* Text */
   --text: #E8EAED;
@@ -29,6 +34,7 @@
   /* Lines */
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.16);
+  --line-hover: rgba(255, 255, 255, 0.32);
 
   /* Liquid glass material */
   --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
@@ -78,6 +84,10 @@
   --z-nav: 100;
   --z-widget: 500;
 
+  /* Page-transition title dip (issue #57): quick dip in, slow cinematic fade-away */
+  --dur-dip-in: 320ms;
+  --dur-dip-out: 1100ms;
+
   /* Spacing (used by components) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -86,6 +96,7 @@
   --space-5: 2rem;
   --space-6: 3rem;
   --space-7: 5rem;
+  --space-8: 8rem;
 
   --radius: 12px;
   --radius-lg: 20px;
@@ -98,5 +109,7 @@
     --dur-fast: 0ms;
     --dur-med: 0ms;
     --dur-ambient: 0ms;
+    --dur-dip-in: 0ms;
+    --dur-dip-out: 0ms;
   }
 }
