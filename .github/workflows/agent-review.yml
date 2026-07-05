@@ -207,7 +207,7 @@ jobs:
             $verdictCode = "LGTM"; if ($verdict -ne "LGTM") { $verdictCode = "CHANGES_REQUESTED" }
             $payload = @{ pr_number = [int]$p; issue_number = [int]$n; verdict = $verdictCode; score = $score; report_path = $report } | ConvertTo-Json
             try {
-              Invoke-RestMethod -Method Post -Uri "https://mgcczsxviukraxonnljm.supabase.co/rest/v1/audits" -Headers @{ apikey = $sbKey; Authorization = "Bearer $sbKey"; Prefer = "return=minimal" } -ContentType "application/json" -Body $payload | Out-Null
+              Invoke-RestMethod -Method Post -Uri "https://qaorlbgrkpldcatyntlw.supabase.co/rest/v1/vcp_audits" -Headers @{ apikey = $sbKey; Authorization = "Bearer $sbKey"; Prefer = "return=minimal" } -ContentType "application/json" -Body $payload | Out-Null
               Write-Host "audit row captured in vcp-ops"
             } catch { Write-Host "::warning::supabase audit capture failed: $($_.Exception.Message)" }
           } else { Write-Host "supabase-key.txt not found - audit capture skipped" }

@@ -23,9 +23,9 @@ GitHub App webhook (projects_v2_item) -> smee.io channel -> `relay.js` on the wo
 
 ## Metadata capture (#41)
 Pipeline metadata streams into the **vcp-ops** Supabase project
-(`mgcczsxviukraxonnljm`, free tier): `tickets` (backfilled from gh),
-`pipeline_events` (relay: every status change, dispatch, merge, bounce, skip),
-`audits` (agent-review.yml: Sterling verdict + score per PR). RLS is on with
+(`qaorlbgrkpldcatyntlw`): `vcp_tickets` (backfilled from gh),
+`vcp_pipeline_events` (relay: every status change, dispatch, merge, bounce, skip),
+`vcp_audits` (agent-review.yml: Sterling verdict + score per PR). RLS is on with
 zero public policies — writes need the service-role key, which lives ONLY in
 `~/vcp-dispatch/supabase-key.txt` on the worker (same convention as
 webhook-secret.txt, never in git). Capture is fire-and-forget: a missing key
