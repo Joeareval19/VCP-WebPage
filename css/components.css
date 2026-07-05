@@ -838,9 +838,8 @@ html.vcp-dip--out::after {
    .vcp-loader--inline renders the same figure in the page flow
    (component reference in demo.html). */
 /* Pre-paint veil: the destination's inline <head> snippet stamps
-   html.vcp-loading before first paint; js/page-loader.js then mounts
-   .vcp-loader and drops this class the same frame (identical scrim,
-   seamless swap). */
+   html.vcp-loading before first paint — veil up and page content
+   blurred until js/page-loader.js runs the reveal. */
 html.vcp-loading::before {
   content: '';
   position: fixed;
@@ -849,6 +848,19 @@ html.vcp-loading::before {
   background: var(--scrim);
   pointer-events: none;
 }
+
+/* Arriving page waits out of focus behind the veil... */
+html.vcp-loading .container { filter: blur(16px); }
+/* ...then blurs into place as the veil lifts (class swap in
+   page-loader.js reveal step). */
+html.vcp-loading--reveal .container {
+  filter: blur(0);
+  transition: filter 600ms var(--ease);
+}
+
+/* While html.vcp-loading carries the veil, the overlay element must
+   not stack a second scrim on top of it. */
+html.vcp-loading .vcp-loader { background: none; }
 
 .vcp-loader {
   position: fixed;
@@ -865,6 +877,15 @@ html.vcp-loading::before {
 
 .vcp-loader.is-on { opacity: 1; }
 .vcp-loader.is-instant { transition: none; }
+
+/* Origin side: the triangle populates — pop over the darkening veil. */
+.vcp-loader.is-entering svg {
+  animation: vcp-loader-pop 320ms var(--ease) both;
+}
+@keyframes vcp-loader-pop {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
 
 .vcp-loader svg {
   width: 72px;
