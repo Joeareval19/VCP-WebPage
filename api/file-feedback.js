@@ -11,11 +11,17 @@
  * mirroring what /vcp-spec does for human-filed specs (see
  * .claude/skills/vcp-spec/SKILL.md), so it lands on the board the same way.
  *
- * Config: set GITHUB_TOKEN (fine-grained PAT scoped to Joeareval19/VCP-WebPage,
- * Issues: write + Contents: read) and GROQ_API_KEY in Vercel project env
- * vars — never commit either. GITHUB_TOKEN should NOT be the same credential
- * used for the agent-dispatch pipeline (agent-dispatch/README.md); this is a
- * narrower, ticket-filing-only scope, kept separate on purpose.
+ * Config: set GITHUB_TOKEN and GROQ_API_KEY in Vercel project env vars —
+ * never commit either. GITHUB_TOKEN must be a CLASSIC personal access
+ * token with the `gist` and `repo` scopes — NOT fine-grained. Gist
+ * creation (createTranscriptGist below) requires the classic `gist` OAuth
+ * scope, which fine-grained PATs cannot grant at all (confirmed against
+ * GitHub's REST API docs); `repo` covers issue creation + the project
+ * board mutations. This is broader than the narrow Issues+Contents scope
+ * originally planned for this token — a real tradeoff of using Gists for
+ * transcript storage, not an oversight. GITHUB_TOKEN should still NOT be
+ * the same credential used for the agent-dispatch pipeline
+ * (agent-dispatch/README.md) — keep this one dedicated to this endpoint.
  */
 
 const rateLimit = require("./_rate-limit.js");
@@ -56,6 +62,30 @@ function ghGraphQL(query) {
   return gh("/graphql", { method: "POST", body: JSON.stringify({ query: query }) }).then(function (r) { return r.json(); });
 }
 
+// Retains the full raw transcript separately from the filed ticket (spec
+// criterion: "retained separately... for cross-session review"), so Jose
+// can review patterns across many sessions, not just the one summary that
+// made it into a given issue. A secret Gist needs no new infrastructure
+// account and reuses GITHUB_TOKEN already provisioned for issue filing.
+// Secret gists are unlisted, not private — anyone with the direct URL can
+// read it — acceptable here since the transcript is already redacted
+// before it reaches this endpoint (js/voice-widget.js redacts client-side).
+async function createTranscriptGist(transcript, sessionId, pageContext) {
+  const resp = await gh("/gists", {
+    method: "POST",
+    body: JSON.stringify({
+      description: "Voice feedback transcript " + sessionId + " (" + pageContext + ")",
+      public: false,
+      files: {
+        ["transcript-" + sessionId + ".txt"]: { content: transcript },
+      },
+    }),
+  });
+  if (!resp.ok) return null;
+  const gist = await resp.json();
+  return gist.html_url || null;
+}
+
 // Mirrors /vcp-spec's code computation (.claude/skills/vcp-spec/SKILL.md
 // Step 1): scan ALL existing titles (not just voice-feedback-labeled ones)
 // for the highest [D####] in this category's digit, increment by one.
@@ -78,7 +108,7 @@ async function nextSpecCode() {
   return "[" + (max + 1) + "]";
 }
 
-function bodyFor(summary, pageContext, sessionId) {
+function bodyFor(summary, pageContext, sessionId, transcriptUrl) {
   const section = function (label, items) {
     if (!items || items.length === 0) return "";
     return "\n### " + label + "\n" + items.map(function (i) { return "- " + i; }).join("\n") + "\n";
@@ -87,6 +117,7 @@ function bodyFor(summary, pageContext, sessionId) {
     "## Source",
     "Auto-filed from a voice feedback session (issue #43). Session ID: `" + sessionId + "`. Page: `" + pageContext + "`.",
     "This is unreviewed raw visitor input — treat like any other Pending spec: verify, edit, or close if not actionable.",
+    transcriptUrl ? "Full transcript: " + transcriptUrl : "Full transcript: not retained (Gist creation failed for this session)",
     section("Likes", summary.likes),
     section("Dislikes", summary.dislikes),
     section("Suggestions", summary.suggestions),
@@ -161,14 +192,20 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    // 2. File the issue.
+    // 2. Retain the full transcript separately (spec requirement — cross-
+    // session review shouldn't depend on what made it into one ticket's
+    // summary). Non-fatal if this fails: the issue still gets filed with
+    // the summary, just without a transcript link.
+    const transcriptUrl = await createTranscriptGist(transcript, sessionId || "unknown", pageContext || "unknown").catch(function () { return null; });
+
+    // 3. File the issue.
     const code = await nextSpecCode();
     const title = code + " Visitor feedback: " + (summary.title || "voice session " + sessionId);
     const createResp = await gh("/repos/" + REPO_OWNER + "/" + REPO_NAME + "/issues", {
       method: "POST",
       body: JSON.stringify({
         title: title,
-        body: bodyFor(summary, pageContext || "unknown", sessionId || "unknown"),
+        body: bodyFor(summary, pageContext || "unknown", sessionId || "unknown", transcriptUrl),
         labels: ["voice-feedback", "spec"],
       }),
     });
@@ -179,7 +216,7 @@ module.exports = async function handler(req, res) {
     }
     const issue = await createResp.json();
 
-    // 3. Add to the VCP Tracker board as Pending (mirrors /vcp-spec Step 4).
+    // 4. Add to the VCP Tracker board as Pending (mirrors /vcp-spec Step 4).
     const addItem = await ghGraphQL(
       'mutation { addProjectV2ItemById(input: {projectId: "' + PROJECT_ID + '", contentId: "' + issue.node_id + '"}) { item { id } } }'
     );
@@ -190,7 +227,7 @@ module.exports = async function handler(req, res) {
       );
     }
 
-    res.status(200).json({ filed: true, issueNumber: issue.number, issueUrl: issue.html_url });
+    res.status(200).json({ filed: true, issueNumber: issue.number, issueUrl: issue.html_url, transcriptUrl: transcriptUrl });
   } catch (err) {
     res.status(502).json({ error: "file-feedback failed", detail: err.message });
   }
