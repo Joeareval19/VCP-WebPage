@@ -325,6 +325,10 @@
         if (result.filed) {
           // eslint-disable-next-line no-console
           console.log("[voice-widget] filed as " + result.issueUrl);
+          if (result.boardWarning) {
+            // eslint-disable-next-line no-console
+            console.warn("[voice-widget] " + result.boardWarning);
+          }
         } else {
           // eslint-disable-next-line no-console
           console.log("[voice-widget] not filed:", result.reason || result.error || "unknown");

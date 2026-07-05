@@ -278,20 +278,39 @@ module.exports = async function handler(req, res) {
     const issue = await createResp.json();
 
     // 4. Add to the VCP Tracker board as Pending (mirrors /vcp-spec Step 4).
+    // GITHUB_TOKEN needs the `Projects: Read and write` fine-grained PAT
+    // permission for this — a SEPARATE scope from `Issues: Read and write`
+    // (step 3's requirement). A token with only Issues access creates the
+    // issue fine but silently fails here with a FORBIDDEN GraphQL error —
+    // "silently" being the exact bug this boardWarning check fixes: the
+    // previous version only ever checked for a truthy itemId and never
+    // inspected addItem.errors, so a token missing Projects access left
+    // issues correctly filed but permanently invisible on the board with
+    // zero indication anything had gone wrong (discovered via manual
+    // end-to-end testing, 2026-07-05 — issue #80 filed successfully but
+    // never appeared on the VCP Tracker).
     const addItem = await ghGraphQL(
       'mutation { addProjectV2ItemById(input: {projectId: "' + PROJECT_ID + '", contentId: "' + issue.node_id + '"}) { item { id } } }'
     );
     const itemId = addItem.data && addItem.data.addProjectV2ItemById && addItem.data.addProjectV2ItemById.item.id;
+    var boardWarning = null;
     if (itemId) {
-      await ghGraphQL(
+      const statusResp = await ghGraphQL(
         'mutation { updateProjectV2ItemFieldValue(input: {projectId: "' + PROJECT_ID + '", itemId: "' + itemId + '", fieldId: "' + STATUS_FIELD_ID + '", value: {singleSelectOptionId: "' + PENDING_OPTION_ID + '"}}) { projectV2Item { id } } }'
       );
+      if (statusResp.errors) {
+        boardWarning = "Added to board but failed to set Status=Pending: " + JSON.stringify(statusResp.errors);
+        console.error("[file-feedback]", boardWarning);
+      }
+    } else {
+      boardWarning = "Issue filed but NOT added to VCP Tracker board: " + JSON.stringify(addItem.errors || addItem);
+      console.error("[file-feedback]", boardWarning);
     }
 
     // 5. Write the filed issue number back onto the session row.
     await setFiledIssue(sessionId, issue.number);
 
-    res.status(200).json({ filed: true, issueNumber: issue.number, issueUrl: issue.html_url });
+    res.status(200).json({ filed: true, issueNumber: issue.number, issueUrl: issue.html_url, boardWarning: boardWarning });
   } catch (err) {
     res.status(502).json({ error: "file-feedback failed", detail: err.message });
   }
