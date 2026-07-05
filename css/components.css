@@ -114,7 +114,7 @@
   box-shadow: var(--glass-highlight);
 }
 
-.vcp-btn--glass:hover { border-color: rgba(255, 255, 255, 0.32); }
+.vcp-btn--glass:hover { border-color: var(--line-hover); }
 
 /* Quiet: text with hairline underline */
 .vcp-btn--quiet {

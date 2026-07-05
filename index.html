@@ -63,12 +63,21 @@
     background: var(--silver-panel);
     opacity: 0.9;
   }
+  /* A plain JPG can't carry the cut-out transparency of the reference,
+     so the photo is clipped INTO the circle, slightly inset so the
+     brushed-silver ring stays visible as a rim (PR #63 audit, finding 1).
+     If a transparent PNG lands later, this can graduate to a true cutout. */
   .portrait img {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    left: 50%;
+    top: 54%;
+    transform: translate(-50%, -50%);
+    width: min(94%, 320px);
+    aspect-ratio: 1;
+    height: auto;
+    border-radius: var(--radius-pill);
     object-fit: cover;
-    object-position: top center;
+    object-position: center;
     filter: grayscale(1) contrast(1.05);
   }
   .portrait--empty img { display: none; }
@@ -147,7 +156,7 @@
     gap: var(--space-4);
     transition: border-color var(--dur-med) var(--ease);
   }
-  .connect-box:hover { border-color: rgba(255, 255, 255, 0.32); }
+  .connect-box:hover { border-color: var(--line-hover); }
   .connect-box p {
     font-family: var(--font-display);
     font-size: var(--fs-28);
