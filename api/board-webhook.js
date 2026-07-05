@@ -20,6 +20,16 @@
  * a serverless function with no local `gh` CLI available, so every gh
  * shell-out becomes a direct GitHub REST/GraphQL fetch() call.
  *
+ * Lifecycle (PR #54 audit, BLOCKER 1): ALL side effects run BEFORE the
+ * response is sent. Vercel does not guarantee execution after the response,
+ * and GitHub does NOT auto-retry webhook deliveries on non-2xx (manual
+ * redelivery only) — so ack-early bought nothing and risked a suspended
+ * instance mid-merge. The full merge path is a handful of API calls, well
+ * inside the function limit; if GitHub's 10s delivery window lapses first
+ * it merely logs a timeout on their side while this invocation completes.
+ * A processing failure returns 500 so it is visible in the GitHub App's
+ * delivery log, where redelivery can be triggered by hand.
+ *
  * Config: set BOARD_WEBHOOK_SECRET (the GitHub App's webhook secret — same
  * value as the old worker's webhook-secret.txt) and
  * BOARD_WEBHOOK_GITHUB_TOKEN (a classic PAT with `repo` + `project` scopes,
@@ -39,7 +49,9 @@ const REPO_NAME = "VCP-WebPage";
 const REPO = REPO_OWNER + "/" + REPO_NAME;
 const PROJECT_ID = "PVT_kwHOBdoj_c4BcT54";
 const STATUS_FIELD = "PVTSSF_lAHOBdoj_c4BcT54zhW9rGs";
-const STATUS_OPTIONS = { Pending: "945c8a59", Started: "de246815", Review: "18317928", Completed: "96b35fff" };
+// Completed (96b35fff) is deliberately absent: it is never a bounce target,
+// and keeping it out makes that invariant structural (relay.js convention).
+const STATUS_OPTIONS = { Pending: "945c8a59", Started: "de246815", Review: "18317928" };
 
 const SUPABASE_URL = "https://qaorlbgrkpldcatyntlw.supabase.co";
 
@@ -66,8 +78,17 @@ function gh(path, options) {
   }));
 }
 
-function ghGraphQL(query) {
-  return gh("/graphql", { method: "POST", body: JSON.stringify({ query: query }) }).then(function (r) { return r.json(); });
+// Throws on HTTP or GraphQL-level failure (PR #54 audit, NOTE 3): a failed
+// board mutation must never be recorded as a success. Callers that can
+// recover (the guard catch) handle the throw; nothing swallows it silently.
+async function ghGraphQL(query) {
+  const r = await gh("/graphql", { method: "POST", body: JSON.stringify({ query: query }) });
+  const j = await r.json().catch(function () { return {}; });
+  if (!r.ok || (j.errors && j.errors.length)) {
+    const msg = (j.errors && j.errors[0] && j.errors[0].message) || ("HTTP " + r.status);
+    throw new Error("GraphQL failed: " + msg);
+  }
+  return j;
 }
 
 async function bounce(itemNodeId, columnName) {
@@ -77,11 +98,17 @@ async function bounce(itemNodeId, columnName) {
   );
 }
 
+// Best-effort by design: a failed comment must not undo a bounce/merge that
+// already happened, but it is logged and captured as a failure, not silence.
 async function commentOn(issueNumber, body) {
-  await gh("/repos/" + REPO + "/issues/" + issueNumber + "/comments", {
+  const resp = await gh("/repos/" + REPO + "/issues/" + issueNumber + "/comments", {
     method: "POST",
     body: JSON.stringify({ body: body }),
   });
+  if (!resp.ok) {
+    console.error("[board-webhook] comment on #" + issueNumber + " failed: HTTP " + resp.status);
+    capture("error", { issue_number: issueNumber, detail: { kind: "comment failed", status: resp.status } });
+  }
 }
 
 function capture(eventType, fields) {
@@ -97,7 +124,8 @@ function capture(eventType, fields) {
 
 async function findOpenPrClosing(issueNumber) {
   const resp = await gh("/repos/" + REPO + "/pulls?state=open&per_page=100");
-  const prs = resp.ok ? await resp.json() : [];
+  if (!resp.ok) throw new Error("PR list failed: HTTP " + resp.status);
+  const prs = await resp.json();
   const rx = new RegExp("close[sd]?\\s+#" + issueNumber + "\\b", "i");
   return prs.find(function (p) { return rx.test(p.body || "") || (p.title || "").includes("(#" + issueNumber + ")"); }) || null;
 }
@@ -107,11 +135,16 @@ async function handleStarted(issue, item, from, to) {
     capture("skip", { issue_number: issue.number, from_status: from, to_status: to, detail: { reason: "already assigned" } });
     return;
   }
-  await gh("/repos/" + REPO + "/dispatches", {
+  const resp = await gh("/repos/" + REPO + "/dispatches", {
     method: "POST",
     body: JSON.stringify({ event_type: "card-started", client_payload: { issue: issue.number } }),
   });
-  capture("dispatch", { issue_number: issue.number, from_status: from, to_status: to, detail: { kind: "card-started" } });
+  if (resp.status === 204) {
+    capture("dispatch", { issue_number: issue.number, from_status: from, to_status: to, detail: { kind: "card-started" } });
+  } else {
+    console.error("[board-webhook] card-started dispatch for #" + issue.number + " failed: HTTP " + resp.status);
+    capture("error", { issue_number: issue.number, from_status: from, to_status: to, detail: { kind: "card-started dispatch failed", status: resp.status } });
+  }
 }
 
 async function handleReview(issue, item, from, to) {
@@ -125,63 +158,91 @@ async function handleReview(issue, item, from, to) {
     capture("skip", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: to, detail: { reason: "already audited" } });
     return;
   }
-  await gh("/repos/" + REPO + "/dispatches", {
+  const resp = await gh("/repos/" + REPO + "/dispatches", {
     method: "POST",
     body: JSON.stringify({ event_type: "card-review", client_payload: { pr: pr.number } }),
   });
-  capture("dispatch", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: to, detail: { kind: "card-review" } });
+  if (resp.status === 204) {
+    capture("dispatch", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: to, detail: { kind: "card-review" } });
+  } else {
+    console.error("[board-webhook] card-review dispatch for PR #" + pr.number + " failed: HTTP " + resp.status);
+    capture("error", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: to, detail: { kind: "card-review dispatch failed", status: resp.status } });
+  }
 }
 
 // Merge guard (mirrors relay.js's issue #21 logic exactly): a card may only
 // rest in Completed if its issue is closed or its PR merges right now.
+// The whole body is wrapped so a transient failure anywhere inside bounces
+// the card instead of leaving it resting unmerged (PR #54 audit, BLOCKER 2 —
+// the same guard catch relay.js carries).
 async function handleCompleted(issue, item, from, to) {
   if (issue.state === "closed") {
     capture("skip", { issue_number: issue.number, from_status: from, to_status: to, detail: { reason: "already closed" } });
     return;
   }
 
-  const pr = await findOpenPrClosing(issue.number);
-  if (!pr) {
-    const target = STATUS_OPTIONS[from] ? from : "Review";
-    await bounce(item.node_id, target);
-    await commentOn(issue.number, "Card was dragged to **Completed**, but no open PR closes this issue — nothing to merge. Bounced back to **" + target + "**. Open a PR with `Closes #" + issue.number + "`, then drag to Completed again.");
-    capture("bounce", { issue_number: issue.number, from_status: "Completed", to_status: target, detail: { reason: "no open PR" } });
-    return;
-  }
-
-  const detailResp = await gh("/repos/" + REPO + "/pulls/" + pr.number);
-  const detail = detailResp.ok ? await detailResp.json() : null;
-
-  // GitHub computes mergeable_state asynchronously; null/"unknown" is not a
-  // conflict, only "dirty" (their conflicting-state string) short-circuits —
-  // same "only a definite CONFLICTING short-circuits" rule as relay.js.
-  if (detail && detail.mergeable_state === "dirty") {
-    await bounce(item.node_id, "Review");
-    await commentOn(issue.number, "Approval received, but PR #" + pr.number + " has **merge conflicts with main**. Bounced back to **Review**. Resolve the conflicts, then drag to Completed again.");
-    capture("bounce", { issue_number: issue.number, pr_number: pr.number, from_status: "Completed", to_status: "Review", detail: { reason: "conflicting with main" } });
-    return;
-  }
-
-  const mergeResp = await gh("/repos/" + REPO + "/pulls/" + pr.number + "/merge", {
-    method: "PUT",
-    body: JSON.stringify({ merge_method: "squash" }),
-  });
-
-  if (mergeResp.ok) {
-    // Delete the branch, matching relay.js's --delete-branch. Best-effort:
-    // a failure here shouldn't undo a merge that already succeeded.
-    if (detail && detail.head && detail.head.ref) {
-      await gh("/repos/" + REPO + "/git/refs/heads/" + encodeURIComponent(detail.head.ref), { method: "DELETE" }).catch(function () {});
+  try {
+    const pr = await findOpenPrClosing(issue.number);
+    if (!pr) {
+      const target = STATUS_OPTIONS[from] ? from : "Review";
+      await bounce(item.node_id, target);
+      await commentOn(issue.number, "Card was dragged to **Completed**, but no open PR closes this issue — nothing to merge. Bounced back to **" + target + "**. Open a PR with `Closes #" + issue.number + "`, then drag to Completed again.");
+      capture("bounce", { issue_number: issue.number, from_status: "Completed", to_status: target, detail: { reason: "no open PR" } });
+      return;
     }
-    capture("merge", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: "Completed" });
-    return;
-  }
 
-  const errBody = await mergeResp.json().catch(function () { return {}; });
-  const reason = errBody.message || ("HTTP " + mergeResp.status);
-  await bounce(item.node_id, "Review");
-  await commentOn(issue.number, "Approval received, but merging PR #" + pr.number + " failed: `" + reason + "`. Bounced back to **Review** — fix the blocker, then drag to Completed again.");
-  capture("bounce", { issue_number: issue.number, pr_number: pr.number, from_status: "Completed", to_status: "Review", detail: { reason: "merge failed: " + reason } });
+    const detailResp = await gh("/repos/" + REPO + "/pulls/" + pr.number);
+    const detail = detailResp.ok ? await detailResp.json() : null;
+
+    // GitHub computes mergeable_state asynchronously; null/"unknown" is not a
+    // conflict, only "dirty" (their conflicting-state string) short-circuits —
+    // same "only a definite CONFLICTING short-circuits" rule as relay.js.
+    if (detail && detail.mergeable_state === "dirty") {
+      await bounce(item.node_id, "Review");
+      await commentOn(issue.number, "Approval received, but PR #" + pr.number + " has **merge conflicts with main**. Bounced back to **Review**. Resolve the conflicts, then drag to Completed again.");
+      capture("bounce", { issue_number: issue.number, pr_number: pr.number, from_status: "Completed", to_status: "Review", detail: { reason: "conflicting with main" } });
+      return;
+    }
+
+    const mergeResp = await gh("/repos/" + REPO + "/pulls/" + pr.number + "/merge", {
+      method: "PUT",
+      body: JSON.stringify({ merge_method: "squash" }),
+    });
+
+    if (mergeResp.ok) {
+      // Delete the branch, matching relay.js's --delete-branch. Best-effort:
+      // a failure here shouldn't undo a merge that already succeeded.
+      if (detail && detail.head && detail.head.ref) {
+        try {
+          await gh("/repos/" + REPO + "/git/refs/heads/" + encodeURIComponent(detail.head.ref), { method: "DELETE" });
+        } catch (e) { /* repo-level delete_branch_on_merge covers this anyway */ }
+      }
+      capture("merge", { issue_number: issue.number, pr_number: pr.number, from_status: from, to_status: "Completed" });
+      return;
+    }
+
+    const errBody = await mergeResp.json().catch(function () { return {}; });
+    const reason = errBody.message || ("HTTP " + mergeResp.status);
+    await bounce(item.node_id, "Review");
+    await commentOn(issue.number, "Approval received, but merging PR #" + pr.number + " failed: `" + reason + "`. Bounced back to **Review** — fix the blocker, then drag to Completed again.");
+    capture("bounce", { issue_number: issue.number, pr_number: pr.number, from_status: "Completed", to_status: "Review", detail: { reason: "merge failed: " + reason } });
+  } catch (e) {
+    // Any other failure in the guard (transient API error, bad JSON) must
+    // not leave the card resting in Completed unmerged — that is the exact
+    // silent failure the guard exists to kill. Bounce to Review; if even
+    // the bounce fails, log loudly and rethrow so the delivery returns 500
+    // and the failure is visible in the GitHub App's delivery log.
+    const reason = String((e && e.message) || e).split("\n")[0];
+    try {
+      await bounce(item.node_id, "Review");
+      await commentOn(issue.number, "Card was dragged to **Completed**, but the merge guard hit an unexpected error before it could merge: `" + reason + "`. Bounced back to **Review** — check the board-webhook function logs, then drag to Completed again.");
+      capture("bounce", { issue_number: issue.number, from_status: "Completed", to_status: "Review", detail: { reason: "guard error: " + reason } });
+    } catch (e2) {
+      console.error("[board-webhook] guard bounce for #" + issue.number + " also failed", e2);
+      capture("error", { issue_number: issue.number, detail: { kind: "guard bounce failed", reason: reason } });
+      throw e;
+    }
+  }
 }
 
 // Body parsing is disabled (see config export below) specifically so HMAC
@@ -199,6 +260,32 @@ function readRawBody(req) {
   });
 }
 
+async function processEvent(rawBody, eventName) {
+  if (eventName !== "projects_v2_item") return;
+  const p = JSON.parse(rawBody.toString("utf8"));
+  if (p.action !== "edited") return;
+  const fv = p.changes && p.changes.field_value;
+  if (!fv || fv.field_name !== "Status") return;
+  const to = fv.to && fv.to.name;
+  const from = fv.from && fv.from.name;
+  if (to === from) return;
+  const item = p.projects_v2_item;
+  if (!item || item.content_type !== "Issue") return;
+
+  const q = 'query { node(id: "' + item.content_node_id + '") { ... on Issue { number state assignees(first: 1) { nodes { login } } } } }';
+  const out = await ghGraphQL(q);
+  const issue = out.data && out.data.node;
+  if (!issue || typeof issue.number !== "number") return;
+  issue.assignees = (issue.assignees && issue.assignees.nodes) || [];
+  issue.state = (issue.state || "").toLowerCase();
+
+  capture("status_change", { issue_number: issue.number, from_status: from, to_status: to });
+
+  if (to === "Started") { await handleStarted(issue, item, from, to); return; }
+  if (to === "Review") { await handleReview(issue, item, from, to); return; }
+  if (to === "Completed") { await handleCompleted(issue, item, from, to); return; }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).send("Method not allowed");
@@ -206,6 +293,17 @@ module.exports = async function handler(req, res) {
   }
 
   const rawBody = await readRawBody(req);
+
+  // Fail loudly, not silently, if the runtime consumed the stream despite
+  // the bodyParser config (PR #54 audit, NOTE 4): real GitHub deliveries
+  // are never empty, so an empty raw body means the config didn't take and
+  // every delivery would 401 forever. 500 makes it visible immediately.
+  if (rawBody.length === 0) {
+    console.error("[board-webhook] empty raw body — bodyParser config may not be honored by this runtime");
+    res.status(500).send("empty body: raw-body read failed");
+    return;
+  }
+
   if (!verify(req.headers["x-hub-signature-256"], rawBody)) {
     // Unlike relay.js (warning-only, because smee.io re-serialization made
     // strict verification unreliable), a direct GitHub webhook has no
@@ -215,36 +313,16 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  res.status(200).send("ok"); // ack immediately; GitHub retries on non-2xx, not on slow processing
-
+  // Process BEFORE responding (see lifecycle note in the header). A failure
+  // returns 500 so it shows as a failed delivery in the GitHub App's
+  // delivery log, where it can be redelivered by hand.
   try {
-    if (req.headers["x-github-event"] !== "projects_v2_item") return;
-    const p = JSON.parse(rawBody.toString("utf8"));
-    if (p.action !== "edited") return;
-    const fv = p.changes && p.changes.field_value;
-    if (!fv || fv.field_name !== "Status") return;
-    const to = fv.to && fv.to.name;
-    const from = fv.from && fv.from.name;
-    if (to === from) return;
-    const item = p.projects_v2_item;
-    if (!item || item.content_type !== "Issue") return;
-
-    const q = 'query { node(id: "' + item.content_node_id + '") { ... on Issue { number state assignees(first: 1) { nodes { login } } } } }';
-    const out = await ghGraphQL(q);
-    const issue = out.data && out.data.node;
-    if (!issue || typeof issue.number !== "number") return;
-    issue.assignees = (issue.assignees && issue.assignees.nodes) || [];
-    issue.state = (issue.state || "").toLowerCase();
-
-    capture("status_change", { issue_number: issue.number, from_status: from, to_status: to });
-
-    if (to === "Started") { await handleStarted(issue, item, from, to); return; }
-    if (to === "Review") { await handleReview(issue, item, from, to); return; }
-    if (to === "Completed") { await handleCompleted(issue, item, from, to); return; }
+    await processEvent(rawBody, req.headers["x-github-event"]);
+    res.status(200).send("ok");
   } catch (err) {
-    // Response already sent (ack-then-process) — nothing more to do but
-    // make sure this failure is visible via Vercel's function logs.
     console.error("[board-webhook] ERROR", err);
+    capture("error", { detail: { kind: "processing failed", message: String((err && err.message) || err).slice(0, 300) } });
+    res.status(500).send("processing failed");
   }
 };
 
