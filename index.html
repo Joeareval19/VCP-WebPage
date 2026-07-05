@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP — Vegas Consulting Partners</title>
-<meta name="description" content="Vegas Consulting Partners — a consulting practice publishing its projects, research, and white papers in the open.">
+<meta name="description" content="Vegas Consulting Partners publishes what it builds as it happens: projects, research, and white papers, in the open.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,49 +12,62 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <style>
-  /* Landing-page layout only — components live in css/components.css */
-  .landing-section { margin-bottom: var(--space-7); }
-  .wing-grid, .featured-grid {
+  /* Landing-page layout only — components live in css/components.css.
+     Four-beat snapshot (#55): hero, wings, about, footer. Open composition:
+     text on graphite, no panels; whitespace carries the rhythm. */
+  h1, h2, h3 { text-wrap: balance; }
+
+  .hero {
+    padding: var(--space-8) 0;
+    max-width: 62ch;
+  }
+  .hero h1 { margin-bottom: var(--space-4); }
+  .hero-lede {
+    font-family: var(--font-display);
+    font-size: var(--fs-40);
+    line-height: 1.15;
+    color: var(--silver-bright);
+    margin: 0 0 var(--space-4);
+    text-wrap: balance;
+  }
+  .hero-sub { max-width: 52ch; text-wrap: pretty; }
+  .hero-actions { margin-top: var(--space-5); }
+
+  .landing-section { margin-bottom: var(--space-8); }
+  .landing-section > h2 { margin-bottom: var(--space-6); }
+
+  .wing-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
-  .wing-card .vcp-card__body {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .wing-card p { flex: 1; }
-  .latest-list { list-style: none; margin: 0; padding: 0; }
-  .latest-list li {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-4);
-    padding: var(--space-4) 0;
-    border-top: 1px solid var(--line);
-  }
-  .latest-list li:last-child { border-bottom: 1px solid var(--line); }
-  .latest-list__title {
-    flex: 1;
-    font-family: var(--font-display);
-    font-size: var(--fs-20);
-    color: var(--silver-bright);
-  }
+  .wing h3 { margin-bottom: var(--space-2); }
+  .wing p { margin: 0 0 var(--space-3); text-wrap: pretty; }
+
   .about-block { max-width: 62ch; }
+  .about-block p { text-wrap: pretty; }
+  .about-contact {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+
   .placeholder-note {
     font-family: var(--font-mono);
     font-size: var(--fs-12);
-    color: var(--text-faint);
+    color: var(--text-soft);
     letter-spacing: 0.1em;
   }
+
   @media (max-width: 900px) {
-    .wing-grid, .featured-grid { grid-template-columns: 1fr; }
     h1 { font-size: var(--fs-56); }
-    .vcp-hero { padding: var(--space-6) var(--space-4); }
+    .hero { padding: var(--space-7) 0; }
+    .hero-lede { font-size: var(--fs-28); }
+    .landing-section { margin-bottom: var(--space-7); }
+    .wing-grid { grid-template-columns: 1fr; gap: var(--space-6); }
     .vcp-nav { flex-wrap: wrap; }
     .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
-    .latest-list li { flex-wrap: wrap; gap: var(--space-2); }
-    .latest-list__title { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -80,157 +93,47 @@
 
 <main>
 
-  <!-- ============ HERO ============ -->
-  <header class="landing-section" style="padding-top: var(--space-6);">
-    <div class="vcp-hero">
-      <div class="vcp-hero__content">
-        <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-5);">Vegas Consulting Partners</p>
-        <h1 class="sheen-text">VCP</h1>
-        <!-- Content slot: positioning statement + subtext (Jose supplies) -->
-        <p style="font-family: var(--font-display); font-size: var(--fs-28); color: var(--silver-bright); margin: var(--space-4) 0 var(--space-2); line-height: 1.3;">A consulting practice that builds in the open. <span class="placeholder-note">[placeholder]</span></p>
-        <p style="max-width: 52ch;">Every project, research topic, and white paper VCP produces is published here — the work itself is the record. <span class="placeholder-note">[placeholder — Jose supplies]</span></p>
-        <div class="vcp-hero__actions">
-          <a class="vcp-btn vcp-btn--silver" href="#wings">Explore the work</a>
-        </div>
-      </div>
+  <!-- Beat 1: hero — open text on graphite, no panel -->
+  <header class="hero">
+    <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-5);">Vegas Consulting Partners</p>
+    <h1 class="sheen-text">VCP</h1>
+    <p class="hero-lede">The work, out in the open.</p>
+    <p class="hero-sub">VCP is a consulting practice that publishes what it builds as it happens: the projects, the research, the finished papers. This site is the working record, kept honest because the work itself lives here.</p>
+    <div class="hero-actions">
+      <a class="vcp-btn vcp-btn--silver" href="#wings">Explore the work</a>
     </div>
   </header>
 
-  <!-- ============ 01 THE THREE WINGS ============ -->
+  <!-- Beat 2: the three wings — open blocks, no cards -->
   <section class="landing-section" id="wings">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">01</span>
-      <h2>The work</h2>
-    </div>
+    <h2>The work</h2>
     <div class="wing-grid">
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Research</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 topics</span>
-          </div>
-          <h3 class="vcp-card__title">Topics &amp; summaries</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">Open research topics with running summaries — what VCP is studying and what it has learned so far.</p>
-          <a class="vcp-link" href="/research.html">Enter research →</a>
-        </div>
+      <article class="wing">
+        <h3>Research</h3>
+        <p>Open questions and running notes: what VCP is studying, and what it's learning along the way.</p>
+        <a class="vcp-link" href="/research.html">Read the research</a>
       </article>
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Projects</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 projects</span>
-          </div>
-          <h3 class="vcp-card__title">Index &amp; breakouts</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">Every engagement and internal build, indexed — each with its own detail breakout.</p>
-          <a class="vcp-link" href="/projects.html">Enter projects →</a>
-        </div>
+      <article class="wing">
+        <h3>Projects</h3>
+        <p>Every engagement and internal build, indexed, each with its own breakout.</p>
+        <a class="vcp-link" href="/projects.html">See the projects</a>
       </article>
-      <article class="vcp-card wing-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Library</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="meta-mono">0 papers</span>
-          </div>
-          <h3 class="vcp-card__title">White papers</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">The repository of finished, citable documents — published as they are completed.</p>
-          <a class="vcp-link" href="/library.html">Enter library →</a>
-        </div>
+      <article class="wing">
+        <h3>Library</h3>
+        <p>Finished, citable white papers, published as they're completed.</p>
+        <a class="vcp-link" href="/library.html">Browse the library</a>
       </article>
     </div>
   </section>
 
-  <!-- ============ 02 FEATURED PROJECTS ============ -->
-  <!-- Content slot: Jose picks the featured projects -->
-  <section class="landing-section" id="featured">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">02</span>
-      <h2>Featured projects</h2>
-      <span class="placeholder-note">[content slot — Jose selects]</span>
-    </div>
-    <div class="featured-grid">
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Active</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot one</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the first featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Active</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot two</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the second featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <div class="vcp-card__eyebrow">
-            <span class="vcp-tag--caps label-caps">Project</span>
-            <span class="vcp-card__eyebrow-rule"></span>
-            <span class="vcp-tag vcp-tag--dot">Planned</span>
-          </div>
-          <h3 class="vcp-card__title" style="font-size: var(--fs-28);">Featured slot three</h3>
-          <p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">One-line summary of the third featured project. <span class="placeholder-note">[placeholder]</span></p>
-          <a class="vcp-link" href="/projects.html">View project →</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ 03 LATEST RESEARCH & PAPERS ============ -->
-  <section class="landing-section" id="latest">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">03</span>
-      <h2>Latest research &amp; papers</h2>
-      <span class="placeholder-note">[fills as content publishes]</span>
-    </div>
-    <ul class="latest-list">
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Research</span>
-        <span class="latest-list__title">Most recent research topic <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/research.html">Read →</a>
-      </li>
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Paper</span>
-        <span class="latest-list__title">Most recent white paper <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/library.html">Read →</a>
-      </li>
-      <li>
-        <span class="meta-mono">2026-07-—</span>
-        <span class="vcp-tag--caps label-caps">Research</span>
-        <span class="latest-list__title">Second most recent research topic <span class="placeholder-note">[placeholder]</span></span>
-        <a class="vcp-link" href="/research.html">Read →</a>
-      </li>
-    </ul>
-  </section>
-
-  <!-- ============ 04 ABOUT VCP ============ -->
-  <!-- Content slot: Jose supplies the About copy + contact channels -->
+  <!-- Beat 3: about — the company in plain words, then the person -->
   <section class="landing-section" id="about">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">04</span>
-      <h2>About VCP</h2>
-      <span class="placeholder-note">[content slot — Jose supplies]</span>
-    </div>
+    <h2>About</h2>
     <div class="about-block">
-      <p>Vegas Consulting Partners is a consulting practice that operates in public: the projects it takes on, the research it runs, and the white papers it writes are published here as an open repository. <span class="placeholder-note">[placeholder]</span></p>
-      <p>The missions and incentives the company is on — why it works this way, and what it is building toward. <span class="placeholder-note">[placeholder — Jose supplies]</span></p>
-      <div class="vcp-hero__actions" style="margin-top: var(--space-4);">
+      <p>VCP works in public. Most firms keep a polished page and a private archive; here they're the same thing. What we're building, what we're studying, and what we've finished all live on this site, current by default.</p>
+      <!-- First-person beat: written ONLY from Jose's notes (input gate, ticket #55) -->
+      <p>I'm Jose. <span class="placeholder-note">[placeholder: this introduction is written from Jose's own notes, posted on ticket #55]</span></p>
+      <div class="about-contact">
         <span class="vcp-status-dot"></span>
         <span style="font-size: var(--fs-14); color: var(--text-soft);">Contact channel <span class="placeholder-note">[placeholder]</span></span>
       </div>
