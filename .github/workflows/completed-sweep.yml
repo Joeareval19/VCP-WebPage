@@ -8,7 +8,9 @@ name: Board Integrity Sweep
 # 2026-07-04: #3/#4/#5/#29/#30 stuck in Started with open PRs). Invariants
 # enforced every 5 minutes, regardless of how a card got where it is:
 #   - a card may only REST in Completed if its issue is closed or its work
-#     actually merged; otherwise it bounces to Review with one comment
+#     actually merged; resting there with a mergeable PR is a dropped-webhook
+#     approval and gets MERGED (squash, branch deleted); only unmergeable
+#     work bounces to Review with one comment (#47)
 #   - a card in Started whose issue has an open `Closes #N` PR belongs in
 #     Review (the work is done and awaiting review) — moved, log-only
 on:
@@ -95,7 +97,11 @@ jobs:
 
           $mutation = 'mutation($pid: ID!, $iid: ID!, $fid: ID!, $oid: String!) { updateProjectV2ItemFieldValue(input: {projectId: $pid, itemId: $iid, fieldId: $fid, value: {singleSelectOptionId: $oid}}) { projectV2Item { id } } }'
 
-          # --- Pass 1 (#26): Completed cards whose work never merged -> bounce ---
+          # --- Pass 1 (#26/#47): Completed cards with an OPEN issue ---
+          # Resting in Completed is an APPROVAL (the drag is the approval act;
+          # the webhook that should have merged it was dropped). Honor it:
+          # merge when merging is possible, bounce to Review only when it is
+          # not (owner directive, #47).
           if ($completedSuspects.Count -gt 0) {
             $mergedPrs = gh pr list --repo $repo --state merged --limit 100 --json number,title,body | ConvertFrom-Json
             foreach ($item in $completedSuspects) {
@@ -113,8 +119,26 @@ jobs:
                 $reason = "Card was resting in **Completed**, but no PR closes this issue - nothing was merged. Bounced back to **Review**. Open a PR with ``Closes #$n`` (or merge the existing work), then drag to Completed again."
                 $logLine = "BOUNCE #${n}: rested in Completed with no PR -> Review"
               } else {
-                $reason = "Card was resting in **Completed**, but PR #$($openPr.number) is **not merged** (the approval webhook was likely dropped). Bounced back to **Review** - drag to Completed again to merge, or merge the PR directly."
-                $logLine = "BOUNCE #${n}: rested in Completed with unmerged PR #$($openPr.number) -> Review"
+                # Only a definite CONFLICTING short-circuits; any other
+                # mergeable state proceeds to the guarded merge attempt.
+                $view = gh pr view $($openPr.number) --repo $repo --json mergeable,mergeStateStatus | ConvertFrom-Json
+                if ($view.mergeable -ne "CONFLICTING") {
+                  # No stderr redirection here: under Stop, 2>&1 on a failing
+                  # native command raises NativeCommandError (#19). Failure is
+                  # detected via the exit code instead; stderr goes to the log.
+                  gh pr merge $($openPr.number) --repo $repo --squash --delete-branch
+                  $mergeExit = $LASTEXITCODE
+                  $global:LASTEXITCODE = 0
+                  if ($mergeExit -eq 0) {
+                    Write-Host "MERGED PR #$($openPr.number) for issue #$n (approval honored by sweep); branch deleted"
+                    continue
+                  }
+                  $reason = "Approval honored late (the merge webhook was dropped), but merging PR #$($openPr.number) **failed** (exit $mergeExit - see the sweep run log). Bounced back to **Review** - fix the blocker, then drag to Completed again."
+                  $logLine = "BOUNCE #${n}: sweep merge of PR #$($openPr.number) failed (exit $mergeExit) -> Review"
+                } else {
+                  $reason = "Approval received, but PR #$($openPr.number) has **merge conflicts with main** (state: $($view.mergeStateStatus)). Bounced back to **Review** - resolve the conflicts, then drag to Completed again."
+                  $logLine = "BOUNCE #${n}: rested in Completed with CONFLICTING PR #$($openPr.number) -> Review"
+                }
               }
 
               gh api graphql -f query=$mutation -f pid=$projectId -f iid=$($item.id) -f fid=$statusFieldId -f oid=$reviewOption | Out-Null

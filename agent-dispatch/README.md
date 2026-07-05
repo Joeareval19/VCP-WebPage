@@ -16,7 +16,7 @@ GitHub App webhook (projects_v2_item) -> smee.io channel -> `relay.js` on the wo
 ## Guards
 - Relay: Status->Started + unassigned = dispatch agent; Review->Completed = human approval, auto-merges the PR
 - Merge guard (#21): a card may only REST in Completed if its issue is closed or its PR squash-merges right now. Any drag into Completed with no open PR bounces back to the source column; a CONFLICTING PR or a failed merge bounces to Review. Every bounce posts one comment on the issue naming the PR and the reason.
-- Board Integrity Sweep (#26/#37, `.github/workflows/completed-sweep.yml`): every 5 min - (a) any card resting in Completed with an open issue and no merged PR bounces back to Review with one issue comment (the safety net for dropped approval webhooks); (b) any Started card whose issue has an open `Closes #N` PR moves to Review, log-only (covers PRs opened by local fan-out sessions that never touch the board)
+- Board Integrity Sweep (#26/#37/#47, `.github/workflows/completed-sweep.yml`): every 5 min - (a) any card resting in Completed with an open issue is treated as a dropped-webhook approval: its `Closes #N` PR is squash-merged with the branch deleted when mergeable, and only unmergeable/PR-less work bounces back to Review with one issue comment; (b) any Started card whose issue has an open `Closes #N` PR moves to Review, log-only (covers PRs opened by local fan-out sessions that never touch the board)
 - Parallel agents: 3 runners (vcp-laptop, -2, -3); per-issue concurrency still one agent per ticket
 - Workflow concurrency: one agent per issue number
 - Agent capped at --max-turns 100; failures are commented on the ticket
