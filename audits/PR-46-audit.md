@@ -1,54 +1,57 @@
 **Sterling** · VCP Chief Auditor
 
-Verdict: CHANGES REQUESTED
-Score: 67/100
+Verdict: LGTM
+Score: 97/100
 
 ### Score breakdown
 | Axis | /max | Notes |
 |---|---|---|
-| Machine checks | 25/25 | Only the `audit` check registered (this run); no local lint pre-#9 — normal, not a finding |
-| Spec compliance | 13/25 | PR is an honest declared-partial draft of #43; ~6 of 11 criteria met, but one criterion the PR claims as "real" (PII redaction) is broken for names |
-| Correctness under stress | 13/25 | TTS proxy survived all 10 attack inputs; name redaction failed its core case (BLOCKER); three stranded-session edges found by reading |
-| Platform integrity | 12/15 | Only shared-code change (nav z-index tokenization) verified value-identical on both pages; no browser render driven this run |
-| Security | 4/10 | Key correctly server-side, no secrets committed; but the privacy control leaks names, and the proxy is an unauthenticated credit-spending endpoint with no rate limit |
+| Machine checks | 25/25 | Only `audit` (this run) registered — pending by definition; no package.json pre-#9 (normal); `node --check` clean on all 4 JS files; no leftover merge-conflict markers after the main merge |
+| Spec compliance | 24/25 | 13 of 15 acceptance criteria demonstrably met in-checkout; the 2 remaining (live migration run, Vercel env vars) are explicitly disclosed, correctly gated, and degrade gracefully — PR honestly states "part of #43, does not close it". −1: pattern redaction is inherently partial |
+| Correctness under stress | 24/25 | Prior name-redaction BLOCKER genuinely fixed (verified); all 4 prior stranded-session NOTEs resolved; upsert/PATCH-vs-RLS paths correct. −1: redaction misses "I am X"/standalone/lowercase names |
+| Platform integrity | 15/15 | Sole shared-code edit (`.vcp-nav` z-index tokenization) value-identical; all other CSS purely additive; widget is a self-contained IIFE that no-ops when absent; publishable key matches existing telemetry.js; migration schemas match code writes exactly |
+| Security | 9/10 | Privileged keys stay server-side; publishable INSERT-only key is the established pattern (not a secret); rate limiting + input validation on both endpoints; no values in .env.example; .gitignore covers .env*.local. −1: in-memory limiter is best-effort only (acknowledged in code) |
 
 ### Machine checks
 - `gh pr checks`: only `audit` (this run) — pending by definition. No failures.
 - Local lint/build/test: no package.json, no lint configured — normal pre-#9, not a finding.
-- `node --check` on both new JS files: clean.
+- `node --check` on js/voice-widget.js, api/next-turn.js, api/file-feedback.js, api/_rate-limit.js: all clean.
+- No `<<<<<<<`/`=======`/`>>>>>>>` markers left after the `origin/main` merge that touched components.css/tokens.css/demo.html.
 
-### Spec compliance (ticket #43)
-The PR is a draft, explicitly "part of #43 (does not close it yet)". Judged against the full criteria list anyway; disclosed-in-PR gaps are marked (draft-scope).
-- [x] Liquid-motion ball renders fixed bottom-right (index.html), above page content (`--z-widget: 500` > `--z-nav: 100`)
-- [x] `prefers-reduced-motion`: `animation: none` + static `--radius-pill` fallback; verified the higher-specificity `[data-state]` rule cannot re-arm it (it sets only `animation-duration`; `animation-name` stays `none` from the media-query shorthand)
-- [x] Click opens a bottom-anchored panel, no navigation, not full-screen
-- [x] Visible consent notice before mic; explicit Start button arms it; Start disabled with a message when the browser lacks SpeechRecognition
-- [~] TTS + STT plumbing real; contextual follow-ups are keyword-matched canned questions, not an LLM (draft-scope, disclosed)
-- [x] Each open resets `history = []` — no cross-session memory
-- [x] Close ends the session immediately, no confirmation
-- [ ] Session-end summary is `console.log`ged, not filed as a Pending ticket (draft-scope, disclosed) — AND its PII redaction does not redact names (finding 1, NOT disclosed: the PR body lists name redaction under "Real")
-- [ ] Transcript retention separate from the ticket: absent (draft-scope, implied)
-- [ ] New liquid-ball component not documented in demo.html (not in the PR's declared follow-up list either)
-- [ ] Site-wide: widget is on index.html only; demo.html carries the shared nav but no widget
-- No smuggled scope: the `.vcp-nav` z-index tokenization is a supporting refactor, value-identical.
+### Spec compliance (ticket #43, amended 2026-07-05)
+- [x] Liquid-motion ball renders bottom-right on every page, persists across navigation (sessionStorage chrome state), above content (`--z-widget: 500` > `--z-nav: 100`)
+- [x] Animation respects `prefers-reduced-motion` both visually (CSS `transform: none !important`, `border-radius: pill`) AND at the JS level (`startIdle`/`startAudioReactive` no-op under the media query)
+- [x] Clicking the ball opens a bottom-anchored panel without navigating away
+- [x] Visible consent notice before the mic activates; explicit Start button arms it; Start disabled with a message when the browser lacks `SpeechRecognition`
+- [x] Voice in via `SpeechRecognition`, all assistant output text-rendered — no TTS/audio: `supportsVoice` no longer checks `speechSynthesis`; api/tts.js and ElevenLabs fully removed from the tree
+- [x] Questions scoped to extract a scope of work (why/what/acceptance-criteria/out-of-scope) — api/next-turn.js system prompt and the client fallback both reframed
+- [x] Each open starts an independent session, `history = []`, fresh `session_id` — no cross-session memory
+- [x] Closing the widget ends the session immediately, no confirmation
+- [~] Confirm/run the migration against the live Supabase project + verify an end-to-end INSERT: migration `70005_voice_turns.sql` present and schema-correct; PR documents live verification (test rows inserted/deleted). Not independently re-runnable from this audit — accepted on the author's disclosed live test.
+- [x] Session end writes to `vcp_voice_sessions` (transcript/page_context/duration/status) — server-side via file-feedback.js, path documented (service-role key, one consistent code path)
+- [x] Every turn (not just end) persists durably — client inserts one row per utterance into `vcp_voice_turns` (INSERT-only anon key), so an abandoned mid-conversation session still leaves a partial transcript
+- [x] Extracted scope-of-work filed as a Pending ticket via /vcp-spec's board mechanics (same project/field/option IDs, [7xxxx] code computed by scanning all titles), category present
+- [x] `filed_issue` written back to the session row (privileged server-side PATCH)
+- [x] Design-system tokens/components for the chrome; liquid ball documented in demo.html (09 section)
+- [x] Works across the whole site — widget markup + script on all 7 content pages (index/research/projects/library/intent/socials/project-detail)
+- [~] Env vars (GROQ_API_KEY, GITHUB_TOKEN, SUPABASE_SERVICE_ROLE_KEY) not yet in Vercel — explicitly disclosed; both endpoints return a clean "not configured" 500 and the client fallback takes over. Gated on Jose's interactive terminal, not a code defect.
 
 ### Stress tests performed
-- `api/tts.js` handler exercised in Node with a mock req/res (no live upstream): GET→405; POST without `ELEVENLABS_API_KEY`→500; body undefined/empty/whitespace/number/object→400 each; 501-char text→400; upstream fetch throwing→502; upstream 401→passed through with detail. All validation paths correct.
-- `PII_PATTERNS` copied verbatim from js/voice-widget.js:34-38 and run against attack inputs: emails and phones redact ("jose@example.com"→"[redacted-email]"; both phone formats caught, one leaves a stray "(" — cosmetic). Names do NOT redact: "my name is John Smith and I like the nav", "I'm Sarah Connor", "this is Miguel from Vegas" all returned verbatim. Root cause proven: the pattern's `tag` is `"$&".replace(...)`, which executes at definition time against the literal 2-char string `"$&"` (no match, no-op), so the tag is the string `"$&"` — which `String.replace` interprets as "the whole match". The rule substitutes every matched name back into the text unchanged.
-- Read-path edges in the session machine (not browser-driven this run): `audio.play()` at line 206 returns a promise whose rejection (autoplay policy) is unhandled — `onended` never fires and the session strands in "speaking"; `recognition.onerror` (line 244) sets "idle" with no retry affordance, stranding an armed session on e.g. mic-permission denial; the 1.6s `setTimeout` at line 255 is never cleared, so close-and-reopen within 1.6s kills the fresh session.
+- Re-ran the prior BLOCKER's exact cases against the current `PII_PATTERNS` (extracted verbatim, run in Node): "my name is John Smith and I like the nav" → "my name is [redacted-name] and I like the nav"; "this is Miguel from Vegas" → "this is [redacted-name] from Vegas" (does NOT swallow "from"); "Im Bob" → redacted. Emails and phones redact. The name blocker from the previous audit is genuinely fixed.
+- Redaction gaps (NOTE, not blocker — spec scopes this to "pattern-based" + a consent notice): "I am Sarah Connor" survives ("I am" not in the lead-in set), lowercase/standalone names survive, and "(415) 555-0199" leaves a stray "(" (cosmetic).
+- Read-path edges the previous audit flagged, re-checked against the current code: (1) autoplay-stranding is structurally gone — text-out only, no `audio.play()` path exists; (2) `finishTimer` is now stored (finishSession) and cleared in both startSession and endSession, so close+reopen within 1.6s no longer kills the fresh session; (3) `recognition.onerror` now routes permission errors to `renderMicError` (retry affordance) and re-listens only on transient no-speech/aborted.
+- `arm()` calls `askQuestion(turn.question)` without a `done` check, but only ever runs on an empty history where `fetchNextTurn` returns the constant OPENING_QUESTION — `question` is always defined on that path; subsequent turns route through `onresult`, which does check `turn.done`. No undefined-question crash.
+- file-feedback.js required-field validation (transcript/sessionId/pageContext length+type) present; `recordVoiceSession` supplies non-null `transcript` and `page_context: pageContext || "unknown"`, satisfying the table's NOT NULL constraints; `status` is a valid enum value ('completed'|'abandoned').
 
 ### Integrity sweep
-- Diff is 7 files; the only edit to pre-existing shared code is css/components.css:19 `.vcp-nav` `z-index: 100` → `var(--z-nav)`. Verified `--z-nav: 100` is defined in css/tokens.css `:root` and that both consumers of the nav (index.html:11-13, demo.html:10-12) load tokens.css before components.css — computed value identical to main on every page.
-- demo.html is otherwise untouched and byte-identical to main.
-- css/tokens.css additions are new tokens only (`--dur-ambient`, `--z-nav`, `--z-widget`) plus `--dur-ambient: 0ms` in the existing reduced-motion block — no existing token changed.
-- index.html additions are appended at the end of `<body>` (widget markup + one script tag); no existing markup touched. Widget script is an IIFE that no-ops if `#vcp-voice-widget` is absent, so pages without the markup are unaffected.
-- .gitignore gains `.vercel` only; .env.example contains no values.
-- One-off rgba()/px values in the new component CSS match the established idiom of components.css on main (verified existing rgba usage) — not a design-law violation.
-- Unverified: no browser render was driven on this runner; visual behavior relies on the PR author's reported Chrome run plus static analysis above.
+- Diff is 17 files. The ONLY edit to a pre-existing shared CSS rule is css/components.css:19 `.vcp-nav` `z-index: 100` → `var(--z-nav)`, and css/tokens.css defines `--z-nav: 100` — computed value identical to main. Every other components.css/tokens.css change is a new `.vcp-voice-*`/liquid selector or a new token; no existing rule's value changed.
+- Widget markup on the 6 newly-touched pages is appended after the existing script tags, before `</body>`; existing markup untouched. The script is an IIFE that no-ops when `#vcp-voice-widget` is absent, so any page without the block is unaffected.
+- Supabase: both tables' schemas (70002 vcp_voice_sessions, 70005 vcp_voice_turns) match every field the code writes; both are anon-INSERT-only under RLS, and the privileged file-feedback.js upsert/PATCH correctly relies on the service-role key bypassing RLS. Existing records remain readable — the code only adds rows, never migrates the schema.
+- The committed `sb_publishable_...` key in voice-widget.js:215 is byte-identical to the one already on main in js/telemetry.js:14 — same publishable INSERT-only key, no new secret exposure.
+- .env.example carries no values; .gitignore now covers `.env*.local` (all `vercel env pull` variants).
+- Not independently verified on this runner: live browser render (Chrome extension was disconnected during the author's last session) and live Supabase/GitHub round-trips (require provisioned secrets). Scored on static + Node execution evidence plus the author's disclosed live tests, not assumed to pass.
 
 ### Findings
-1. BLOCKER — js/voice-widget.js:37 — Name redaction is a silent no-op: the pattern's replacement evaluates to the literal string `"$&"` (whole-match backreference), so "my name is John Smith" survives redaction verbatim. The PR body lists name redaction under "Real". Fix: capture the lead-in phrase and use a replacer, e.g. `re: /\b(my name is|i'?m|this is)\s+[A-Z][a-zA-Z'-]+(?:\s+[A-Z][a-zA-Z'-]+)?/gi, tag: "$1 [redacted-name]"`.
-2. NOTE — api/tts.js:20 — The proxy is unauthenticated and unthrottled; the 500-char cap is per-request, so a loop drains ElevenLabs credits freely on a public site. Add rate limiting and/or an origin allowlist before `ELEVENLABS_API_KEY` is ever provisioned (deployment is currently blocked on Vercel linking, which is the only reason this is not a BLOCKER).
-3. NOTE — js/voice-widget.js:206 — `audio.play()` rejection (autoplay policy) is unhandled: `onended` never fires and the session strands in "speaking". Add `.catch(function(){ self.speakWithBrowserTts(question); })` or route to `listen()`.
-4. NOTE — js/voice-widget.js:255 — The 1.6s end-of-session timer is never stored/cleared; closing and reopening within 1.6s makes the stale timer end the brand-new session. Keep the handle and clear it in `endSession`/`startSession`.
-5. NOTE — js/voice-widget.js:244 — `recognition.onerror` drops to "idle" with no retry affordance; a visitor who denies mic permission right after consenting gets a dead panel whose only exit is close. Render a retry (or re-consent) state instead.
+1. NOTE — js/voice-widget.js:104 — Pattern-based name redaction only catches capitalized names after an explicit lead-in ("my name is / this is / I'm"). "I am Sarah Connor", standalone names, and lowercase names pass through unredacted. This is within the spec's declared "pattern-based" scope and backstopped by the consent notice, so it's an accepted limitation — but an LLM-side redaction pass (already noted as a #43 follow-up) is the real fix before this handles adversarial input.
+2. NOTE — api/_rate-limit.js:20 — The limiter is in-memory per instance, so it does not enforce a hard global cap across Vercel's concurrent instances/cold starts (the module says so itself). Fine as the cheap first line at launch scale; swap to Vercel KV/Upstash if the widget ever sees real traffic.
+3. NOTE — js/voice-widget.js:95 — The phone pattern leaves a stray leading "(" on "(415) 555-0199" → "([redacted-phone]". Cosmetic only; the digits are redacted.
