@@ -1,87 +1,59 @@
 [
   {
-    "slug": "signal-relay",
-    "name": "[PLACEHOLDER] Signal Relay",
-    "one_liner": "A one-milestone placeholder project to test the minimal timeline case.",
+    "slug": "caneycloud",
+    "name": "CaneyCloud",
+    "one_liner": "Hotel operating system for Venezuela — posadas, boutique hotels, and hostels sell, operate, and collect payments from one place.",
+    "status": "Active",
+    "client": "VCP build",
+    "website": "https://www.caneycloud.com/",
+    "logo": "assets/logos/caneycloud.png",
+    "overview": "<p>CaneyCloud is a hotel operating system built for Venezuelan hospitality — posadas, boutique hotels, hostels, glamping, and apartment-hotels. It brings reservations, WhatsApp sales, payments, and invoicing into a single platform, replacing the scattered spreadsheets, chat groups, and disconnected payment systems small operators run on today.</p><p>The product covers the whole operating loop: a drag-and-drop reservation calendar synced against Booking.com, Airbnb, Expedia and direct channels; a point of sale for restaurant, minibar, tours and spa; operational inventory; dynamic pricing driven by occupancy and demand; and an AI-assisted WhatsApp agent that answers with the hotel's own context while the team keeps control.</p>",
+    "timeline": null,
+    "moat": "<p>Built Venezuela-first, where global PMS vendors don't reach: dual-currency operation (USD and VES) with SENIAT-compatible fiscal invoicing, channel sync designed for zero overbooking across OTAs and direct sales, and WhatsApp — the channel Venezuelan hotels actually sell on — treated as a first-class sales surface with AI assistance under team oversight.</p>",
+    "business_model": "<p>SaaS subscription for hospitality operators. Hotels start on a free tier — up to two users, no credit card — and grow into paid plans as the team and property scale.</p>",
+    "specifics": {
+      "Website": "https://www.caneycloud.com/",
+      "Market": "Posadas, boutique hotels, hostels, glamping — Venezuela",
+      "Product": "PMS + channel manager + POS + WhatsApp AI agent",
+      "Channels": "Booking.com, Airbnb, Expedia + direct",
+      "Billing": "USD & VES, SENIAT-compatible invoicing"
+    },
+    "related": null
+  },
+  {
+    "slug": "vamosavenezuela",
+    "name": "VamosaVenezuela",
+    "one_liner": "A booking platform for the Venezuela you haven't seen — curated stays, dining, and experiences across every region of the country.",
+    "status": "Active",
+    "client": "VCP build",
+    "website": "https://vamosavenezuela.com/",
+    "logo": "assets/logos/vamosavenezuela.svg",
+    "overview": "<p>VamosaVenezuela is a travel guide and trip-planning platform for Venezuelan tourism. It curates places to stay, dining, and activities across eight regions — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — plus landscape categories from beaches and islands to tepuis and jungle.</p><p>Beyond destination guides, the platform ships real planning tools: an interactive map, flight search, sample trips, and a custom itinerary builder. Every destination carries an editorial safety rating, so travelers know what to expect before they commit.</p>",
+    "timeline": null,
+    "moat": "<p>Editorial curation plus a per-destination safety-rating system — a trust layer no generic travel site offers for Venezuela. The content depth across all eight regions, hidden gems included, is the kind of ground-truth coverage a competitor can't scrape together quickly.</p>",
+    "business_model": "<p>Audience-first: the platform builds traffic through curated destination content, with flight search and stay/experience listings as the natural referral and booking surfaces to monetize as the audience grows.</p>",
+    "specifics": {
+      "Website": "https://vamosavenezuela.com/",
+      "Coverage": "8 regions + landscape categories across Venezuela",
+      "Content": "Destinations, stays, gastronomy, experiences, itineraries",
+      "Safety": "Per-destination editorial risk ratings",
+      "Tools": "Interactive map, flight search, itinerary builder"
+    },
+    "related": null
+  },
+  {
+    "slug": "pipa-database",
+    "name": "PIPA Database",
+    "one_liner": "A centralized operating system for e-commerce brands to handle analytics, decision making, and advertising.",
     "status": "Incubating",
-    "client": "Confidential",
-    "overview": "<p>[PLACEHOLDER] This project is a stand-in for real content — it exists to prove the detail template renders correctly with only a single timeline milestone and no optional sections.</p><p>Replace this overview with the real problem statement and outcome once Jose supplies content.</p>",
-    "timeline": [
-      { "date": "2026-06", "title": "Kickoff", "note": "[PLACEHOLDER] Engagement scoped and kicked off." }
-    ],
+    "client": "VCP build",
+    "website": null,
+    "logo": "assets/logos/pipa.png",
+    "overview": "<p>PIPA Database is a centralized operating system for e-commerce brands: analytics, decision making, and advertising handled from one place. It is still incubating — \"PIPA Database\" is a working title, and the full write-up will land here as the build matures.</p>",
+    "timeline": null,
     "moat": null,
     "business_model": null,
     "specifics": null,
     "related": null
-  },
-  {
-    "slug": "atlas-underwriting",
-    "name": "[PLACEHOLDER] Atlas Underwriting Engine",
-    "one_liner": "A five-milestone placeholder project exercising the moat and specifics sections.",
-    "status": "Active",
-    "client": "Atlas Capital Partners",
-    "overview": "<p>[PLACEHOLDER] Atlas needed faster, more consistent underwriting decisions on a growing deal pipeline without adding headcount.</p><p>[PLACEHOLDER] VCP built an underwriting engine that combines structured deal data with a review workflow, cutting decision turnaround while keeping a human in the loop for every call.</p>",
-    "timeline": [
-      { "date": "2026-01", "title": "Discovery", "note": "[PLACEHOLDER] Mapped the existing underwriting workflow and data sources." },
-      { "date": "2026-02", "title": "Data model", "note": "[PLACEHOLDER] Defined the deal schema and scoring inputs." },
-      { "date": "2026-03", "title": "Engine v1", "note": "[PLACEHOLDER] Shipped first scoring pass to a pilot group of underwriters." },
-      { "date": "2026-05", "title": "Workflow integration", "note": "[PLACEHOLDER] Wired the engine into the existing review queue." },
-      { "date": "2026-06", "title": "Full rollout", "note": "[PLACEHOLDER] Rolled out to the entire underwriting team." }
-    ],
-    "moat": "<p>[PLACEHOLDER] Proprietary scoring model trained on a decade of Atlas's own deal outcomes — a dataset a competitor cannot replicate without the same history.</p>",
-    "business_model": null,
-    "specifics": {
-      "Stack": "[PLACEHOLDER] Python, Postgres, internal review UI",
-      "Team": "[PLACEHOLDER] 2 engineers, 1 domain expert",
-      "Repo": "[PLACEHOLDER] private — client-owned"
-    },
-    "related": null
-  },
-  {
-    "slug": "meridian-marketplace",
-    "name": "[PLACEHOLDER] Meridian Marketplace",
-    "one_liner": "A twenty-milestone placeholder project exercising the full long-timeline and all optional sections.",
-    "status": "Completed",
-    "client": "Meridian Holdings",
-    "overview": "<p>[PLACEHOLDER] Meridian wanted to stand up a two-sided marketplace connecting regional suppliers with mid-market buyers, replacing a slow, manual quoting process run over email and spreadsheets.</p><p>[PLACEHOLDER] VCP designed and built the marketplace end to end — listings, quoting, payments, and post-sale logistics tracking — and handed off a fully staffed internal team to run it.</p>",
-    "timeline": [
-      { "date": "2025-01", "title": "Opportunity sizing", "note": "[PLACEHOLDER] Sized the addressable supplier and buyer base." },
-      { "date": "2025-02", "title": "Discovery interviews", "note": "[PLACEHOLDER] Interviewed 20 suppliers and 15 buyers." },
-      { "date": "2025-02", "title": "Spec v0", "note": "[PLACEHOLDER] Drafted the initial product spec." },
-      { "date": "2025-03", "title": "Design system", "note": "[PLACEHOLDER] Established the marketplace's visual and interaction language." },
-      { "date": "2025-03", "title": "Supplier onboarding flow", "note": "[PLACEHOLDER] Built the supplier listing and verification flow." },
-      { "date": "2025-04", "title": "Buyer search & quoting", "note": "[PLACEHOLDER] Shipped search, filtering, and quote requests." },
-      { "date": "2025-04", "title": "Private alpha", "note": "[PLACEHOLDER] Launched to 5 supplier and 5 buyer accounts." },
-      { "date": "2025-05", "title": "Payments integration", "note": "[PLACEHOLDER] Integrated escrowed payments for completed orders." },
-      { "date": "2025-05", "title": "Alpha feedback pass", "note": "[PLACEHOLDER] Incorporated feedback from alpha cohort." },
-      { "date": "2025-06", "title": "Logistics tracking", "note": "[PLACEHOLDER] Added shipment tracking and delivery confirmation." },
-      { "date": "2025-06", "title": "Private beta", "note": "[PLACEHOLDER] Expanded to 30 supplier and 40 buyer accounts." },
-      { "date": "2025-07", "title": "Trust & safety pass", "note": "[PLACEHOLDER] Added dispute resolution and fraud checks." },
-      { "date": "2025-08", "title": "Beta feedback pass", "note": "[PLACEHOLDER] Second round of product changes from beta usage." },
-      { "date": "2025-09", "title": "Billing & invoicing", "note": "[PLACEHOLDER] Automated supplier payouts and buyer invoicing." },
-      { "date": "2025-09", "title": "Admin console", "note": "[PLACEHOLDER] Internal tools for the Meridian ops team." },
-      { "date": "2025-10", "title": "Public launch", "note": "[PLACEHOLDER] Opened the marketplace to all suppliers and buyers." },
-      { "date": "2025-11", "title": "Growth loop v1", "note": "[PLACEHOLDER] Shipped referral and repeat-order incentives." },
-      { "date": "2025-12", "title": "Scale hardening", "note": "[PLACEHOLDER] Performance and reliability work ahead of peak season." },
-      { "date": "2026-02", "title": "Internal team handoff", "note": "[PLACEHOLDER] Trained and transitioned to Meridian's internal team." },
-      { "date": "2026-03", "title": "Engagement close", "note": "[PLACEHOLDER] VCP engagement formally closed; marketplace fully owned by Meridian." }
-    ],
-    "moat": "<p>[PLACEHOLDER] Two-sided network effects plus exclusive integration with Meridian's existing supplier contracts — new entrants would need to rebuild both sides of the market from zero.</p>",
-    "business_model": "<p>[PLACEHOLDER] Take-rate on completed transactions, plus a flat monthly fee for suppliers above a listing threshold.</p><table><thead><tr><th>Revenue line</th><th>Mechanism</th><th>Share of revenue</th></tr></thead><tbody><tr><td>Transaction take-rate</td><td>% of each completed order</td><td>[PLACEHOLDER] ~70%</td></tr><tr><td>Supplier subscriptions</td><td>Flat monthly fee above listing threshold</td><td>[PLACEHOLDER] ~25%</td></tr><tr><td>Featured placement</td><td>Paid search ranking boost</td><td>[PLACEHOLDER] ~5%</td></tr></tbody></table>",
-    "specifics": {
-      "Stack": "[PLACEHOLDER] TypeScript, Next.js, Postgres, Stripe Connect",
-      "Team": "[PLACEHOLDER] 4 engineers, 1 designer, 1 PM",
-      "Links": "[PLACEHOLDER] meridianmarketplace.example.com",
-      "Repo": "[PLACEHOLDER] private — transferred to Meridian on handoff",
-      "Metrics": "[PLACEHOLDER] 300+ suppliers, 1,200+ buyers at handoff"
-    },
-    "related": {
-      "research": [
-        { "label": "[PLACEHOLDER] Two-sided marketplace liquidity", "href": "/research.html" }
-      ],
-      "library": [
-        { "label": "[PLACEHOLDER] Marketplace trust & safety white paper", "href": "/library.html" }
-      ]
-    }
   }
 ]

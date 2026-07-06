@@ -3,10 +3,11 @@
  *
  * Single template shared by every project: reads ?slug= from the URL,
  * looks up the matching entry in data/projects.json (via js/projects-data.js),
- * and renders all 7 sections (header, overview, timeline, moat, business
- * model, specifics, related). Optional sections (moat, business_model,
- * specifics, related) are omitted entirely — heading and all — when the
- * underlying data is null/empty, per the acceptance criteria.
+ * and renders up to 7 sections (header, overview, timeline, moat, business
+ * model, specifics, related). Every section after the header is optional —
+ * omitted entirely, heading and all, when the underlying data is null/empty —
+ * and section numbers are assigned to the sections that actually render, so
+ * a minimal entry never shows gaps in the numbering.
  */
 (function () {
   'use strict';
@@ -39,29 +40,28 @@
   function renderHeader(project) {
     return (
       '<header class="vcp-detail-header">' +
-        '<p class="detail-back"><a class="vcp-link" href="projects.html">&larr; All projects</a></p>' +
-        '<div class="vcp-detail-header__meta" style="margin-top: var(--space-4);">' +
-          '<span class="vcp-tag vcp-tag--dot">' + escapeHtml(project.status) + '</span>' +
-          '<span class="vcp-tag">' + escapeHtml(project.client || 'Confidential') + '</span>' +
-        '</div>' +
+        '<p class="detail-back"><a class="vcp-link" href="projects.html">&larr; Portfolio</a></p>' +
+        (project.logo
+          ? '<span class="vcp-logo-chip vcp-logo-chip--lg" style="margin-top: var(--space-4);"><img src="' + escapeHtml(project.logo) + '" alt=""></span>'
+          : '') +
         '<h1 class="sheen-text">' + escapeHtml(project.name) + '</h1>' +
         '<p class="vcp-detail-header__thesis">' + escapeHtml(project.one_liner) + '</p>' +
       '</header>'
     );
   }
 
-  // 2. Overview — required, rich text (trusted HTML from our own data file).
-  function renderOverview(project) {
+  // Overview — rich text (trusted HTML from our own data file).
+  function renderOverview(project, num) {
     return (
       '<section class="detail-section" id="overview">' +
-        sectionHeading('02', 'Overview') +
+        sectionHeading(num, 'Overview') +
         '<div class="vcp-prose" style="max-width: 72ch;">' + project.overview + '</div>' +
       '</section>'
     );
   }
 
-  // 3. Timeline — required, list of {date, title, note}. Must handle 1, 5, 20+ items.
-  function renderTimeline(project) {
+  // Timeline — list of {date, title, note}. Must handle 1, 5, 20+ items.
+  function renderTimeline(project, num) {
     var items = project.timeline.map(function (m) {
       return (
         '<li class="vcp-timeline__item">' +
@@ -75,18 +75,17 @@
 
     return (
       '<section class="detail-section" id="timeline">' +
-        sectionHeading('03', 'Timeline') +
+        sectionHeading(num, 'Timeline') +
         '<ol class="vcp-timeline" style="max-width: 72ch;">' + items + '</ol>' +
       '</section>'
     );
   }
 
-  // 4. Moat — optional, highlighted panel. Omit entirely (heading included) if absent.
-  function renderMoat(project) {
-    if (isBlank(project.moat)) return '';
+  // Moat — highlighted panel.
+  function renderMoat(project, num) {
     return (
       '<section class="detail-section" id="moat">' +
-        sectionHeading('04', 'Moat') +
+        sectionHeading(num, 'Moat') +
         '<div class="vcp-panel" style="max-width: 72ch;">' +
           '<div class="label-caps label-caps--wide vcp-panel__label">Defensibility</div>' +
           '<div class="vcp-prose">' + project.moat + '</div>' +
@@ -95,32 +94,34 @@
     );
   }
 
-  // 5. Business model — optional, rich text, may include a simple table.
-  function renderBusinessModel(project) {
-    if (isBlank(project.business_model)) return '';
+  // Business model — rich text, may include a simple table.
+  function renderBusinessModel(project, num) {
     return (
       '<section class="detail-section" id="business-model">' +
-        sectionHeading('05', 'Business model') +
+        sectionHeading(num, 'Business model') +
         '<div class="vcp-prose" style="max-width: 72ch;">' + project.business_model + '</div>' +
       '</section>'
     );
   }
 
-  // 6. Specifics — optional, flexible key-value block.
-  function renderSpecifics(project) {
-    if (isBlank(project.specifics)) return '';
+  // Specifics — flexible key-value block. URL values render as links.
+  function renderSpecifics(project, num) {
     var rows = Object.keys(project.specifics).map(function (key) {
+      var value = project.specifics[key];
+      var valueHtml = /^https?:\/\//.test(String(value))
+        ? '<a class="vcp-link" href="' + escapeHtml(value) + '" target="_blank" rel="noopener">' + escapeHtml(value) + '</a>'
+        : escapeHtml(value);
       return (
         '<div>' +
           '<dt>' + escapeHtml(key) + '</dt>' +
-          '<dd>' + escapeHtml(project.specifics[key]) + '</dd>' +
+          '<dd>' + valueHtml + '</dd>' +
         '</div>'
       );
     }).join('');
 
     return (
       '<section class="detail-section" id="specifics">' +
-        sectionHeading('06', 'Specifics') +
+        sectionHeading(num, 'Specifics') +
         '<div class="vcp-card" style="max-width: 72ch;"><div class="vcp-card__body">' +
           '<dl class="vcp-kv">' + rows + '</dl>' +
         '</div></div>' +
@@ -128,13 +129,17 @@
     );
   }
 
-  // 7. Related — optional, refs to research topics / library papers.
-  function renderRelated(project) {
-    if (isBlank(project.related)) return '';
+  // Related — refs to research topics / library papers.
+  function relatedGroups(project) {
+    if (isBlank(project.related)) return [];
     var groups = [];
     if (!isBlank(project.related.research)) groups.push({ label: 'Research', items: project.related.research });
     if (!isBlank(project.related.library)) groups.push({ label: 'Library', items: project.related.library });
-    if (groups.length === 0) return '';
+    return groups;
+  }
+
+  function renderRelated(project, num) {
+    var groups = relatedGroups(project);
 
     var lists = groups.map(function (group) {
       var items = group.items.map(function (item) {
@@ -153,24 +158,34 @@
 
     return (
       '<section class="detail-section" id="related">' +
-        sectionHeading('07', 'Related') +
+        sectionHeading(num, 'Related') +
         '<ul class="related-list" style="max-width: 72ch;">' + lists + '</ul>' +
       '</section>'
     );
   }
 
   function renderProject(project) {
-    document.title = project.name + ' — VCP Projects';
+    document.title = project.name + ' — VCP Portfolio';
 
-    var sections = [
-      renderHeader(project),
-      renderOverview(project),
-      renderTimeline(project),
-      renderMoat(project),
-      renderBusinessModel(project),
-      renderSpecifics(project),
-      renderRelated(project)
-    ].filter(function (html) { return html !== ''; });
+    // Each section that actually has content takes the next number starting
+    // at 01 (the site convention, see demo.html), so minimal entries never
+    // show gaps in the numbering.
+    var sectionDefs = [
+      { blank: isBlank(project.overview), render: renderOverview },
+      { blank: isBlank(project.timeline), render: renderTimeline },
+      { blank: isBlank(project.moat), render: renderMoat },
+      { blank: isBlank(project.business_model), render: renderBusinessModel },
+      { blank: isBlank(project.specifics), render: renderSpecifics },
+      { blank: relatedGroups(project).length === 0, render: renderRelated }
+    ];
+
+    var sections = [renderHeader(project)];
+    var next = 1;
+    sectionDefs.forEach(function (def) {
+      if (def.blank) return;
+      sections.push(def.render(project, ('0' + next).slice(-2)));
+      next++;
+    });
 
     root.innerHTML = sections.join('');
   }
@@ -179,7 +194,7 @@
     root.innerHTML =
       '<div class="detail-notfound">' +
         '<p>This project could not be found.</p>' +
-        '<p><a class="vcp-link" href="projects.html">&larr; Back to all projects</a></p>' +
+        '<p><a class="vcp-link" href="projects.html">&larr; Back to the portfolio</a></p>' +
       '</div>';
   }
 

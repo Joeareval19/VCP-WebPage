@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP — Vegas Consulting Partners</title>
-<meta name="description" content="Jose Ernesto Arevalo, founder of Vegas Consulting Partners. Projects, research, and white papers, published in the open as they happen.">
+<meta name="description" content="Jose Ernesto Arevalo, founder of Vegas Consulting Partners. The portfolio, research, and white papers, published in the open as they happen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -187,8 +187,6 @@
     .work-band { grid-template-columns: 1fr; }
     .work-cols { grid-template-columns: 1fr; }
     .connect-band { grid-template-columns: 1fr; }
-    .vcp-nav { flex-wrap: wrap; }
-    .vcp-nav__links { flex-wrap: wrap; gap: var(--space-3); }
   }
 </style>
 </head>
@@ -202,11 +200,16 @@
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
   </a>
-  <ul class="vcp-nav__links">
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="/" aria-current="page">Home</a></li>
     <li><a href="/intent.html">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
-    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/projects.html">Portfolio</a></li>
     <li><a href="/library.html">Library</a></li>
     <li><a href="/socials.html">Socials</a></li>
   </ul>
@@ -246,9 +249,9 @@
         </article>
         <article class="work-col">
           <span class="work-col__num">02</span>
-          <h3>Projects</h3>
+          <h3>Portfolio</h3>
           <p>Every engagement and internal build, indexed, each with its own breakout.</p>
-          <a class="vcp-link" href="/projects.html">See the projects</a>
+          <a class="vcp-link" href="/projects.html">See the portfolio</a>
         </article>
         <article class="work-col">
           <span class="work-col__num">03</span>
@@ -278,7 +281,7 @@
       </div>
       <a class="connect-box" href="/projects.html">
         <p>See everything VCP is building.</p>
-        <span class="vcp-link" style="border: none;">View the projects →</span>
+        <span class="vcp-link" style="border: none;">View the portfolio →</span>
       </a>
     </div>
   </section>
@@ -293,7 +296,7 @@
   <ul class="vcp-footer__links">
     <li><a href="/intent.html">The Intent</a></li>
     <li><a href="/research.html">Research</a></li>
-    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/projects.html">Portfolio</a></li>
     <li><a href="/library.html">Library</a></li>
     <li><a href="/socials.html">Socials</a></li>
   </ul>
@@ -302,6 +305,7 @@
 
 </div>
 
+<script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>

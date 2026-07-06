@@ -7,6 +7,7 @@
    Overlay visuals live in css/components.css (html.vcp-dip pseudo-elements). */
 (function () {
   var KEY = 'vcp-dip-title';
+  var SEEN_KEY = 'vcp-dip-seen';
   /* Handoff: navigate just after --dur-dip-in (320ms) completes; the
      --hold breathe animation's -340ms delay in components.css matches. */
   var NAV_DELAY = 340;
@@ -14,6 +15,31 @@
 
   var root = document.documentElement;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* First-visit gate (issue #89): the dip plays only for pages not yet
+     seen this session — repeat visits navigate plainly. */
+  function norm(path) {
+    return path.replace(/\/index\.html$/, '/') || '/';
+  }
+
+  function seenPages() {
+    try { return JSON.parse(sessionStorage.getItem(SEEN_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+
+  function markSeen(path) {
+    try {
+      var seen = seenPages();
+      if (seen.indexOf(path) === -1) {
+        seen.push(path);
+        sessionStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+      }
+    } catch (e) {}
+  }
+
+  /* Every load counts as a visit, including direct entry — landing on
+     Home means nav-clicking back to Home later shows no dip. */
+  markSeen(norm(window.location.pathname));
 
   function clear() {
     root.classList.remove('vcp-dip', 'vcp-dip--in', 'vcp-dip--hold', 'vcp-dip--out');
@@ -56,6 +82,8 @@
     var url = new URL(link.href, window.location.href);
     if (url.origin !== window.location.origin || url.hash) return;
     if (url.pathname === window.location.pathname) return;
+    /* Already seen this session → plain navigation, no dip (issue #89) */
+    if (seenPages().indexOf(norm(url.pathname)) !== -1) return;
 
     e.preventDefault();
     var title = (link.textContent || '').trim();

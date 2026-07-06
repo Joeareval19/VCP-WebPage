@@ -19,6 +19,8 @@
   .demo-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
   .demo-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .demo-swatch { height: 64px; border-radius: var(--radius); border: 1px solid var(--line); }
+  /* Static samples of the mobile nav toggle, visible at any width */
+  .demo-toggle-sample { display: inline-flex; }
   @media (max-width: 900px) {
     .demo-grid-2, .demo-grid-3 { grid-template-columns: 1fr; }
     h1 { font-size: var(--fs-56); }
@@ -35,7 +37,12 @@
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
   </a>
-  <ul class="vcp-nav__links">
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="#cards" aria-current="page">Work</a></li>
     <li><a href="#cards">Research</a></li>
     <li><a href="#narrative">Story</a></li>
@@ -128,6 +135,22 @@
       <h2>Navigation</h2>
     </div>
     <p class="text-muted" style="font-size: var(--fs-14);">The glass nav bar at the top of this page is the component — sticky, translucent, wordmark in sheen, one silver call-to-action.</p>
+
+    <h3 style="margin-top: var(--space-5);">Mobile nav (issue #85)</h3>
+    <p class="text-muted" style="font-size: var(--fs-14);">At ≤900px the links collapse behind a menu toggle, the wordmark grows to <code>--fs-28</code>, and the pill slides away on scroll-down (back on scroll-up) — resize this page below 900px to drive the live nav above. Toggle states:</p>
+    <div class="demo-row">
+      <span class="vcp-nav__toggle demo-toggle-sample" aria-hidden="true" aria-expanded="false">
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+      </span>
+      <span class="vcp-nav__toggle demo-toggle-sample" aria-hidden="true" aria-expanded="true">
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+      </span>
+      <span class="text-muted" style="font-size: var(--fs-12);">closed · open</span>
+    </div>
   </section>
 
   <!-- ============ 04 BUTTONS ============ -->
@@ -152,6 +175,11 @@
       <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="true">All</button>
       <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="false">AI</button>
       <button type="button" class="vcp-tag vcp-tag--filter" aria-pressed="false">Markets</button>
+    </div>
+    <div class="demo-row" style="gap: 14px; margin-top: 24px;">
+      <span class="vcp-logo-chip"><img src="assets/logos/caneycloud.png" alt="CaneyCloud logo"></span>
+      <span class="vcp-logo-chip"><img src="assets/logos/pipa.png" alt="PIPA wordmark (wide marks widen the chip)"></span>
+      <span class="vcp-logo-chip vcp-logo-chip--lg"><img src="assets/logos/vamosavenezuela.svg" alt="VamosaVenezuela logo, large chip variant"></span>
     </div>
   </section>
 
@@ -278,6 +306,13 @@
       <img src="assets/intent-banner-caracas.jpg" alt="Panoramic view of Caracas beneath the El Ávila mountain range">
     </div>
     <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Add <code>.vcp-media-banner--film</code> with an <code>&lt;img&gt;</code> child: static SVG grain overlay plus a slight contrast/saturation mute makes the photo read like film. Grain is static — no motion to suppress.</p>
+    <div class="label-caps label-caps--wide" style="margin: 34px 0 18px;">Editorial prose (issue #88)</div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">Nothing on this page was written to fill space — the lede runs full width in the display serif, opened by a drop cap, the way a magazine feature begins.</p>
+      <p>Body paragraphs then flow two per row, whole paragraphs side by side, so a long read feels like columns in print rather than one narrow scroll.</p>
+      <p>Below 900px the grid folds to a single column, and full-width breakers — pull quotes, lists, links — carry <code>.vcp-editorial__span</code>.</p>
+    </div>
+    <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Magazine-article prose: <code>.vcp-editorial</code> grid with a <code>.vcp-editorial__lede</code> (drop cap via <code>::first-letter</code>) and two-per-row body paragraphs. Used on The Intent.</p>
   </section>
 
   <!-- ============ 08 PROJECT DETAIL ELEMENTS ============ -->
@@ -456,6 +491,7 @@
 
 </div>
 
+<script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
