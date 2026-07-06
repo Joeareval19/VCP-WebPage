@@ -810,6 +810,49 @@
   mix-blend-mode: overlay;
 }
 
+/* === Editorial prose (issue #88) === */
+/* Magazine-article prose: a full-width lede with a drop cap, then body
+   paragraphs flowing two per row. Whole paragraphs never split across
+   columns. Flow breakers (pull quotes, lists, links) span full width via
+   .vcp-editorial__span. Collapses to one column below 900px. */
+.vcp-editorial {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-6);
+  row-gap: var(--space-4);
+  align-items: start;
+}
+
+.vcp-editorial > p { margin: 0; }
+
+.vcp-editorial__span {
+  grid-column: 1 / -1;
+}
+
+.vcp-editorial__lede {
+  grid-column: 1 / -1;
+  max-width: 62ch;
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  line-height: 1.55;
+  color: var(--silver);
+}
+
+/* Drop cap on the lede — display serif, no sheen (the sheen stays reserved
+   for wordmark/headings per DESIGN.md rule 3) */
+.vcp-editorial__lede::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 3.1em;
+  line-height: 0.8;
+  padding: 0.05em 0.12em 0 0;
+  color: var(--silver-bright);
+}
+
+@media (max-width: 900px) {
+  .vcp-editorial { grid-template-columns: 1fr; }
+}
+
 /* === Page transition: title dip (issue #57) === */
 /* The overlay renders as pseudo-elements on <html> so the inline pre-paint
    snippet in each page's <head> can show it before first paint — no DOM
