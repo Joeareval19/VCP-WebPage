@@ -19,6 +19,8 @@
   .demo-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
   .demo-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .demo-swatch { height: 64px; border-radius: var(--radius); border: 1px solid var(--line); }
+  /* Static samples of the mobile nav toggle, visible at any width */
+  .demo-toggle-sample { display: inline-flex; }
   @media (max-width: 900px) {
     .demo-grid-2, .demo-grid-3 { grid-template-columns: 1fr; }
     h1 { font-size: var(--fs-56); }
@@ -35,7 +37,12 @@
     <span class="vcp-nav__divider"></span>
     <span class="label-caps">Vegas Consulting Partners</span>
   </a>
-  <ul class="vcp-nav__links">
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="#cards" aria-current="page">Work</a></li>
     <li><a href="#cards">Research</a></li>
     <li><a href="#narrative">Story</a></li>
@@ -128,6 +135,22 @@
       <h2>Navigation</h2>
     </div>
     <p class="text-muted" style="font-size: var(--fs-14);">The glass nav bar at the top of this page is the component — sticky, translucent, wordmark in sheen, one silver call-to-action.</p>
+
+    <h3 style="margin-top: var(--space-5);">Mobile nav (issue #85)</h3>
+    <p class="text-muted" style="font-size: var(--fs-14);">At ≤900px the links collapse behind a menu toggle, the wordmark grows to <code>--fs-28</code>, and the pill slides away on scroll-down (back on scroll-up) — resize this page below 900px to drive the live nav above. Toggle states:</p>
+    <div class="demo-row">
+      <span class="vcp-nav__toggle demo-toggle-sample" aria-hidden="true" aria-expanded="false">
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+      </span>
+      <span class="vcp-nav__toggle demo-toggle-sample" aria-hidden="true" aria-expanded="true">
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+        <span class="vcp-nav__toggle-bar"></span>
+      </span>
+      <span class="text-muted" style="font-size: var(--fs-12);">closed · open</span>
+    </div>
   </section>
 
   <!-- ============ 04 BUTTONS ============ -->
@@ -435,6 +458,7 @@
 
 </div>
 
+<script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>

@@ -38,6 +38,10 @@
 
   /* Liquid glass material */
   --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  /* Near-opaque glass for floating menus (mobile nav dropdown): a popover
+     that escapes its blurred parent can't rely on backdrop-filter for
+     legibility, so it carries its own body */
+  --glass-bg-solid: linear-gradient(135deg, rgba(43, 46, 52, 0.97), rgba(23, 25, 29, 0.97));
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-blur: 24px;
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.14);

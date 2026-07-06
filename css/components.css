@@ -77,6 +77,90 @@
   color: var(--on-silver);
 }
 
+/* Menu toggle (issue #85) — desktop hides it; ≤900px it replaces the
+   inline links. Appearance + X-morph live outside the media query so
+   demo.html can render the states at any width. */
+.vcp-nav__toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--glass-bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.vcp-nav__toggle:hover { border-color: var(--line-hover); }
+
+.vcp-nav__toggle-bar {
+  width: 16px;
+  height: 1.5px;
+  background: var(--silver);
+  transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+
+.vcp-nav__toggle[aria-expanded="true"] .vcp-nav__toggle-bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.vcp-nav__toggle[aria-expanded="true"] .vcp-nav__toggle-bar:nth-child(2) { opacity: 0; }
+.vcp-nav__toggle[aria-expanded="true"] .vcp-nav__toggle-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* === Nav, mobile (issue #85) — brand grows, links collapse into a
+   tap-to-open glass menu box, and the pill slides away as you read
+   down (js/nav.js drives .is-open / .vcp-nav--away) === */
+@media (max-width: 900px) {
+  .vcp-nav {
+    transition: transform var(--dur-med) var(--ease);
+  }
+
+  /* Reading down: out of sight (clears the sticky offset + top shadow) */
+  .vcp-nav--away { transform: translateY(calc(-100% - var(--space-5))); }
+
+  /* The wordmark is the mobile brand — bigger, alone in the glass pill */
+  .vcp-nav__wordmark { font-size: var(--fs-28); }
+  .vcp-nav__divider,
+  .vcp-nav__brand .label-caps { display: none; }
+
+  .vcp-nav__toggle { display: inline-flex; }
+
+  .vcp-nav__links {
+    display: none;
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    min-width: 230px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
+    background: var(--glass-bg-solid);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-highlight), var(--shadow-float);
+  }
+
+  .vcp-nav.is-open .vcp-nav__links { display: flex; }
+
+  /* Comfortable tap targets */
+  .vcp-nav__links a {
+    display: block;
+    padding: 13px var(--space-3);
+    border-radius: var(--radius);
+    font-size: var(--fs-16);
+  }
+
+  .vcp-nav__links li + li a { border-top: 1px solid var(--line); }
+
+  .vcp-nav__links a:hover,
+  .vcp-nav__links a[aria-current] { background: rgba(255, 255, 255, 0.05); }
+}
+
 /* === Buttons === */
 .vcp-btn {
   display: inline-flex;
