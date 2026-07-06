@@ -3,163 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<title>Research — VCP</title>
-<meta name="description" content="Vegas Consulting Partners — open research topics, running summaries, and links into the white paper library.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- The Research wing was renamed to Clients (issue #110). This stub keeps the
+     old /research.html URL from 404-ing by redirecting to /clients.html.
+     The former research grid (js/research.js + data/research-topics.json) is
+     retired from navigation but kept in the repo in case that topic content is
+     repurposed later. -->
+<meta http-equiv="refresh" content="0; url=/clients.html">
+<link rel="canonical" href="/clients.html">
+<title>Moved to Clients — VCP</title>
+<meta name="robots" content="noindex">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/components.css">
-<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
-<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
-  /* Research page layout only — components live in css/components.css */
-  .research-header { margin-bottom: var(--space-6); max-width: 62ch; }
-  .research-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-bottom: var(--space-6);
-  }
-  .research-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
-  }
-  .research-card__summary {
-    font-size: var(--fs-14);
-    margin: 0 0 var(--space-4);
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .research-card__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-bottom: var(--space-4);
-  }
-  .research-card__tags .vcp-tag {
-    padding: 5px 12px;
-    font-size: 11.5px;
-  }
-  .research-card__papers {
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--line);
-  }
-  .research-card__paper-links {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    margin-top: var(--space-2);
-  }
-  .research-card__paper-link {
-    font-size: var(--fs-14);
-  }
-  .research-empty {
-    padding: var(--space-6) 0;
+  .redirect-note {
+    max-width: 48ch;
+    margin: 18vh auto 0;
+    padding: 0 var(--space-4);
     text-align: center;
-    color: var(--text-muted);
+    font-family: var(--font-body);
+    color: var(--text-soft);
   }
-  @media (max-width: 1100px) {
-    .research-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 640px) {
-    .research-grid { grid-template-columns: 1fr; }
-  }
+  .redirect-note a { color: var(--silver-bright); }
 </style>
 </head>
 <body>
-
-<div class="container" style="padding-top: var(--space-3);">
-
-<nav class="vcp-nav" aria-label="Primary">
-  <a class="vcp-nav__brand" href="/">
-    <span class="vcp-nav__wordmark sheen-text">VCP</span>
-    <span class="vcp-nav__divider"></span>
-    <span class="label-caps">Vegas Consulting Partners</span>
-  </a>
-  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
-    <span class="vcp-nav__toggle-bar"></span>
-    <span class="vcp-nav__toggle-bar"></span>
-    <span class="vcp-nav__toggle-bar"></span>
-  </button>
-  <ul class="vcp-nav__links" id="vcp-nav-menu">
-    <li><a href="/">Home</a></li>
-    <li><a href="/intent.html">The Intent</a></li>
-    <li><a href="/research.html" aria-current="page">Research</a></li>
-    <li><a href="/projects.html">Portfolio</a></li>
-    <li><a href="/library.html">Library</a></li>
-    <li><a href="/socials.html">Socials</a></li>
-  </ul>
-</nav>
-
-<main>
-
-  <!-- ============ HEADER ============ -->
-  <header class="research-header" style="padding-top: var(--space-6);">
-    <p class="label-caps label-caps--wide">Research</p>
-    <h1 style="font-size: var(--fs-56); margin-top: var(--space-3);">Open research topics</h1>
-    <p>What VCP is studying right now, with running summaries and links into the white papers each topic feeds.</p>
-  </header>
-
-  <!-- ============ TAG FILTER ============ -->
-  <div class="research-filters" id="research-filters" role="group" aria-label="Filter research topics by tag"></div>
-
-  <!-- ============ TOPIC GRID ============ -->
-  <section aria-live="polite">
-    <div class="research-grid" id="research-grid"></div>
-    <p class="research-empty" id="research-empty" hidden>No research topics match this tag.</p>
-  </section>
-
-</main>
-
-<footer class="vcp-footer">
-  <div>
-    <div class="vcp-footer__wordmark sheen-text">VCP</div>
-    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
-  </div>
-  <ul class="vcp-footer__links">
-    <li><a href="/intent.html">The Intent</a></li>
-    <li><a href="/research.html">Research</a></li>
-    <li><a href="/projects.html">Portfolio</a></li>
-    <li><a href="/library.html">Library</a></li>
-    <li><a href="/socials.html">Socials</a></li>
-  </ul>
-  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent<br><span style="font-size:10.5px">Anonymous usage analytics · voice sessions transcribed with consent</span></div>
-</footer>
-
+<div class="redirect-note">
+  <p>This page has moved to <a href="/clients.html">Clients</a>. Redirecting you now…</p>
 </div>
-
-<script src="js/research.js"></script>
-<script defer src="js/nav.js"></script>
-<script defer src="js/page-dip.js"></script>
-<script defer src="js/page-loader.js"></script>
-<script defer src="js/telemetry.js"></script>
-
-<!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->
-<div id="vcp-voice-widget">
-  <button type="button" class="vcp-voice-trigger" aria-label="Give voice feedback about this page" aria-haspopup="dialog"></button>
-  <button type="button" class="vcp-voice-reset" aria-label="Move widget back to its original position">&times;</button>
-  <div class="vcp-voice-panel" role="dialog" aria-label="Voice feedback" aria-modal="false">
-    <div class="vcp-voice-panel__header">
-      <span class="vcp-voice-panel__title">Quick feedback</span>
-      <div class="vcp-voice-panel__actions">
-        <button type="button" class="vcp-voice-panel__minimize" aria-label="Minimize">&minus;</button>
-        <button type="button" class="vcp-voice-panel__close" aria-label="Close">&times;</button>
-      </div>
-    </div>
-    <div class="vcp-voice-panel__body"></div>
-    <div class="vcp-voice-status">
-      <span class="vcp-voice-status__state">idle</span>
-    </div>
-  </div>
-</div>
-<script src="js/voice-widget.js"></script>
+<script>location.replace('/clients.html');</script>
 </body>
 </html>
