@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
-<script>/* page-fade pre-paint (issue #107): veil before first paint */(function(){try{if(sessionStorage.getItem("vcp-fade")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.className+=" vcp-fade";}}catch(e){}})();</script>
+<script>/* page-fade pre-paint (issue #107): veil before first paint */(function(){try{if(sessionStorage.getItem("vcp-fade")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.className+=" vcp-fade vcp-fade--in";}}catch(e){}})();</script>
 <style>
   /* Intent-page layout only — components live in css/components.css */
   .intent-section { margin-bottom: var(--space-7); }

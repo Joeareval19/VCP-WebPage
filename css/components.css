@@ -1325,28 +1325,30 @@ html.vcp-dip--out::after {
 /* ── Page fade transition (issue #107) ──────────────────────────────
    Replaces the Penrose loader. Non-nav internal navigation (and nav
    repeat visits) cross-fade through a short scrim veil; first visits
-   still play the title dip above (html.vcp-dip). js/page-fade.js
-   drives these classes. Under prefers-reduced-motion navigation is
-   native and immediate. */
-/* The veil element. On the DESTINATION the pre-paint snippet stamps
-   html.vcp-fade so the page starts fully veiled; --reveal fades it away.
-   On the ORIGIN it starts transparent and --out fades it up. */
+   still play the title dip above (html.vcp-dip). js/page-dip.js drives
+   these classes. Under prefers-reduced-motion navigation is native and
+   immediate. */
+/* The veil element. It defaults to transparent (opacity 0); the two
+   sides drive it in opposite directions:
+   - ORIGIN: js/page-dip.js adds .vcp-fade then .vcp-fade--out on the next
+     frame → veil fades UP over the leaving page.
+   - DESTINATION: the pre-paint snippet stamps .vcp-fade--in so the page
+     starts fully veiled; .vcp-fade--reveal drops it back to 0 → veil
+     fades AWAY on the arriving page. */
 html.vcp-fade::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 9000;
   background: var(--scrim);
-  opacity: 1;
+  opacity: 0;
   pointer-events: none;
   transition: opacity var(--dur-med) var(--ease);
 }
 
-/* Origin side: js/page-fade.js adds .vcp-fade (veil transparent) then, on
-   the next frame, .vcp-fade--out to transition the veil up before leaving. */
-html.vcp-fade:not(.vcp-fade--out):not(.vcp-fade--reveal)::before { opacity: 0; }
-
-/* Destination side: .vcp-fade--reveal lifts the pre-paint veil. */
+/* Origin veil up; destination veil starts up and is lifted by --reveal. */
+html.vcp-fade--out::before,
+html.vcp-fade--in::before { opacity: 1; }
 html.vcp-fade--reveal::before { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {

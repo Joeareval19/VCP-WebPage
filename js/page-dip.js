@@ -76,13 +76,13 @@
 
   /* Cross-fade: pre-paint snippet set html.vcp-fade (veil up) before
      first paint. Lift it once the page has settled. */
-  if (root.classList.contains('vcp-fade')) {
+  if (root.classList.contains('vcp-fade--in')) {
     try { sessionStorage.removeItem(FADE_KEY); } catch (e) {}
     var reveal = function () {
       requestAnimationFrame(function () {
         root.classList.add('vcp-fade--reveal');
         setTimeout(function () {
-          root.classList.remove('vcp-fade', 'vcp-fade--reveal');
+          root.classList.remove('vcp-fade', 'vcp-fade--in', 'vcp-fade--reveal');
         }, FADE_REVEAL + 50);
       });
     };
@@ -98,7 +98,7 @@
         sessionStorage.removeItem(FADE_KEY);
       } catch (err) {}
       clearDip();
-      root.classList.remove('vcp-fade', 'vcp-fade--reveal');
+      root.classList.remove('vcp-fade', 'vcp-fade--in', 'vcp-fade--out', 'vcp-fade--reveal');
     }
   });
 
@@ -133,7 +133,10 @@
 
     var url = new URL(link.href, window.location.href);
     if (url.origin !== window.location.origin) return;
-    /* Same-page fragment moves and same-page reloads don't transition. */
+    /* Fragment links (same- or cross-page, e.g. /library.html#id) scroll
+       to an anchor — stay native, never transition (issue #107 spec). */
+    if (url.hash) return;
+    /* Same-page reloads don't transition. */
     if (norm(url) === norm(window.location)) return;
 
     if (navigating) return;
