@@ -15,6 +15,7 @@
   var chipsEl = document.getElementById('tag-chips');
   var sortSelect = document.getElementById('sort-select');
   var emptyEl = document.getElementById('paper-empty');
+  var controlsEl = document.getElementById('library-controls');
 
   function formatDate(iso) {
     var d = new Date(iso + 'T00:00:00');
@@ -91,9 +92,22 @@
   }
 
   function render() {
+    // Nothing published yet: hide the filter/sort controls entirely (there is
+    // nothing to filter) and show the "coming soon" copy rather than the
+    // filtered-to-nothing message.
+    if (state.papers.length === 0) {
+      if (controlsEl) controlsEl.hidden = true;
+      listEl.innerHTML = '';
+      emptyEl.textContent = 'No white papers published yet. VCP publishes each one here as it is finished — check back soon.';
+      emptyEl.hidden = false;
+      return;
+    }
+
+    if (controlsEl) controlsEl.hidden = false;
     var papers = visiblePapers();
     if (papers.length === 0) {
       listEl.innerHTML = '';
+      emptyEl.textContent = 'No papers match the selected tags.';
       emptyEl.hidden = false;
       return;
     }

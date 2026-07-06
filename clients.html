@@ -20,36 +20,9 @@
   /* Clients page layout only — components live in css/components.css */
   .clients-header { margin-bottom: var(--space-7); max-width: 62ch; padding-top: var(--space-6); }
   .clients-section { margin-bottom: var(--space-7); }
-  .clients-testimonials {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-  }
-  .clients-roster {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-4);
-  }
-  .clients-roster__tile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 96px;
-    padding: var(--space-4);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--glass-bg);
-    text-align: center;
-  }
-  .placeholder-note {
-    font-family: var(--font-mono);
-    font-size: var(--fs-12);
-    color: var(--text-faint);
-    letter-spacing: 0.1em;
-  }
+  .clients-empty { max-width: 62ch; }
+  .clients-empty p:last-child { color: var(--text-soft); }
   @media (max-width: 900px) {
-    .clients-testimonials { grid-template-columns: 1fr; }
-    .clients-roster { grid-template-columns: repeat(2, 1fr); }
     h1 { font-size: var(--fs-56); }
   }
 </style>
@@ -81,57 +54,18 @@
 
 <main>
 
-  <!-- ============================================================
-       PLACEHOLDER CONTENT NOTICE (issue #110)
-       This page ships as a Clients shell. The testimonials and the
-       client roster below are placeholders marked
-       "[placeholder — client content]"; Jose supplies the real
-       quotes, names, and logos in a follow-up.
-       ============================================================ -->
-
   <!-- ============ HEADER ============ -->
   <header class="clients-header">
     <p class="label-caps label-caps--wide">Clients</p>
     <h1 style="font-size: var(--fs-56); margin-top: var(--space-3);">Who VCP works with</h1>
-    <p>The engagements behind the mission, in the clients' own words. <span class="placeholder-note">[placeholder — client content]</span></p>
+    <p>The engagements behind the mission, in the clients' own words.</p>
   </header>
 
-  <!-- ============ TESTIMONIALS ============ -->
-  <section class="clients-section" aria-label="Client testimonials">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">01</span>
-      <h2>Testimonials</h2>
-      <hr class="vcp-section-heading__rule">
-    </div>
-    <div class="clients-testimonials">
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <blockquote class="vcp-quote" style="margin-top: 0;">"A placeholder testimonial — the kind of result a client would describe once the work speaks for itself." <span class="placeholder-note">[placeholder — client content]</span></blockquote>
-          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: var(--space-4) 0 0;">Client name — Role, Company <span class="placeholder-note">[placeholder]</span></p>
-        </div>
-      </article>
-      <article class="vcp-card">
-        <div class="vcp-card__body">
-          <blockquote class="vcp-quote" style="margin-top: 0;">"A second placeholder testimonial, held here so the layout reads true before real quotes arrive." <span class="placeholder-note">[placeholder — client content]</span></blockquote>
-          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: var(--space-4) 0 0;">Client name — Role, Company <span class="placeholder-note">[placeholder]</span></p>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ CLIENT ROSTER ============ -->
-  <section class="clients-section" aria-label="Client roster">
-    <div class="vcp-section-heading">
-      <span class="vcp-section-heading__num">02</span>
-      <h2>The roster</h2>
-      <hr class="vcp-section-heading__rule">
-    </div>
-    <p style="max-width: 62ch; margin-bottom: var(--space-5);">The organizations VCP works alongside. <span class="placeholder-note">[placeholder — client content: logos or names]</span></p>
-    <div class="clients-roster">
-      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
-      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
-      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
-      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
+  <!-- ============ COMING SOON ============ -->
+  <section class="clients-section" aria-label="Client stories">
+    <div class="vcp-panel clients-empty">
+      <p class="label-caps label-caps--wide vcp-panel__label">In their own words</p>
+      <p>Client stories are on the way. As engagements close, their testimonials and the organizations behind them will be published here — in the clients' own words, not ours.</p>
     </div>
   </section>
 
