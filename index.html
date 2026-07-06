@@ -312,5 +312,25 @@
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
+
+<!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->
+<div id="vcp-voice-widget">
+  <button type="button" class="vcp-voice-trigger" aria-label="Give voice feedback about this page" aria-haspopup="dialog"></button>
+  <button type="button" class="vcp-voice-reset" aria-label="Move widget back to its original position">&times;</button>
+  <div class="vcp-voice-panel" role="dialog" aria-label="Voice feedback" aria-modal="false">
+    <div class="vcp-voice-panel__header">
+      <span class="vcp-voice-panel__title">Quick feedback</span>
+      <div class="vcp-voice-panel__actions">
+        <button type="button" class="vcp-voice-panel__minimize" aria-label="Minimize">&minus;</button>
+        <button type="button" class="vcp-voice-panel__close" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="vcp-voice-panel__body"></div>
+    <div class="vcp-voice-status">
+      <span class="vcp-voice-status__state">idle</span>
+    </div>
+  </div>
+</div>
+<script src="js/voice-widget.js"></script>
 </body>
 </html>

@@ -72,6 +72,22 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-fast: 150ms;
   --dur-med: 250ms;
+  /* Ambient/looping animation duration — deliberately separate from
+     --dur-fast/--dur-med (interaction transitions): those collapse to 0ms
+     under reduced-motion for snappy-but-instant transitions, whereas a
+     looping animation needs its @keyframes suppressed outright, not sped
+     up to 0ms (which would flash rather than stop). See the
+     prefers-reduced-motion block below. Slow and unhurried at idle — the
+     JS-driven randomization in js/voice-widget.js varies the actual cycle
+     length per-loop around this baseline, so it never reads as a fixed,
+     mechanically repeating cycle the way a bare CSS @keyframes loop does. */
+  --dur-ambient: 9000ms;
+
+  /* Stacking context scale — every fixed/sticky element picks a rung here
+     instead of an inline magic number. */
+  --z-nav: 100;
+  --z-widget: 500;
+
   /* Page-transition title dip (issue #57): quick dip in, slow cinematic fade-away */
   --dur-dip-in: 320ms;
   --dur-dip-out: 1100ms;
@@ -96,6 +112,7 @@
   :root {
     --dur-fast: 0ms;
     --dur-med: 0ms;
+    --dur-ambient: 0ms;
     --dur-dip-in: 0ms;
     --dur-dip-out: 0ms;
   }
