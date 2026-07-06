@@ -6,8 +6,8 @@
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<title>Portfolio — VCP</title>
-<meta name="description" content="The VCP portfolio — every company and internal build, each with its own detail breakout.">
+<title>Clients — VCP</title>
+<meta name="description" content="Vegas Consulting Partners — the clients VCP works with, in their words: testimonials and the people behind the engagements.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,21 +17,39 @@
 <script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
 <script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
-  /* Projects index layout only — components live in css/components.css */
-  .projects-header { padding: var(--space-6) 0 var(--space-5); max-width: 62ch; }
-  .projects-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-5) 0 var(--space-6); }
-  .projects-grid {
+  /* Clients page layout only — components live in css/components.css */
+  .clients-header { margin-bottom: var(--space-7); max-width: 62ch; padding-top: var(--space-6); }
+  .clients-section { margin-bottom: var(--space-7); }
+  .clients-testimonials {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-4);
   }
-  .project-card .vcp-card__body { display: flex; flex-direction: column; height: 100%; }
-  .project-card .vcp-card__title { text-wrap: balance; }
-  .project-card p { flex: 1; text-wrap: pretty; }
-  .project-card__links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
-  .projects-empty { padding: var(--space-6) 0; text-align: center; color: var(--text-muted); display: none; }
+  .clients-roster {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+  .clients-roster__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--glass-bg);
+    text-align: center;
+  }
+  .placeholder-note {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
   @media (max-width: 900px) {
-    .projects-grid { grid-template-columns: 1fr; }
+    .clients-testimonials { grid-template-columns: 1fr; }
+    .clients-roster { grid-template-columns: repeat(2, 1fr); }
     h1 { font-size: var(--fs-56); }
   }
 </style>
@@ -54,8 +72,8 @@
   <ul class="vcp-nav__links" id="vcp-nav-menu">
     <li><a href="/">Home</a></li>
     <li><a href="/intent.html">The Intent</a></li>
-    <li><a href="/clients.html">Clients</a></li>
-    <li><a href="/projects.html" aria-current="page">Portfolio</a></li>
+    <li><a href="/clients.html" aria-current="page">Clients</a></li>
+    <li><a href="/projects.html">Portfolio</a></li>
     <li><a href="/library.html">Library</a></li>
     <li><a href="/socials.html">Socials</a></li>
   </ul>
@@ -63,27 +81,58 @@
 
 <main>
 
+  <!-- ============================================================
+       PLACEHOLDER CONTENT NOTICE (issue #110)
+       This page ships as a Clients shell. The testimonials and the
+       client roster below are placeholders marked
+       "[placeholder — client content]"; Jose supplies the real
+       quotes, names, and logos in a follow-up.
+       ============================================================ -->
+
   <!-- ============ HEADER ============ -->
-  <header class="projects-header">
-    <p class="kicker label-caps label-caps--wide" style="margin-bottom: var(--space-4);">Portfolio</p>
-    <h1>Index &amp; breakouts</h1>
-    <p style="margin-top: var(--space-3);">The VCP portfolio — every company and internal build, each with its own detail breakout covering overview, moat, and business model.</p>
+  <header class="clients-header">
+    <p class="label-caps label-caps--wide">Clients</p>
+    <h1 style="font-size: var(--fs-56); margin-top: var(--space-3);">Who VCP works with</h1>
+    <p>The engagements behind the mission, in the clients' own words. <span class="placeholder-note">[placeholder — client content]</span></p>
   </header>
 
-  <!-- ============ FILTERS ============ -->
-  <div class="projects-filters" role="group" aria-label="Filter the portfolio by status">
-    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="all" aria-pressed="true">All</button>
-    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Active" aria-pressed="false">Active</button>
-    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Completed" aria-pressed="false">Completed</button>
-    <button type="button" class="vcp-tag vcp-tag--filter" data-filter="Incubating" aria-pressed="false">Incubating</button>
-  </div>
-
-  <!-- ============ PROJECT GRID ============ -->
-  <section aria-live="polite">
-    <div class="projects-grid" id="projects-grid">
-      <!-- Rendered from data/projects.json by js/projects-index.js -->
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="clients-section" aria-label="Client testimonials">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">01</span>
+      <h2>Testimonials</h2>
+      <hr class="vcp-section-heading__rule">
     </div>
-    <p class="projects-empty" id="projects-empty">Nothing in the portfolio matches this filter.</p>
+    <div class="clients-testimonials">
+      <article class="vcp-card">
+        <div class="vcp-card__body">
+          <blockquote class="vcp-quote" style="margin-top: 0;">"A placeholder testimonial — the kind of result a client would describe once the work speaks for itself." <span class="placeholder-note">[placeholder — client content]</span></blockquote>
+          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: var(--space-4) 0 0;">Client name — Role, Company <span class="placeholder-note">[placeholder]</span></p>
+        </div>
+      </article>
+      <article class="vcp-card">
+        <div class="vcp-card__body">
+          <blockquote class="vcp-quote" style="margin-top: 0;">"A second placeholder testimonial, held here so the layout reads true before real quotes arrive." <span class="placeholder-note">[placeholder — client content]</span></blockquote>
+          <p style="font-size: var(--fs-14); color: var(--text-soft); margin: var(--space-4) 0 0;">Client name — Role, Company <span class="placeholder-note">[placeholder]</span></p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ CLIENT ROSTER ============ -->
+  <section class="clients-section" aria-label="Client roster">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">02</span>
+      <h2>The roster</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <p style="max-width: 62ch; margin-bottom: var(--space-5);">The organizations VCP works alongside. <span class="placeholder-note">[placeholder — client content: logos or names]</span></p>
+    <div class="clients-roster">
+      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
+      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
+      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
+      <div class="clients-roster__tile"><span class="label-caps">Client<br>[placeholder]</span></div>
+    </div>
   </section>
 
 </main>
@@ -105,8 +154,6 @@
 
 </div>
 
-<script src="js/projects-data.js"></script>
-<script src="js/projects-index.js"></script>
 <script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
 <script defer src="js/page-loader.js"></script>
