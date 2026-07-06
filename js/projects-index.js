@@ -23,7 +23,7 @@
           '<h3 class="vcp-card__title">' + escapeHtml(project.name) + '</h3>' +
           '<p style="font-size: var(--fs-14); margin: var(--space-3) 0 var(--space-4);">' + escapeHtml(project.one_liner) + '</p>' +
           '<div class="project-card__links">' +
-            '<a class="vcp-link" href="project-detail.html?slug=' + encodeURIComponent(project.slug) + '">View project &rarr;</a>' +
+            '<a class="vcp-link" href="project-detail.html?slug=' + encodeURIComponent(project.slug) + '" data-dip-title="' + escapeHtml(project.name) + '">View project &rarr;</a>' +
             (project.website
               ? '<a class="vcp-link" href="' + escapeHtml(project.website) + '" target="_blank" rel="noopener">Visit site &nearr;</a>'
               : '') +

@@ -1321,74 +1321,36 @@ html.vcp-dip--out::after {
   max-width: 170px;
 }
 
-/* ── Penrose loader — "Quicksilver" (issue #71) ─────────────────────
-   Loading placeholder for internal navigation OUTSIDE the top nav
-   (nav tabs + brand use the title dip above). js/page-loader.js
-   injects .vcp-loader as a fixed overlay on click; the sheen
-   circulates through the tri-bar (SMIL gradient rotation in the SVG)
-   until the destination page replaces the document.
-   .vcp-loader--inline renders the same figure in the page flow
-   (component reference in demo.html). */
-/* Pre-paint veil: the destination's inline <head> snippet stamps
-   html.vcp-loading before first paint — veil up and page content
-   blurred until js/page-loader.js runs the reveal. */
-html.vcp-loading::before {
+
+/* ── Page fade transition (issue #107) ──────────────────────────────
+   Replaces the Penrose loader. Non-nav internal navigation (and nav
+   repeat visits) cross-fade through a short scrim veil; first visits
+   still play the title dip above (html.vcp-dip). js/page-dip.js drives
+   these classes. Under prefers-reduced-motion navigation is native and
+   immediate. */
+/* The veil element. It defaults to transparent (opacity 0); the two
+   sides drive it in opposite directions:
+   - ORIGIN: js/page-dip.js adds .vcp-fade then .vcp-fade--out on the next
+     frame → veil fades UP over the leaving page.
+   - DESTINATION: the pre-paint snippet stamps .vcp-fade--in so the page
+     starts fully veiled; .vcp-fade--reveal drops it back to 0 → veil
+     fades AWAY on the arriving page. */
+html.vcp-fade::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 9000;
   background: var(--scrim);
-  pointer-events: none;
-}
-
-/* Arriving page waits out of focus behind the veil... */
-html.vcp-loading .container { filter: blur(16px); }
-/* ...then blurs into place as the veil lifts (class swap in
-   page-loader.js reveal step). */
-html.vcp-loading--reveal .container {
-  filter: blur(0);
-  transition: filter 600ms var(--ease);
-}
-
-/* While html.vcp-loading carries the veil, the overlay element must
-   not stack a second scrim on top of it. */
-html.vcp-loading .vcp-loader { background: none; }
-
-.vcp-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9001; /* beneath the title dip (9999) — paths never overlap */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--scrim);
   opacity: 0;
-  transition: opacity var(--dur-med) var(--ease);
   pointer-events: none;
+  transition: opacity var(--dur-med) var(--ease);
 }
 
-.vcp-loader.is-on { opacity: 1; }
-.vcp-loader.is-instant { transition: none; }
+/* Origin veil up; destination veil starts up and is lifted by --reveal. */
+html.vcp-fade--out::before,
+html.vcp-fade--in::before { opacity: 1; }
+html.vcp-fade--reveal::before { opacity: 0; }
 
-/* Origin side: the triangle populates — pop over the darkening veil. */
-.vcp-loader.is-entering svg {
-  animation: vcp-loader-pop 320ms var(--ease) both;
-}
-@keyframes vcp-loader-pop {
-  from { opacity: 0; transform: scale(0.82); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.vcp-loader svg {
-  width: 72px;
-  height: 72px;
-}
-
-.vcp-loader--inline {
-  position: static;
-  inset: auto;
-  display: inline-flex;
-  background: none;
-  opacity: 1;
-  z-index: auto;
+@media (prefers-reduced-motion: reduce) {
+  html.vcp-fade::before { display: none; }
 }
