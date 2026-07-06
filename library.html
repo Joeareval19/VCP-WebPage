@@ -19,6 +19,9 @@
 <style>
   /* Library-page layout only — components live in css/components.css */
   .library-header { margin-bottom: var(--space-6); }
+  /* [hidden] must win over display:flex when the library is empty (no papers
+     to filter/sort). Bare `display:flex` would otherwise override it. */
+  .library-controls[hidden] { display: none; }
   .library-controls {
     display: flex;
     flex-wrap: wrap;
@@ -90,12 +93,12 @@
   <header class="library-header" style="padding-top: var(--space-6);">
     <p class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Library</p>
     <h1 class="sheen-text" style="font-size: var(--fs-56);">White papers</h1>
-    <p style="max-width: 62ch; margin-top: var(--space-3);">The repository of finished, citable documents VCP has published — filter by topic or sort by date to find what you need.</p>
+    <p style="max-width: 62ch; margin-top: var(--space-3);">The repository of finished, citable documents VCP publishes as they are completed.</p>
   </header>
 
   <!-- ============ CONTROLS: tag filter + sort ============ -->
   <section aria-label="Filter and sort papers">
-    <div class="library-controls">
+    <div class="library-controls" id="library-controls">
       <div class="library-controls__chips" id="tag-chips" role="group" aria-label="Filter by tag">
         <!-- Populated by js/library.js -->
       </div>
@@ -112,7 +115,7 @@
     <div id="paper-list" aria-live="polite">
       <!-- Populated by js/library.js from data/papers.json -->
     </div>
-    <p id="paper-empty" class="text-muted" hidden>No papers match the selected tags.</p>
+    <p id="paper-empty" class="text-muted" hidden></p>
   </section>
 
 </main>
