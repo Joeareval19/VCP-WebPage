@@ -99,6 +99,10 @@
       } catch (err) {}
       clearDip();
       root.classList.remove('vcp-fade', 'vcp-fade--in', 'vcp-fade--out', 'vcp-fade--reveal');
+      /* A bfcache Back restores this page without re-running the IIFE, so
+         the origin-side lock would stay stuck true and hard-cut every
+         later click. Release it. (var-hoisted, declared below.) */
+      navigating = false;
     }
   });
 
