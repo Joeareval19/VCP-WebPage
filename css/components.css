@@ -829,6 +829,13 @@
   grid-column: 1 / -1;
 }
 
+/* Anchors as breakers keep their own row but shrink the hit target back to
+   the text (audit #90 finding 1: a stretched grid-item link is clickable
+   across the whole empty row) */
+a.vcp-editorial__span {
+  justify-self: start;
+}
+
 .vcp-editorial__lede {
   grid-column: 1 / -1;
   max-width: 62ch;
