@@ -328,8 +328,16 @@
       return;
     }
 
+    // Drift target, resampled only every DRIFT_HOLD_MS (not every frame) so
+    // the ball settles briefly at each spot before tumbling to the next —
+    // "clear motions and shifts," not a nervous jitter. transform's own
+    // 120ms transition (components.css) smooths the trip between spots.
+    var DRIFT_HOLD_MS = 260;
+    var DRIFT_RADIUS_PX = 10; // how far it can wander from center at max loudness
+    var lastDriftAt = 0;
+
     var self = this;
-    function tick() {
+    function tick(now) {
       self.analyser.getByteFrequencyData(self.dataArray);
       var sum = 0;
       for (var i = 0; i < self.dataArray.length; i++) sum += self.dataArray[i];
@@ -346,9 +354,22 @@
         Math.round(r()) + "% " + Math.round(100 - r()) + "% " + Math.round(100 - r()) + "% " + Math.round(r()) + "% / " +
         Math.round(r()) + "% " + Math.round(r()) + "% " + Math.round(100 - r()) + "% " + Math.round(100 - r()) + "%");
 
+      // Positional drift — "liquid shifting in outer space": the ball
+      // tumbles a few px off-center, further when louder, drifting back
+      // toward center as the visitor quiets down. This is layered on top
+      // of the caller's own drag position (--widget-x/--widget-y), never
+      // replacing it — see components.css's translate()+scale() comment.
+      if (now - lastDriftAt > DRIFT_HOLD_MS) {
+        lastDriftAt = now;
+        var angle = Math.random() * Math.PI * 2;
+        var radius = level * DRIFT_RADIUS_PX;
+        self.el.style.setProperty("--liquid-x", (Math.cos(angle) * radius).toFixed(1) + "px");
+        self.el.style.setProperty("--liquid-y", (Math.sin(angle) * radius).toFixed(1) + "px");
+      }
+
       self.rafId = requestAnimationFrame(tick);
     }
-    tick();
+    requestAnimationFrame(tick);
   };
 
   LiquidBall.prototype.stopAudioReactive = function () {
@@ -357,6 +378,11 @@
     if (this.analyser) { try { this.analyser.disconnect(); } catch (e) {} this.analyser = null; }
     if (this.audioCtx) { try { this.audioCtx.close(); } catch (e) {} this.audioCtx = null; }
     this.dataArray = null;
+    // Recenter the voice-driven drift — without this the ball could stay
+    // visibly offset from its actual drag position after the visitor
+    // stops talking, since --liquid-x/y otherwise just hold their last value.
+    this.el.style.setProperty("--liquid-x", "0px");
+    this.el.style.setProperty("--liquid-y", "0px");
   };
 
   LiquidBall.prototype.destroy = function () {

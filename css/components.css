@@ -795,7 +795,10 @@
   box-shadow: var(--shadow-silver), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
   border-radius: var(--liquid-radius, 50%);
   background-position: var(--liquid-bg-pos, 50% 50%);
-  transform: scale(var(--liquid-scale, 1));
+  /* translate() composes with scale() so voice-driven drift (--liquid-x/
+     --liquid-y, set only while listening — see startAudioReactive) and the
+     existing size pulse apply together without fighting over `transform`. */
+  transform: translate(var(--liquid-x, 0), var(--liquid-y, 0)) scale(var(--liquid-scale, 1));
   transition: border-radius var(--liquid-dur, 2600ms) ease-in-out,
               background-position var(--liquid-dur, 2600ms) ease-in-out,
               transform 120ms ease-out,
