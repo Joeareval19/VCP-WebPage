@@ -1,35 +1,65 @@
 {
   "_comment": "PLACEHOLDER DATA — these are not real accounts. Jose supplies the actual platform list, handles, and URLs before launch. Every url below is a non-functional placeholder anchor (#placeholder-*), not a guessed or real link.",
-  "socials": [
+  "groups": [
     {
-      "platform": "LinkedIn",
-      "handle": "[placeholder]",
-      "url": "#placeholder-linkedin",
-      "icon": "in"
+      "id": "company",
+      "title": "VCP",
+      "socials": [
+        {
+          "platform": "LinkedIn",
+          "handle": "[placeholder]",
+          "url": "#placeholder-company-linkedin",
+          "icon": "linkedin"
+        },
+        {
+          "platform": "X / Twitter",
+          "handle": "[placeholder]",
+          "url": "#placeholder-company-x",
+          "icon": "x"
+        },
+        {
+          "platform": "GitHub",
+          "handle": "[placeholder]",
+          "url": "#placeholder-company-github",
+          "icon": "github"
+        },
+        {
+          "platform": "YouTube",
+          "handle": "[placeholder]",
+          "url": "#placeholder-company-youtube",
+          "icon": "youtube"
+        },
+        {
+          "platform": "Instagram",
+          "handle": "[placeholder]",
+          "url": "#placeholder-company-instagram",
+          "icon": "instagram"
+        }
+      ]
     },
     {
-      "platform": "X / Twitter",
-      "handle": "[placeholder]",
-      "url": "#placeholder-x",
-      "icon": "X"
-    },
-    {
-      "platform": "GitHub",
-      "handle": "[placeholder]",
-      "url": "#placeholder-github",
-      "icon": "GH"
-    },
-    {
-      "platform": "YouTube",
-      "handle": "[placeholder]",
-      "url": "#placeholder-youtube",
-      "icon": "YT"
-    },
-    {
-      "platform": "Instagram",
-      "handle": "[placeholder]",
-      "url": "#placeholder-instagram",
-      "icon": "IG"
+      "id": "personal",
+      "title": "Jose",
+      "socials": [
+        {
+          "platform": "LinkedIn",
+          "handle": "[placeholder]",
+          "url": "#placeholder-personal-linkedin",
+          "icon": "linkedin"
+        },
+        {
+          "platform": "X / Twitter",
+          "handle": "[placeholder]",
+          "url": "#placeholder-personal-x",
+          "icon": "x"
+        },
+        {
+          "platform": "GitHub",
+          "handle": "[placeholder]",
+          "url": "#placeholder-personal-github",
+          "icon": "github"
+        }
+      ]
     }
   ]
 }
