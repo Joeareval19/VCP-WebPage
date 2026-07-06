@@ -23,7 +23,7 @@
   {
     "slug": "vamosavenezuela",
     "name": "VamosaVenezuela",
-    "one_liner": "A travel platform for the Venezuela you haven't seen — curated stays, dining, and experiences across every region of the country.",
+    "one_liner": "A booking platform for the Venezuela you haven't seen — curated stays, dining, and experiences across every region of the country.",
     "status": "Active",
     "client": "VCP build",
     "website": "https://vamosavenezuela.com/",
@@ -44,12 +44,12 @@
   {
     "slug": "pipa-database",
     "name": "PIPA Database",
-    "one_liner": "An early-stage data platform, currently incubating — \"PIPA Database\" is a working title.",
+    "one_liner": "A centralized operating system for e-commerce brands to handle analytics, decision making, and advertising.",
     "status": "Incubating",
     "client": "VCP build",
     "website": null,
     "logo": "assets/logos/pipa.png",
-    "overview": "<p>PIPA Database is an early-stage internal build, still in incubation. The name is a working title, and the public write-up will land here once the project is further along.</p>",
+    "overview": "<p>PIPA Database is a centralized operating system for e-commerce brands: analytics, decision making, and advertising handled from one place. It is still incubating — \"PIPA Database\" is a working title, and the full write-up will land here as the build matures.</p>",
     "timeline": null,
     "moat": null,
     "business_model": null,
