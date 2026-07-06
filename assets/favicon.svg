@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBFCFD"/>
+      <stop offset="0.34" stop-color="#D6DBE1"/>
+      <stop offset="0.62" stop-color="#9AA1AB"/>
+      <stop offset="0.82" stop-color="#C3C9D1"/>
+      <stop offset="1" stop-color="#F0F2F5"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.35" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#5E656E" stop-opacity="0.35"/>
+    </radialGradient>
+  </defs>
+  <path d="M 28.03 6.68 Q 32.00 5.80 35.88 6.96 Q 39.76 8.13 43.75 9.22 Q 47.75 10.32 50.23 13.64 Q 52.71 16.95 54.05 20.68 Q 55.40 24.40 56.95 28.20 Q 58.50 32.00 57.57 36.00 Q 56.63 40.00 54.39 43.32 Q 52.14 46.64 49.98 50.20 Q 47.81 53.76 43.81 54.91 Q 39.82 56.06 35.91 57.08 Q 32.00 58.10 28.18 56.80 Q 24.37 55.49 20.37 54.51 Q 16.36 53.52 13.75 50.34 Q 11.13 47.16 9.68 43.45 Q 8.22 39.73 6.76 35.86 Q 5.30 32.00 6.57 28.08 Q 7.84 24.15 9.28 20.35 Q 10.72 16.54 14.07 14.24 Q 17.42 11.94 20.74 9.75 Q 24.06 7.56 28.03 6.68 Z" fill="url(#metal)"/>
+  <path d="M 28.03 6.68 Q 32.00 5.80 35.88 6.96 Q 39.76 8.13 43.75 9.22 Q 47.75 10.32 50.23 13.64 Q 52.71 16.95 54.05 20.68 Q 55.40 24.40 56.95 28.20 Q 58.50 32.00 57.57 36.00 Q 56.63 40.00 54.39 43.32 Q 52.14 46.64 49.98 50.20 Q 47.81 53.76 43.81 54.91 Q 39.82 56.06 35.91 57.08 Q 32.00 58.10 28.18 56.80 Q 24.37 55.49 20.37 54.51 Q 16.36 53.52 13.75 50.34 Q 11.13 47.16 9.68 43.45 Q 8.22 39.73 6.76 35.86 Q 5.30 32.00 6.57 28.08 Q 7.84 24.15 9.28 20.35 Q 10.72 16.54 14.07 14.24 Q 17.42 11.94 20.74 9.75 Q 24.06 7.56 28.03 6.68 Z" fill="url(#glow)"/>
+  <circle cx="32" cy="32" r="18.5" fill="none" stroke="#8A919B" stroke-width="1.4" opacity="0.85"/>
+  <circle cx="32.5" cy="32.5" r="18.5" fill="none" stroke="#FFFFFF" stroke-width="0.7" opacity="0.55"/>
+  <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-size="21" font-weight="600" fill="#79818C">V</text>
+  <text x="32.45" y="32.45" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-size="21" font-weight="600" fill="#FFFFFF" opacity="0.35">V</text>
+</svg>
