@@ -1944,3 +1944,13 @@ html.vcp-fade--reveal::before { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   html.vcp-fade::before { display: none; }
 }
+
+/* === Placeholder note — inline marker for draft copy awaiting Jose's edit ===
+   Promoted from identical page-scoped copies on intent.html and
+   paper-caneycloud.html (issue #136); safe to remove those local copies. */
+.placeholder-note {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+}
