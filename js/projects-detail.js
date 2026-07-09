@@ -94,11 +94,19 @@
 
   // Extra sections — project-specific prose sections ({title, html}) that
   // don't warrant their own renderer. Numbered like every other section.
+  // An optional `aside` (trusted HTML, e.g. a large decorative SVG) renders
+  // as a banner column to the right of the prose.
   function renderExtraSection(section, num) {
+    var body = section.aside
+      ? '<div class="vcp-section-split">' +
+          '<div class="vcp-prose">' + section.html + '</div>' +
+          '<div class="vcp-section-split__aside">' + section.aside + '</div>' +
+        '</div>'
+      : '<div class="vcp-prose" style="max-width: 72ch;">' + section.html + '</div>';
     return (
       '<section class="detail-section">' +
         sectionHeading(num, section.title) +
-        '<div class="vcp-prose" style="max-width: 72ch;">' + section.html + '</div>' +
+        body +
       '</section>'
     );
   }

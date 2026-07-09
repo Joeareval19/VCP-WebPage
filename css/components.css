@@ -601,6 +601,34 @@
   margin-bottom: var(--space-4);
 }
 
+/* === Section split — prose beside a banner aside (icon at poster scale) === */
+.vcp-section-split {
+  display: grid;
+  grid-template-columns: minmax(0, 62ch) 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.vcp-section-split__aside {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: radial-gradient(closest-side, rgba(232, 234, 237, 0.07), transparent);
+}
+
+.vcp-section-split__aside .vcp-section-icon {
+  width: min(100%, 300px);
+  height: auto;
+  margin: 0;
+  color: var(--silver-bright);
+}
+
+@media (max-width: 900px) {
+  .vcp-section-split { grid-template-columns: 1fr; }
+  .vcp-section-split__aside .vcp-section-icon { max-width: 200px; }
+}
+
 /* Status dot — "available for advisory" */
 .vcp-status-dot {
   width: 8px;
