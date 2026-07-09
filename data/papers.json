@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "slug": "caneycloud-business-white-paper",
+    "title": "CaneyCloud: The Property Management Ecosystem for Venezuela's Tourism Rebirth",
+    "abstract": "Venezuela sits five hours from New York with natural assets rivaling the world's most visited destinations, yet receives roughly 90% less tourism than neighboring Colombia. As the 2026 transition reopens the country to global capital, this paper lays out the CaneyCloud thesis: an all-in-one property management system, built by Venezuelans for Venezuela, positioned as the operational gateway for an addressable hospitality market scaling from $390M to $1.97B.",
+    "date": "2026-07-09",
+    "tags": ["business", "tourism", "Venezuela", "hospitality"],
+    "reading_time": "14 min read",
+    "file": "/paper-caneycloud.html",
+    "related_project": "caneycloud"
+  }
+]
