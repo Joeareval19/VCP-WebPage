@@ -687,6 +687,32 @@
 
 .vcp-prose td { color: var(--text-soft); font-weight: 300; }
 
+/* === Article (project detail case study) — prose blocks interleaved with figures === */
+.vcp-article h3 {
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.vcp-article h3:first-child { margin-top: 0; }
+
+/* === Article figure — product screenshot with caption === */
+.vcp-figure {
+  margin: var(--space-4) 0 var(--space-5);
+}
+
+.vcp-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.vcp-figure figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
 /* === Timeline (project detail) — vertical milestone list with silver hairline === */
 .vcp-timeline {
   position: relative;

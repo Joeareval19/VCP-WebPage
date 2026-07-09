@@ -3,8 +3,8 @@
  *
  * Single template shared by every project: reads ?slug= from the URL,
  * looks up the matching entry in data/projects.json (via js/projects-data.js),
- * and renders up to 7 sections (header, overview, timeline, moat, business
- * model, specifics, related). Every section after the header is optional —
+ * and renders up to 8 sections (header, overview, article, timeline, moat,
+ * business model, specifics, related). Every section after the header is optional —
  * omitted entirely, heading and all, when the underlying data is null/empty —
  * and section numbers are assigned to the sections that actually render, so
  * a minimal entry never shows gaps in the numbering.
@@ -56,6 +56,37 @@
       '<section class="detail-section" id="overview">' +
         sectionHeading(num, 'Overview') +
         '<div class="vcp-prose" style="max-width: 72ch;">' + project.overview + '</div>' +
+      '</section>'
+    );
+  }
+
+  // Article — case-study blocks of {heading, html, image}, rendered as an
+  // article view: heading + prose + captioned product screenshot per block.
+  // Images carry explicit width/height (no layout shift) and lazy-load.
+  function renderArticle(project, num) {
+    var blocks = project.article.map(function (block) {
+      var parts = [];
+      if (block.heading) parts.push('<h3>' + escapeHtml(block.heading) + '</h3>');
+      if (block.html) parts.push('<div class="vcp-prose">' + block.html + '</div>');
+      if (block.image) {
+        var img = block.image;
+        parts.push(
+          '<figure class="vcp-figure">' +
+            '<img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt) + '" loading="lazy"' +
+            (img.width ? ' width="' + escapeHtml(String(img.width)) + '"' : '') +
+            (img.height ? ' height="' + escapeHtml(String(img.height)) + '"' : '') +
+            '>' +
+            (img.caption ? '<figcaption>' + escapeHtml(img.caption) + '</figcaption>' : '') +
+          '</figure>'
+        );
+      }
+      return parts.join('');
+    }).join('');
+
+    return (
+      '<section class="detail-section" id="article">' +
+        sectionHeading(num, 'Inside the product') +
+        '<div class="vcp-article" style="max-width: 72ch;">' + blocks + '</div>' +
       '</section>'
     );
   }
@@ -172,6 +203,7 @@
     // show gaps in the numbering.
     var sectionDefs = [
       { blank: isBlank(project.overview), render: renderOverview },
+      { blank: isBlank(project.article), render: renderArticle },
       { blank: isBlank(project.timeline), render: renderTimeline },
       { blank: isBlank(project.moat), render: renderMoat },
       { blank: isBlank(project.business_model), render: renderBusinessModel },
