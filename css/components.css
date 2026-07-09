@@ -1340,6 +1340,18 @@
   margin-top: var(--space-3);
 }
 
+/* Phones: the thesis reads as a compact descriptive sentence, not display
+   copy — smaller, tighter, quieter (issue #127 review feedback). */
+@media (max-width: 700px) {
+  .vcp-detail-header { padding-top: var(--space-5); margin-bottom: var(--space-5); }
+  .vcp-detail-header__thesis {
+    font-size: var(--fs-16);
+    line-height: 1.45;
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+  }
+}
+
 /* === Footer === */
 .vcp-footer {
   border-top: 1px solid var(--line);
