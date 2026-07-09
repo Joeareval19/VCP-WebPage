@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<title>CaneyCloud — White Paper — VCP</title>
+<meta name="description" content="CaneyCloud business white paper — an all-in-one property management ecosystem built to capture Venezuela's tourism rebirth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
+<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
+<style>
+  /* Paper-page layout only — components live in css/components.css.
+     Mirrors the Intent page's section rhythm (issue #128). */
+  .paper-section { margin-bottom: var(--space-7); }
+  .paper-header { padding-top: var(--space-6); }
+  .paper-header__framing {
+    font-family: var(--font-display);
+    font-size: var(--fs-28);
+    color: var(--silver-bright);
+    max-width: 56ch;
+    margin: var(--space-4) 0 0;
+    line-height: 1.35;
+  }
+  .paper-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+  .paper-pillar-list {
+    list-style: none;
+    margin: var(--space-5) 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .paper-pillar-list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--glass-bg);
+  }
+  .paper-pillar-list__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+  .paper-pillar-list h3 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--fs-20);
+  }
+  .paper-pillar-list p { margin: 0; }
+  .placeholder-note {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+  @media (max-width: 900px) {
+    h1 { font-size: var(--fs-56); }
+    .paper-header { padding-top: var(--space-5); }
+    .paper-header__framing { font-size: var(--fs-20); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: var(--space-3);">
+
+<nav class="vcp-nav" aria-label="Primary">
+  <a class="vcp-nav__brand" href="/">
+    <span class="vcp-nav__wordmark sheen-text">VCP</span>
+    <span class="vcp-nav__divider"></span>
+    <span class="label-caps">Vegas Consulting Partners</span>
+  </a>
+  <button class="vcp-nav__toggle" type="button" aria-expanded="false" aria-controls="vcp-nav-menu" aria-label="Open menu">
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+    <span class="vcp-nav__toggle-bar"></span>
+  </button>
+  <ul class="vcp-nav__links" id="vcp-nav-menu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/intent.html">The Intent</a></li>
+    <li><a href="/clients.html">Clients</a></li>
+    <li><a href="/projects.html">Portfolio</a></li>
+    <li><a href="/library.html" aria-current="page">Library</a></li>
+    <li><a href="/socials.html">Socials</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ============================================================
+       COPY STATUS (issue #128)
+       Abstract and chapters 01–06 are Jose's draft (supplied
+       2026-07-09), lightly copy-edited with meaning preserved.
+       Chapters 07–12 were outlines/stubs in the draft; their prose
+       is drafted from the paper's own numbers and context and every
+       drafted passage carries a "[draft — Jose refines]" note —
+       same convention as intent.html.
+       ============================================================ -->
+
+  <!-- ============ HEADER ============ -->
+  <header class="paper-section paper-header">
+    <p class="kicker label-caps label-caps--wide">Library · White paper</p>
+    <h1 class="sheen-text">CaneyCloud</h1>
+    <p class="paper-header__framing">An all-in-one property management ecosystem built by Venezuelans, for Venezuela — positioned to capture the tourism rebirth of a nation coming back online.</p>
+    <div class="paper-header__meta">
+      <span class="vcp-tag--caps label-caps">Business</span>
+      <span class="meta-mono">Jul 9, 2026</span>
+      <span aria-hidden="true" class="meta-mono">·</span>
+      <span class="meta-mono">14 min read</span>
+      <span aria-hidden="true" class="meta-mono">·</span>
+      <a class="vcp-link" href="/projects.html">CaneyCloud in the portfolio →</a>
+    </div>
+  </header>
+
+  <!-- ============ ABSTRACT ============ -->
+  <section class="paper-section" id="abstract">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">§</span>
+      <h2>Abstract</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">In 2026, Venezuela finds itself in a very particular situation: a tourist industry at a standstill, standing on the largest opportunity in its history.</p>
+      <p>Before learning about CaneyCloud and how we are going to revolutionize the country's tourism industry, it is of utmost importance that our audience familiarize themselves with the unique social and geopolitical dynamics that have governed Venezuela over the last twenty years. Venezuela is a nation of immense natural beauty, rivaling the world's most visited destinations. Its capital is a five-hour trip from New York City, a nine-hour trip from Madrid, and at most a five-hour trip from any neighboring Latin American country.</p>
+      <p>Even though Venezuela is strategically located to be the center of one of the largest tourism hubs in the world, over the last ten years — at roughly 500,000 international tourists per year — it has consistently received about 90% less tourism than its neighbor Colombia. At the core of the problem has been a socio-political crisis that drove the industry to a halt. With the American political intervention of early 2026, this is all set to change: with an oil sector receiving heavy international funding, the nation will at last have capital to distribute toward what is arguably its second-largest industry — tourism.</p>
+    </div>
+  </section>
+
+  <!-- ============ 01 THE MISSION & THE VISION ============ -->
+  <section class="paper-section" id="mission-vision">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">01</span>
+      <h2>The mission &amp; the vision</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">CaneyCloud's values are deeply rooted in Venezuelan culture. We are an all-in-one property management system built by Venezuelans, for Venezuela.</p>
+      <p>Our mission is to elevate national hospitality to the global golden standard by providing local operators with the robust technological infrastructure and real-time data engines needed to capture international demand.</p>
+      <p>Our ultimate vision is to rapidly become the region's market-leading software ecosystem — establishing a dominant technology stack and a data-gathering network that secures our industry moat. As we scale, CaneyCloud will actively reinvest in the nation, serving as a forward-thinking catalyst for macroeconomic growth.</p>
+      <p>We are committed to uplifting the broader community: embedding direct donation channels within our platform, distributing free hospitality education, creating low-risk domestic investment vehicles, and balancing tourism demand across every state so the entire nation benefits.</p>
+    </div>
+  </section>
+
+  <!-- ============ PULL QUOTE ============ -->
+  <section class="paper-section vcp-pullquote" id="statement" aria-label="Thesis statement">
+    <p class="sheen-text">CaneyCloud does not need to manufacture demand — it needs to be the gateway that captures it.</p>
+  </section>
+
+  <!-- ============ 02 THE PROBLEM IN THE MARKET ============ -->
+  <section class="paper-section" id="problem">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">02</span>
+      <h2>What's the problem in the market?</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">For over 24 years, the Venezuelan domestic market has operated in near-total isolation from global commerce.</p>
+      <p>A self-destructive combination of heavy oil-price dependency, systemic corruption, widespread insecurity, and a complete failure to maintain basic infrastructure created the perfect concoction for nearly three decades of disastrous management. International software networks, global payment gateways, and modern property management systems pulled out of the country entirely — leaving local operators to survive on fragmented, manual systems handled entirely via WhatsApp and Instagram.</p>
+      <p>Despite this prolonged isolation, a resilient baseline of local hospitality persisted. Today, even with severe systemic friction, international tourism is estimated at approximately 500,000 visitors per year — proving that the underlying demand for Venezuela's unique destinations remains fundamentally unbroken.</p>
+      <h3 class="vcp-editorial__span" style="margin-bottom: 0;">The 2026 inflection point</h3>
+      <p>Flash forward to 2026: Venezuela — a country previously marked by the largest human exodus per capita in modern history — stands on the precipice of a highly anticipated structural rebirth. Following an assertive military operation from the United States that resulted in the capture of the dictator Nicolás Maduro, the nation suddenly finds itself in a dramatic, rapid transition toward an open market economy.</p>
+      <p>With direct flights from global hubs reopening and international "smart money" circling the country's untouched hospitality sector, the industry faces an unprecedented bottleneck. Demand is returning at an exponential rate — but the core software infrastructure required to capture, process, and scale that demand simply does not exist.</p>
+    </div>
+  </section>
+
+  <!-- ============ 03 MARKET STUDY ============ -->
+  <section class="paper-section" id="market-study">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">03</span>
+      <h2>Market study</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">To quantify the opportunity, start with the regional benchmark: Colombia's 2023 baseline.</p>
+      <p>In 2023, Colombia solidified its status as a premier global destination, welcoming 5.7 million international arrivals and driving $8.59 billion USD in direct tourism economic output. Tourism became Colombia's leading non-mining foreign-exchange earner, accounting for nearly 5% of national GDP and supporting a highly organized ecosystem of over 900,000 hospitality jobs.</p>
+      <p>That economic engine relies completely on a modern, deeply integrated tech stack: global channels (Booking.com, Airbnb, Expedia) flow seamlessly into centralized property management systems, enabling optimized occupancy and rapid capitalization.</p>
+      <p>Venezuela possesses a geographic footprint and tourist assets that rival or exceed Colombia's. But after a decades-long technology blackout, its hospitality economy is a highly compressed, unmonetized spring. Our models span three structural tiers, evaluated under pessimistic (current baseline) and optimistic (unlocked infrastructure) parameters:</p>
+    </div>
+    <div class="vcp-prose">
+      <table>
+        <caption>Venezuelan hospitality market — pessimistic baseline vs. optimistic addressable model</caption>
+        <thead>
+          <tr>
+            <th scope="col">Hospitality segment</th>
+            <th scope="col">Units (pess.)</th>
+            <th scope="col">Units (opt.)</th>
+            <th scope="col">Baseline occupancy</th>
+            <th scope="col">Target occupancy</th>
+            <th scope="col">Annual rev (pess.)</th>
+            <th scope="col">Addressable rev (opt.)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hotels (formal chains)</td>
+            <td>250</td><td>300</td><td>20%</td><td>45%</td>
+            <td>$273.75M</td><td>$739.12M</td>
+          </tr>
+          <tr>
+            <td>Posadas (high-end)</td>
+            <td>1,000</td><td>2,000</td><td>10%</td><td>55%</td>
+            <td>$109.50M</td><td>$1,204.50M</td>
+          </tr>
+          <tr>
+            <td>Vacation rentals</td>
+            <td>4,000</td><td>6,000</td><td>10%</td><td>30%</td>
+            <td>$7.30M</td><td>$32.85M</td>
+          </tr>
+          <tr>
+            <td><strong>Totals</strong></td>
+            <td><strong>5,250</strong></td><td><strong>8,300</strong></td><td>—</td><td>—</td>
+            <td><strong>$390.55M</strong></td><td><strong>$1,976.47M</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="vcp-editorial">
+      <h3 class="vcp-editorial__span" style="margin-bottom: 0;">Analyzing the infrastructure gap</h3>
+      <p>The discrepancy between the pessimistic and optimistic models is not a demand problem; it is an operational execution problem.</p>
+      <p><strong>The high-end posada anomaly.</strong> In the current manual ecosystem, premium boutique posadas operate at an unsustainable 10% annual occupancy, generating a fragmented $109.5 million USD across the country. Given automation and international channel integrations, the addressable valuation scales to $1.20 billion USD at a modest 55% target occupancy.</p>
+      <p><strong>The chain-hotel bottleneck.</strong> Formal hotel chains are trapped at an average 20% occupancy. Without programmatic yields, local managers cannot dynamically price rooms to capture the corporate and leisure demand flowing back into the country.</p>
+      <h3 class="vcp-editorial__span" style="margin-bottom: 0;">The CaneyCloud arbitrage</h3>
+      <p class="vcp-editorial__span">Venezuela's total addressable hospitality market is poised to scale from a stagnant $390 million USD to a $1.97 billion USD ecosystem as modern economic conditions return. CaneyCloud does not need to manufacture demand. By positioning our all-in-one property management system as the sole operational gateway for these 8,300+ prospective properties, we capture a direct software royalty on a multi-billion-dollar economic awakening.</p>
+    </div>
+  </section>
+
+  <!-- ============ 04 TECHNOLOGICAL FOOTING ============ -->
+  <section class="paper-section" id="technological-footing">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">04</span>
+      <h2>Technological footing</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">While the underlying architecture is enterprise-grade, the day-to-day experience is designed for absolute simplicity — a single digital command center for the entire business.</p>
+      <p class="vcp-editorial__span" style="margin: 0;">For a property owner, manager, or front-desk receptionist, here is exactly how the platform functions in practice:</p>
+    </div>
+    <ul class="paper-pillar-list">
+      <li>
+        <span class="paper-pillar-list__num">01</span>
+        <div>
+          <h3>The unified calendar &amp; global OTA sync</h3>
+          <p>The core interface is a visual, drag-and-drop master calendar. When an operator updates a room's status locally, CaneyCloud instantly syncs that inventory across all major online travel agencies (Booking.com, Airbnb, and beyond). Double-bookings are eliminated completely.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">02</span>
+        <div>
+          <h3>AI-driven pricing suggestions</h3>
+          <p>Owners no longer guess what to charge. An intelligent demand engine analyzes real-time market data, local flight inflows, and occupancy trends to suggest the most profitable room rates for any given day.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">03</span>
+        <div>
+          <h3>Hands-free social media booking</h3>
+          <p>Because most travelers in Venezuela book via messaging apps, CaneyCloud includes automated chat assistants for WhatsApp and Instagram. The platform checks live inventory, quotes prices, and secures bookings directly inside the master calendar.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">04</span>
+        <div>
+          <h3>Seamless front-desk operations (POS)</h3>
+          <p>When a guest orders food at the property's restaurant, books a local tour, or requests extra amenities, staff log it into the built-in point of sale — and the charge maps automatically to that guest's master room bill.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">05</span>
+        <div>
+          <h3>Integrated guest loyalty (CRM)</h3>
+          <p>The platform securely tracks guest contact info, past preferences, and billing histories — letting boutique posadas deliver the personalized, luxury experience that keeps international tourists coming back.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">06</span>
+        <div>
+          <h3>The free learning academy</h3>
+          <p>To elevate national service standards, CaneyCloud embeds a completely free hospitality learning module directly into the platform. Property staff access world-class training, improving local employment skills while directly upgrading operations.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">07</span>
+        <div>
+          <h3>One-click financial clarity</h3>
+          <p>CaneyCloud automatically tracks incoming multi-currency payments, manages operational costs, and generates clear performance reports so owners can monitor their margins from anywhere.</p>
+        </div>
+      </li>
+    </ul>
+    <div class="vcp-editorial">
+      <h3 class="vcp-editorial__span" style="margin-bottom: 0;">The CaneyCloud flywheel: unlocking macroeconomic data</h3>
+      <p>By anchoring every aspect of the hospitality ecosystem into a single software interface, CaneyCloud captures an unprecedented, invaluable data asset. That data acts as a flywheel driving three national initiatives.</p>
+      <p><strong>Predictive market demand.</strong> Tracking real-time tourism velocity, length of stay, and spending habits compiles the definitive data engine for Venezuelan tourism — objective data used to de-risk and structure high-yield hospitality investment packages that attract global "smart money" to build new properties.</p>
+      <p><strong>Workforce optimization.</strong> Data from the free educational modules maps skills gaps across states, so training resources are dynamically allocated to areas experiencing sudden tourism surges.</p>
+      <p><strong>Raw-material &amp; supply-chain acceleration.</strong> A booming hospitality sector requires vast physical resources — from local agricultural produce for hotel restaurants to construction materials for resort expansions. CaneyCloud uses its vendor data to partner with local providers and manufacturers, directly stimulating Venezuela's raw-material sectors so the economic windfall stays within the country.</p>
+    </div>
+  </section>
+
+  <!-- ============ 05 BUSINESS MODEL ============ -->
+  <section class="paper-section" id="business-model">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">05</span>
+      <h2>Business model</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">Our monetization architecture relies on two primary mechanisms.</p>
+      <p><strong>Subscription fees.</strong> Fixed monthly recurring revenue (MRR) based on operational features and data-infrastructure limits.</p>
+      <p><strong>Platform transaction fees.</strong> A standard 2% fee applied to all financial and procurement transactions processed through the platform — aligning our revenue directly with the marketplace volume we facilitate.</p>
+    </div>
+    <div class="vcp-prose">
+      <table>
+        <caption>Pricing tiers</caption>
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Monthly cost</th>
+            <th scope="col">Transaction fee</th>
+            <th scope="col">Target audience</th>
+            <th scope="col">Key features &amp; limits</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Free</td>
+            <td>$0</td>
+            <td>2%</td>
+            <td>Boutique hotels, local vendors, and early-stage hospitality startups</td>
+            <td>Core features, basic vendor matching, and localized supply-chain metrics. Strictly capped by operational usage and data throughput.</td>
+          </tr>
+          <tr>
+            <td>Premium</td>
+            <td>$250 / mo</td>
+            <td>2%</td>
+            <td>Mid-sized hospitality operations and growing regional hotel chains</td>
+            <td>Advanced predictive analytics, automated procurement workflows, and priority vendor communication channels.</td>
+          </tr>
+          <tr>
+            <td>Premium Pro</td>
+            <td>$300 / mo</td>
+            <td>2%</td>
+            <td>Enterprise resorts and high-volume raw-material manufacturers</td>
+            <td>Unlimited usage, unrestricted data synchronization, deep-dive predictive intelligence, and dedicated account management.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 06 WHY WE WIN ============ -->
+  <section class="paper-section" id="why-we-win">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">06</span>
+      <h2>Why we win</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">CaneyCloud operates with the velocity of a Silicon Valley startup, injecting modern intensity into an industry historically characterized by fragmented, non-technical, slow-moving processes. We aren't just participating in the market — we are fundamentally redefining it.</p>
+      <p class="vcp-editorial__span" style="margin: 0;">Our competitive moat is built on four pillars:</p>
+    </div>
+    <ul class="paper-pillar-list">
+      <li>
+        <span class="paper-pillar-list__num">01</span>
+        <div>
+          <h3>Cultural specialization</h3>
+          <p>We are not an off-the-shelf PMS. The platform is architected specifically for the nuances of Venezuelan operations — from local regulatory requirements to the operational realities of independent posadas — setting us apart from any international system.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">02</span>
+        <div>
+          <h3>Lean model &amp; operational agility</h3>
+          <p>By leveraging advanced AI capabilities and startup intensity, the team iterates faster than any legacy competitor. That speed captures market share quickly, and the lean cost base lets us pair competitive pricing with excellent market solutions.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">03</span>
+        <div>
+          <h3>Education module &amp; philanthropic effort</h3>
+          <p>Our focus is sustainable tourism, not extractive tourism. The non-profit educational platform empowers hospitality workers with learning resources, economic incentive rewards, and career certificates — and in parallel we funnel funds toward initiatives that preserve natural ecosystems, fight deforestation, and assist the country's positive change.</p>
+        </div>
+      </li>
+      <li>
+        <span class="paper-pillar-list__num">04</span>
+        <div>
+          <h3>The "Posada Incubator" ecosystem</h3>
+          <p>We move beyond software provisioning to become a partner in growth. Combining market-level demand data with per-property operational insight yields directly quantifiable investment opportunities with controllable risk. The vision: package the brand into an investment fund for tourism infrastructure — a controlled, safe vehicle in a country surrounded by risk and forecasted 10x market growth — driving adoption across the existing base and the forecasted 3,000+ new posadas and hotels in the next five years.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ 07 BUSINESS CAVEATS ============ -->
+  <section class="paper-section" id="business-caveats">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">07</span>
+      <h2>Business caveats</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">A thesis this asymmetric only survives contact with reality if its risks are named plainly. These are the caveats we underwrite against. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Political transition risk.</strong> The entire market unlock assumes the 2026 transition holds. A reversal, contested succession, or renewed sanctions regime would re-freeze international demand. Mitigation: the platform is engineered to be valuable at the domestic baseline (500k visitors) — the upside scenario is leverage, not a dependency. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Payment-rail immaturity.</strong> Global gateways are only beginning to re-enter; until they mature, collections span cash, Zelle, crypto, and bolívares. Mitigation: multi-currency tracking is a first-class feature, and the 2% transaction fee is applied wherever settlement actually happens rather than assuming a single rail. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Infrastructure &amp; connectivity gaps.</strong> Many flagship destinations (Los Roques, Canaima) run on intermittent power and satellite links. Mitigation: offline-first architecture — local state syncs when connectivity returns, so the front desk never stops. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>OTA re-entry timing.</strong> Our channel-sync value compounds when Booking.com, Airbnb, and Expedia fully reopen Venezuelan inventory; the timing is theirs, not ours. Mitigation: WhatsApp/Instagram booking automation monetizes the channels operators already use today, making OTA sync additive rather than existential. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Perception lag.</strong> Traveler sentiment recovers more slowly than headlines; insurance, advisories, and word-of-mouth carry years of inertia. Mitigation: our marketing leans on verified guest experience data and the diaspora as first movers (see Chapter 08). <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Talent competition.</strong> The same reopening that creates our market invites global competitors and drains local technical talent. Mitigation: cultural specialization, the free academy as a talent pipeline, and speed — the moat is being first and being native. <span class="placeholder-note">[draft — Jose refines]</span></p>
+    </div>
+  </section>
+
+  <!-- ============ 08 MARKETING STRATEGY ============ -->
+  <section class="paper-section" id="marketing-strategy">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">08</span>
+      <h2>Marketing strategy</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">Our marketing has many angles of attack, all critical for the success of our first year in the market.</p>
+      <p><strong>Meet operators where they already work.</strong> Venezuelan hospitality runs on WhatsApp and Instagram today. Acquisition happens in those channels: direct outreach, operator communities, and demo flows that run inside the messaging apps themselves — no landing-page detour. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>A state-by-state ground game.</strong> Trust in Venezuela is built in person. Regional ambassadors onboard the anchor posadas in each tourism corridor (Margarita, Los Roques, Mérida, Canaima), and each anchor property becomes the reference sale for its neighbors. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Paid social with surgical targeting.</strong> Meta ads aimed at two audiences: property operators inside the country, and the diaspora — the eight million Venezuelans abroad who will be the first wave of returning travelers and the loudest referral engine. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Content as proof.</strong> A dedicated content team documents the industry's rebirth — occupancy turnarounds, destination stories, operator spotlights — making CaneyCloud the publication of record for Venezuelan tourism while every piece doubles as top-of-funnel. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>The free tier and the academy as the funnel's mouth.</strong> Zero-cost entry removes all adoption risk for small operators; the free learning academy pulls in the workforce, whose certificates and rewards make the platform sticky before a single dollar is charged. Land free, expand to Premium as occupancy grows. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Institutional partnerships.</strong> Tourism boards, airlines restoring routes, and the OTAs themselves — each reopening announcement is a co-marketing moment CaneyCloud is positioned to own. <span class="placeholder-note">[draft — Jose refines]</span></p>
+    </div>
+  </section>
+
+  <!-- ============ 09 SOCIAL INCENTIVES ============ -->
+  <section class="paper-section" id="social-incentives">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">09</span>
+      <h2>Social incentives</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">CaneyCloud's social commitments are not appendices to the business model — they are load-bearing parts of it. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Free hospitality education.</strong> The academy ships free in every tier, with economic incentive rewards and career certificates. Every trained worker raises the national service standard — and the quality of the properties on our own platform. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Embedded donation channels.</strong> Guests and operators can route contributions to vetted national causes directly inside the platform, with the same transparency the rest of the system provides. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Ecosystem preservation.</strong> A share of platform proceeds funds non-profits protecting the natural assets tourism depends on — reef systems, tepuis, and forest cover — including direct anti-deforestation work. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Demand balancing across states.</strong> Our pricing and recommendation engines deliberately surface under-visited states, spreading tourism income beyond the famous corridors so the entire nation benefits from the recovery. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      <p><strong>Local supply chains first.</strong> Vendor matching prioritizes Venezuelan producers and manufacturers, keeping the hospitality windfall circulating in the domestic economy (see the flywheel, Chapter 04). <span class="placeholder-note">[draft — Jose refines]</span></p>
+    </div>
+  </section>
+
+  <!-- ============ 10 FORECAST ============ -->
+  <section class="paper-section" id="forecast">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">10</span>
+      <h2>Forecast</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">The forecast below applies the Chapter 03 market model to a staged adoption curve. All figures are illustrative planning targets, not commitments. <span class="placeholder-note">[draft — Jose refines: all figures]</span></p>
+      <p>Year one is a beachhead: onboard the anchor properties of the top tourism corridors on the free tier and convert the operationally serious ones to Premium. Years two and three ride the occupancy recovery — as OTA inventory reopens and flight capacity returns, platform transaction volume scales with the market itself, ahead of our own sales effort.</p>
+      <p>By year five, capturing roughly 40% of the optimistic 8,300-property universe positions the platform to process a meaningful share of a ~$2B hospitality economy — at which point the transaction fee, not the subscription, is the dominant revenue line, and the Posada Incubator fund (Chapter 06) becomes the growth engine for the next 3,000 properties.</p>
+    </div>
+    <div class="vcp-prose">
+      <table>
+        <caption>Illustrative adoption and revenue targets <span class="placeholder-note">[draft — Jose refines]</span></caption>
+        <thead>
+          <tr>
+            <th scope="col">Horizon</th>
+            <th scope="col">Properties on platform</th>
+            <th scope="col">Paid-tier share</th>
+            <th scope="col">Platform GMV</th>
+            <th scope="col">Illustrative revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Year 1 — beachhead</td>
+            <td>250</td>
+            <td>~20%</td>
+            <td>$15M</td>
+            <td>$0.45M</td>
+          </tr>
+          <tr>
+            <td>Year 3 — recovery ride</td>
+            <td>1,500</td>
+            <td>~30%</td>
+            <td>$180M</td>
+            <td>$4.9M</td>
+          </tr>
+          <tr>
+            <td>Year 5 — gateway position</td>
+            <td>3,300</td>
+            <td>~35%</td>
+            <td>$600M</td>
+            <td>$15.5M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 11 BUDGET ============ -->
+  <section class="paper-section" id="budget">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">11</span>
+      <h2>Budget</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede">The lean model from Chapter 06 is reflected in where the first year's capital goes: product and ground-level adoption over overhead. Allocation percentages below are the working draft; the funding total is set at raise time. <span class="placeholder-note">[draft — Jose refines: allocation and total]</span></p>
+    </div>
+    <div class="vcp-prose">
+      <table>
+        <caption>Year-one operating allocation (working draft) <span class="placeholder-note">[draft — Jose refines]</span></caption>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Share</th>
+            <th scope="col">What it buys</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Engineering &amp; AI platform</td>
+            <td>35%</td>
+            <td>Core PMS, OTA sync, pricing engine, WhatsApp/Instagram automation — a small AI-accelerated team</td>
+          </tr>
+          <tr>
+            <td>Field onboarding &amp; support</td>
+            <td>20%</td>
+            <td>Regional ambassadors, anchor-property onboarding, bilingual support</td>
+          </tr>
+          <tr>
+            <td>Marketing &amp; content</td>
+            <td>20%</td>
+            <td>Meta ads, content creation team, partnership launches (Chapter 08)</td>
+          </tr>
+          <tr>
+            <td>Learning academy</td>
+            <td>10%</td>
+            <td>Course production, certification program, incentive rewards</td>
+          </tr>
+          <tr>
+            <td>Cloud &amp; infrastructure</td>
+            <td>8%</td>
+            <td>Hosting, GCP migration, offline-sync infrastructure</td>
+          </tr>
+          <tr>
+            <td>Legal &amp; operations</td>
+            <td>7%</td>
+            <td>Entity structure, payment-rail compliance, accounting</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 12 ROAD MAP ============ -->
+  <section class="paper-section" id="road-map">
+    <div class="vcp-section-heading">
+      <span class="vcp-section-heading__num">12</span>
+      <h2>Road map</h2>
+      <hr class="vcp-section-heading__rule">
+    </div>
+    <div class="vcp-editorial">
+      <p class="vcp-editorial__lede" style="margin-bottom: var(--space-5);">Four stages, sequenced so the product is bulletproof before the market's attention arrives.</p>
+    </div>
+    <ol class="vcp-timeline">
+      <li class="vcp-timeline__item">
+        <span class="vcp-timeline__dot"></span>
+        <p class="label-caps" style="margin: 0 0 var(--space-2);">Pre-launch</p>
+        <p style="margin: 0;">Beta-testing every feature with pilot properties — making sure the product is solid and bulletproof before general availability.</p>
+      </li>
+      <li class="vcp-timeline__item">
+        <span class="vcp-timeline__dot"></span>
+        <p class="label-caps" style="margin: 0 0 var(--space-2);">Launch</p>
+        <p style="margin: 0;">General availability on the free tier, anchored by the beta cohort as reference properties in each corridor. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      </li>
+      <li class="vcp-timeline__item">
+        <span class="vcp-timeline__dot"></span>
+        <p class="label-caps" style="margin: 0 0 var(--space-2);">Post-launch</p>
+        <p style="margin: 0;">Meta ads at scale, the content creation team comes online, migration to GCP for the growth curve, and direct OTA outreach as global inventory reopens.</p>
+      </li>
+      <li class="vcp-timeline__item">
+        <span class="vcp-timeline__dot"></span>
+        <p class="label-caps" style="margin: 0 0 var(--space-2);">Scale</p>
+        <p style="margin: 0;">The Posada Incubator fund opens, channeling investment into the forecasted 3,000+ new properties — with CaneyCloud as the operating layer for each one. <span class="placeholder-note">[draft — Jose refines]</span></p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ BACK TO LIBRARY ============ -->
+  <section class="paper-section">
+    <a class="vcp-link" href="/library.html#caneycloud-business-white-paper">← Back to the Library</a>
+  </section>
+
+</main>
+
+<footer class="vcp-footer">
+  <div>
+    <div class="vcp-footer__wordmark sheen-text">VCP</div>
+    <div class="label-caps vcp-footer__tagline">Vegas Consulting Partners</div>
+  </div>
+  <ul class="vcp-footer__links">
+    <li><a href="/intent.html">The Intent</a></li>
+    <li><a href="/clients.html">Clients</a></li>
+    <li><a href="/projects.html">Portfolio</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/socials.html">Socials</a></li>
+  </ul>
+  <div class="vcp-footer__meta">© 2026 · Vegas Consulting Partners<br>Everything with intent<br><span style="font-size:10.5px">Anonymous usage analytics · voice sessions transcribed with consent</span></div>
+</footer>
+
+</div>
+
+<script defer src="js/nav.js"></script>
+<script defer src="js/page-dip.js"></script>
+<script defer src="js/page-loader.js"></script>
+<script defer src="js/telemetry.js"></script>
+
+<!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->
+<div id="vcp-voice-widget">
+  <button type="button" class="vcp-voice-trigger" aria-label="Give voice feedback about this page" aria-haspopup="dialog"></button>
+  <button type="button" class="vcp-voice-reset" aria-label="Move widget back to its original position">&times;</button>
+  <div class="vcp-voice-panel" role="dialog" aria-label="Voice feedback" aria-modal="false">
+    <div class="vcp-voice-panel__header">
+      <span class="vcp-voice-panel__title">Quick feedback</span>
+      <div class="vcp-voice-panel__actions">
+        <button type="button" class="vcp-voice-panel__minimize" aria-label="Minimize">&minus;</button>
+        <button type="button" class="vcp-voice-panel__close" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="vcp-voice-panel__body"></div>
+    <div class="vcp-voice-status">
+      <span class="vcp-voice-status__state">idle</span>
+    </div>
+  </div>
+</div>
+<script src="js/voice-widget.js"></script>
+</body>
+</html>

@@ -78,15 +78,19 @@
   function paperRow(paper) {
     var fileHref = paper.file;
     var fileName = paper.slug + '.pdf';
+    /* On-site HTML papers navigate in the same tab and have no PDF to
+       download; external/PDF files keep the original two-link treatment. */
+    var isPage = /\.html?$/i.test(fileHref);
+    var actions = isPage
+      ? '<a class="vcp-link" href="' + escapeHtml(fileHref) + '">Read →</a>'
+      : '<a class="vcp-link" href="' + escapeHtml(fileHref) + '" target="_blank" rel="noopener">Read →</a>' +
+        '<a class="vcp-link" href="' + escapeHtml(fileHref) + '" download="' + escapeHtml(fileName) + '">Download ↓</a>';
     return (
       '<article class="vcp-paper" id="' + escapeHtml(paper.slug) + '" data-slug="' + escapeHtml(paper.slug) + '" tabindex="-1">' +
         '<h3 class="vcp-paper__title">' + escapeHtml(paper.title) + '</h3>' +
         '<p class="vcp-paper__abstract">' + escapeHtml(paper.abstract) + '</p>' +
         '<div class="vcp-paper__meta">' + metaLine(paper) + '</div>' +
-        '<div class="vcp-paper__actions">' +
-          '<a class="vcp-link" href="' + escapeHtml(fileHref) + '" target="_blank" rel="noopener">Read →</a>' +
-          '<a class="vcp-link" href="' + escapeHtml(fileHref) + '" download="' + escapeHtml(fileName) + '">Download ↓</a>' +
-        '</div>' +
+        '<div class="vcp-paper__actions">' + actions + '</div>' +
       '</article>'
     );
   }
