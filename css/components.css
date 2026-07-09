@@ -1880,6 +1880,20 @@ html.vcp-dip--out::after {
 .vcp-logo-chip--lg img {
   max-width: 170px;
 }
+/* Uniform variant (project cards): every holder is the same fixed square
+   regardless of the logo's aspect ratio, so the grid lines up (issue #129). */
+.vcp-logo-chip--uniform {
+  width: 64px;
+  height: 64px;
+  min-width: 0;
+  padding: 10px;
+}
+.vcp-logo-chip--uniform img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+}
 
 
 /* ── Page fade transition (issue #107) ──────────────────────────────
