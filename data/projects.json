@@ -57,6 +57,27 @@
     "timeline": null,
     "moat": "<p>Built Venezuela-first, where global PMS vendors don't reach: dual-currency operation (USD and VES) with SENIAT-compatible fiscal invoicing, channel sync designed for zero overbooking across OTAs and direct sales, and WhatsApp — the channel Venezuelan hotels actually sell on — treated as a first-class sales surface with AI assistance under team oversight.</p>",
     "business_model": "<p>SaaS subscription for hospitality operators, on three tiers: <strong>Free</strong> with usage limits — no credit card, enough to get a small property running — <strong>Premium</strong> at $300/month, and <strong>Premium Plus</strong> at $500/month for larger teams and properties.</p><p>On top of subscriptions, CaneyCloud earns a 1% fee on every transaction handled through the platform — so revenue scales with the hotels' own sales, and the incentive stays aligned: the platform only earns more when its hotels sell more.</p>",
+    "channels_pricing": {
+      "intro": "<p>A posada sells in more places than it can manage: OTAs, its own site, WhatsApp threads, Instagram DMs. CaneyCloud's channel manager makes one calendar the single source of truth — rooms list once and stay in sync everywhere, so the moment a night sells on any channel it closes on all of them. No overbooking, no five extranets to babysit.</p>",
+      "distribution": {
+        "eyebrow": "Distribute",
+        "title": "List once,<br>sync everywhere",
+        "sub": "Run your property from WhatsApp, Instagram, or a simple sheet — CaneyCloud keeps every booking channel in sync, automatically.",
+        "status_label": "Syncing",
+        "status_note": "every channel",
+        "hub_logo": "assets/logos/caneycloud.png",
+        "left": ["whatsapp", "instagram", "sheets"],
+        "right": ["booking", "expedia", "more:300+"],
+        "aria_label": "CaneyCloud connects WhatsApp, Instagram and Sheets to Booking.com, Expedia and 300+ channels"
+      },
+      "pricing_heading": "Priced by demand",
+      "pricing_html": "<p>The same calendar runs dynamic pricing: nightly rates adjust automatically with occupancy, season, lead time, and demand — inside floors and ceilings the owner sets, and always in both currencies, USD and bolívares at the day's BCV rate. Try it:</p>",
+      "calc": {
+        "base_usd": 50,
+        "bcv": 700.22,
+        "disclaimer": "Illustrative math on a $50 base rate at BCV 700.22 — the production engine weighs occupancy, lead time, season, and live demand signals."
+      }
+    },
     "chart": {
       "title": "First five years — simulated projection",
       "note": "Simulated: paying properties start at 5 in month 1 and follow an S-curve to ~245 by year 5. Subscriptions = paying properties × $360/month blended (70% Premium at $300, 30% Premium Plus at $500). Transaction fees = 1% of each property's payment volume at the $80k/year posada average (≈$67/property/month). Total = subscriptions + fees.",

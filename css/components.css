@@ -783,10 +783,14 @@
   position: absolute;
   inset: 0 auto 0 50%;
   width: 82%;
+  display: flex;
+  align-items: center;
   transform: translateX(-50%);
   transition: transform 450ms cubic-bezier(0.33, 1, 0.68, 1), opacity 450ms ease;
   cursor: pointer;
 }
+
+.vcp-carousel__slide .vcp-browser { width: 100%; }
 
 .vcp-carousel__slide--active {
   transform: translateX(-50%) translateZ(0);
@@ -866,12 +870,257 @@
 }
 
 @media (max-width: 700px) {
+  /* Slides run taller than the desktop stage ratio on narrow screens —
+     give the stage room and push the controls clear (issue #127). */
+  .vcp-carousel__stage { aspect-ratio: 1.4; }
+  .vcp-carousel__controls { margin-top: var(--space-5); }
   .vcp-carousel__slide { width: 96%; }
   .vcp-carousel__slide--left, .vcp-carousel__slide--right { opacity: 0.2; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vcp-carousel__slide { transition: none; }
+}
+
+/* === Distro card (vcp-distro.js) — "list once, sync everywhere" hub-and-spoke === */
+.vcp-distro {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: 0 34px 90px -34px rgba(0, 0, 0, 0.72);
+  overflow: hidden;
+  margin: var(--space-4) 0;
+}
+
+.vcp-distro__copy {
+  flex: 1 1 44%;
+  min-width: 0;
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.vcp-distro__title {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-40);
+  font-weight: 500;
+  line-height: 1.05;
+  color: var(--silver-bright);
+}
+
+.vcp-distro__sub {
+  margin: var(--space-3) 0 0;
+  color: var(--text-soft);
+  font-size: var(--fs-16);
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
+.vcp-distro__rule { border-top: 1px dashed var(--line-strong); margin-top: var(--space-5); }
+
+.vcp-distro__status {
+  margin-top: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.vcp-distro__live {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--silver-bright);
+}
+
+.vcp-distro__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--silver-bright);
+  box-shadow: 0 0 0 0 rgba(232, 234, 237, 0.5);
+  animation: vcp-distro-pulse 2.2s ease-out infinite;
+}
+
+@keyframes vcp-distro-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(232, 234, 237, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(232, 234, 237, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(232, 234, 237, 0); }
+}
+
+.vcp-distro__note {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.vcp-distro__diagram {
+  flex: 1 1 56%;
+  min-width: 0;
+  position: relative;
+  min-height: 330px;
+  border-left: 1px dashed var(--line-strong);
+}
+
+.vcp-distro__wires { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+
+.vcp-distro__wire {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 6;
+  animation: vcp-distro-flow 3.2s linear infinite;
+}
+
+@keyframes vcp-distro-flow { to { stroke-dashoffset: -22; } }
+
+.vcp-distro__tile,
+.vcp-distro__node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.vcp-distro__tile {
+  width: 58px;
+  height: 58px;
+  background: var(--silver-bright);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.55);
+  transition: transform 180ms ease;
+}
+
+.vcp-distro__tile:hover { transform: translate(-50%, -50%) scale(1.06); }
+
+.vcp-distro__tile svg { width: 34px; height: 34px; display: block; }
+
+.vcp-distro__more {
+  font-weight: 700;
+  font-size: var(--fs-16);
+  color: var(--bg);
+}
+
+.vcp-distro__node {
+  width: 88px;
+  height: 88px;
+  background: var(--silver-bright);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  left: 50%;
+  top: 50%;
+  box-shadow: 0 0 0 6px rgba(232, 234, 237, 0.06), 0 0 42px -6px rgba(232, 234, 237, 0.4);
+}
+
+.vcp-distro__node img { width: 56px; height: 56px; display: block; object-fit: contain; }
+
+@media (max-width: 780px) {
+  .vcp-distro { flex-direction: column; }
+  .vcp-distro__copy { padding: var(--space-5) var(--space-4); }
+  .vcp-distro__title { font-size: var(--fs-28); }
+  .vcp-distro__diagram {
+    border-left: none;
+    border-top: 1px dashed var(--line-strong);
+    min-height: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vcp-distro__wire { animation: none; }
+  .vcp-distro__pulse { animation: none; box-shadow: 0 0 10px 1px rgba(232, 234, 237, 0.5); }
+  .vcp-distro__tile { transition: none; }
+}
+
+/* === Rate calc (vcp-rate-calc.js) — illustrative dynamic-pricing widget === */
+.vcp-calc {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) 0;
+}
+
+.vcp-calc__label { margin-bottom: var(--space-4); }
+
+.vcp-calc__grid {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.vcp-calc__controls {
+  flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.vcp-calc__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--fs-14);
+  color: var(--text-soft);
+}
+
+.vcp-calc__control strong { color: var(--silver-bright); font-weight: 500; }
+
+.vcp-calc__control--row { flex-direction: row; align-items: center; gap: var(--space-2); cursor: pointer; }
+
+.vcp-calc__control input[type="range"] { width: 100%; accent-color: var(--silver-bright); }
+.vcp-calc__control input[type="checkbox"] { accent-color: var(--silver-bright); }
+
+.vcp-calc__result {
+  flex: 1 1 45%;
+  text-align: center;
+  border-left: 1px dashed var(--line-strong);
+  padding-left: var(--space-5);
+}
+
+.vcp-calc__caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.vcp-calc__usd {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--fs-56);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--silver-bright);
+}
+
+.vcp-calc__bs {
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-14);
+  color: var(--text-muted);
+}
+
+.vcp-calc__disclaimer {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+@media (max-width: 700px) {
+  .vcp-calc__grid { flex-direction: column; align-items: stretch; }
+  .vcp-calc__result { border-left: none; border-top: 1px dashed var(--line-strong); padding: var(--space-4) 0 0; }
 }
 
 /* === Chart (vcp-chart.js) — aligned single-axis line panels + key on the right === */
@@ -978,7 +1227,8 @@
   cursor: pointer;
 }
 
-.vcp-chart__table .vcp-prose { max-height: 300px; overflow-y: auto; margin-top: var(--space-2); }
+.vcp-chart__table { overflow: hidden; }
+.vcp-chart__table .vcp-prose { max-height: 300px; overflow: auto; margin-top: var(--space-2); }
 
 @media (max-width: 700px) {
   .vcp-chart__layout { flex-direction: column; gap: var(--space-2); }

@@ -72,6 +72,25 @@
     );
   }
 
+  // Channels & pricing — channel-manager story: intro prose, the distro card
+  // (js/vcp-distro.js), then the dynamic-pricing prose and the illustrative
+  // rate calculator (js/vcp-rate-calc.js). Slots fill after DOM insert.
+  function renderChannels(project, num) {
+    var cp = project.channels_pricing;
+    return (
+      '<section class="detail-section" id="channels-pricing">' +
+        sectionHeading(num, 'Channel manager & dynamic pricing') +
+        '<div style="max-width: 72ch;">' +
+          '<div class="vcp-prose">' + cp.intro + '</div>' +
+          '<div data-distro-slot></div>' +
+          '<h3 style="margin: var(--space-5) 0 var(--space-3);">' + escapeHtml(cp.pricing_heading) + '</h3>' +
+          '<div class="vcp-prose">' + cp.pricing_html + '</div>' +
+          '<div data-calc-slot></div>' +
+        '</div>' +
+      '</section>'
+    );
+  }
+
   // Timeline — list of {date, title, note}. Must handle 1, 5, 20+ items.
   function renderTimeline(project, num) {
     var items = project.timeline.map(function (m) {
@@ -188,6 +207,7 @@
     var sectionDefs = [
       { blank: isBlank(project.overview), render: renderOverview },
       { blank: isBlank(project.article), render: renderArticle },
+      { blank: isBlank(project.channels_pricing), render: renderChannels },
       { blank: isBlank(project.timeline), render: renderTimeline },
       { blank: isBlank(project.moat), render: renderMoat },
       { blank: isBlank(project.business_model), render: renderBusinessModel },
@@ -219,6 +239,16 @@
         chromeUrl: chromeUrl,
         label: project.name + ' product walkthrough'
       });
+    }
+
+    var distroSlot = root.querySelector('[data-distro-slot]');
+    if (distroSlot && window.VCPDistro) {
+      window.VCPDistro.render(distroSlot, project.channels_pricing.distribution);
+    }
+
+    var calcSlot = root.querySelector('[data-calc-slot]');
+    if (calcSlot && window.VCPRateCalc) {
+      window.VCPRateCalc.render(calcSlot, project.channels_pricing.calc);
     }
   }
 
