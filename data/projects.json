@@ -59,7 +59,7 @@
     "business_model": "<p>SaaS subscription for hospitality operators, on three tiers: <strong>Free</strong> with usage limits — no credit card, enough to get a small property running — <strong>Premium</strong> at $300/month, and <strong>Premium Plus</strong> at $500/month for larger teams and properties.</p><p>On top of subscriptions, CaneyCloud earns a 1% fee on every transaction handled through the platform — so revenue scales with the hotels' own sales, and the incentive stays aligned: the platform only earns more when its hotels sell more.</p>",
     "chart": {
       "title": "First five years — simulated projection",
-      "note": "Simulated: adoption grows to ~460 properties; paid mix rises from 25% to 55% of active properties (70/30 Premium vs Premium Plus); 40% → 90% of guest payments processed on-platform at the 1% fee, on an average posada revenue of $80k/year.",
+      "note": "Simulated: paying properties start at 5 in month 1 and follow an S-curve to ~245 by year 5. Subscriptions = paying properties × $360/month blended (70% Premium at $300, 30% Premium Plus at $500). Transaction fees = 1% of each property's payment volume at the $80k/year posada average (≈$67/property/month). Total = subscriptions + fees.",
       "xName": "Month",
       "xTicks": [
         { "at": 11, "label": "Year 1" },
@@ -72,16 +72,34 @@
         {
           "label": "Monthly revenue (USD)",
           "format": "usd",
-          "height": 200,
-          "yTicks": [0, 40000, 80000, 120000],
-          "points": [1500, 1800, 2100, 2200, 2700, 3000, 3400, 3900, 4300, 4800, 5500, 6300, 7100, 8000, 9000, 10100, 11300, 12600, 14100, 15600, 17400, 19200, 21300, 23500, 25800, 28200, 31000, 33700, 36600, 39600, 42600, 45800, 49100, 52300, 55700, 58900, 62300, 65700, 69000, 72100, 75200, 78400, 81300, 84400, 87100, 89800, 92300, 94900, 97300, 99700, 101900, 104100, 106400, 108400, 110200, 112000, 113900, 115700, 117300, 119200]
+          "height": 210,
+          "yTicks": [0, 30000, 60000, 90000],
+          "series": [
+            {
+              "label": "Total revenue",
+              "points": [2133, 2560, 2560, 2987, 3413, 3413, 3840, 4267, 4693, 5547, 5973, 6400, 7253, 8107, 8960, 9813, 10667, 11520, 12800, 14080, 15360, 16640, 18347, 20053, 21760, 23893, 26027, 28160, 30293, 32853, 35413, 37973, 40533, 43520, 46080, 49067, 52053, 55040, 58027, 61013, 64427, 66987, 69973, 72960, 75520, 78507, 81067, 83627, 85760, 87893, 90027, 92160, 93867, 95573, 97280, 98987, 100267, 101547, 102827, 104107]
+            },
+            {
+              "label": "Subscriptions",
+              "points": [1800, 2160, 2160, 2520, 2880, 2880, 3240, 3600, 3960, 4680, 5040, 5400, 6120, 6840, 7560, 8280, 9000, 9720, 10800, 11880, 12960, 14040, 15480, 16920, 18360, 20160, 21960, 23760, 25560, 27720, 29880, 32040, 34200, 36720, 38880, 41400, 43920, 46440, 48960, 51480, 54360, 56520, 59040, 61560, 63720, 66240, 68400, 70560, 72360, 74160, 75960, 77760, 79200, 80640, 82080, 83520, 84600, 85680, 86760, 87840]
+            },
+            {
+              "label": "Transaction fees (1%)",
+              "points": [333, 400, 400, 467, 533, 533, 600, 667, 733, 867, 933, 1000, 1133, 1267, 1400, 1533, 1667, 1800, 2000, 2200, 2400, 2600, 2867, 3133, 3400, 3733, 4067, 4400, 4733, 5133, 5533, 5933, 6333, 6800, 7200, 7667, 8133, 8600, 9067, 9533, 10067, 10467, 10933, 11400, 11800, 12267, 12667, 13067, 13400, 13733, 14067, 14400, 14667, 14933, 15200, 15467, 15667, 15867, 16067, 16267]
+            }
+          ]
         },
         {
-          "label": "Active properties",
+          "label": "Paying properties",
           "format": "count",
           "height": 150,
-          "yTicks": [0, 150, 300, 450],
-          "points": [13, 15, 17, 18, 21, 23, 26, 29, 32, 35, 39, 44, 49, 54, 60, 66, 73, 80, 88, 96, 106, 115, 126, 137, 148, 160, 173, 186, 199, 213, 226, 240, 254, 267, 281, 294, 307, 320, 332, 343, 354, 365, 374, 384, 392, 400, 407, 414, 420, 426, 431, 436, 441, 445, 448, 451, 454, 457, 459, 462]
+          "yTicks": [0, 80, 160, 240],
+          "series": [
+            {
+              "label": "Paying properties",
+              "points": [5, 6, 6, 7, 8, 8, 9, 10, 11, 13, 14, 15, 17, 19, 21, 23, 25, 27, 30, 33, 36, 39, 43, 47, 51, 56, 61, 66, 71, 77, 83, 89, 95, 102, 108, 115, 122, 129, 136, 143, 151, 157, 164, 171, 177, 184, 190, 196, 201, 206, 211, 216, 220, 224, 228, 232, 235, 238, 241, 244]
+            }
+          ]
         }
       ]
     },

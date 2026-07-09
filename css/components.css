@@ -762,7 +762,9 @@
 
 .vcp-chart__line { fill: none; stroke-width: 2; stroke-linejoin: round; }
 .vcp-chart__line--a { stroke: var(--silver-bright); }
-.vcp-chart__line--b { stroke: var(--silver-deep); stroke-dasharray: 6 5; }
+.vcp-chart__line--b { stroke: var(--silver); stroke-dasharray: 7 5; }
+.vcp-chart__line--c { stroke: var(--silver-deep); stroke-dasharray: 2 4; stroke-linecap: round; }
+.vcp-chart__line--d { stroke: var(--silver-deep); }
 
 .vcp-chart__cross { stroke: var(--line-strong); stroke-width: 1; opacity: 0; }
 
@@ -785,7 +787,9 @@
 
 .vcp-chart__swatch { width: 22px; flex: 0 0 auto; }
 .vcp-chart__swatch--a { border-top: 2px solid var(--silver-bright); }
-.vcp-chart__swatch--b { border-top: 2px dashed var(--silver-deep); }
+.vcp-chart__swatch--b { border-top: 2px dashed var(--silver); }
+.vcp-chart__swatch--c { border-top: 2px dotted var(--silver-deep); }
+.vcp-chart__swatch--d { border-top: 2px solid var(--silver-deep); }
 
 .vcp-chart__tip {
   position: absolute;

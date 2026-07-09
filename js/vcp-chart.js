@@ -1,11 +1,12 @@
 /**
  * VCP Chart — minimal dependency-free line-chart renderer (inline SVG).
  *
- * Renders a spec of N series as vertically aligned single-axis panels that
- * share the same x scale (never dual y-axes on one plot). Each panel gets its
- * own y scale and direct label; a shared key sits to the right; hovering
- * shows a crosshair + tooltip across all panels; a <details> data table
- * provides the non-visual fallback.
+ * Renders a spec as vertically aligned single-axis panels that share the same
+ * x scale (never dual y-axes on one plot). A panel can carry multiple series
+ * as long as they share one unit; each series gets a distinct monochrome line
+ * style (identity never rides on color alone). A shared key sits to the
+ * right; hovering shows a crosshair + tooltip across all panels; a <details>
+ * data table provides the non-visual fallback.
  *
  * Spec shape (all trusted data from our own data files):
  * {
@@ -14,8 +15,9 @@
  *   xTicks: [{ at: <index>, label }],   // e.g. yearly marks on monthly data
  *   xName: string,                      // x unit name for tooltip/table, e.g. "Month"
  *   panels: [{
- *     label, points: [numbers],
- *     yTicks: [numbers], format: 'usd'|'count', height: <viewBox px>
+ *     label,                            // panel title (its shared unit)
+ *     yTicks: [numbers], format: 'usd'|'count', height: <viewBox px>,
+ *     series: [{ label, points: [numbers] }]
  *   }]
  * }
  */
@@ -24,9 +26,10 @@
 
   var VB_W = 640;      // viewBox width shared by all panels
   var PAD_L = 46;      // room for y tick labels
-  var PAD_R = 28;  // wide enough that a centered label on the last x tick doesn't clip
+  var PAD_R = 28;      // wide enough that a centered label on the last x tick doesn't clip
   var PAD_T = 22;      // room for the panel's direct label
   var SVG_NS = 'http://www.w3.org/2000/svg';
+  var STYLES = ['a', 'b', 'c', 'd'];  // line styles assigned in fixed series order
 
   function fmt(value, format) {
     if (format === 'usd') {
@@ -46,13 +49,28 @@
     return node;
   }
 
-  function buildPanel(panel, spec, isLast, seriesIndex) {
+  // Flat list of {panel, series, styleIndex} in spec order — drives line
+  // styles, the key, the tooltip, and the data table identically.
+  function flatSeries(spec) {
+    var flat = [];
+    spec.panels.forEach(function (panel) {
+      panel.series.forEach(function (series) {
+        flat.push({ panel: panel, series: series, style: STYLES[flat.length % STYLES.length] });
+      });
+    });
+    return flat;
+  }
+
+  function buildPanel(panel, spec, isLast, flat) {
     var height = panel.height || 190;
     var padB = isLast ? 24 : 8;
     var plotW = VB_W - PAD_L - PAD_R;
     var plotH = height - PAD_T - padB;
-    var n = panel.points.length;
-    var yMax = Math.max(panel.yTicks[panel.yTicks.length - 1], Math.max.apply(null, panel.points));
+    var n = panel.series[0].points.length;
+    var dataMax = Math.max.apply(null, panel.series.map(function (s) {
+      return Math.max.apply(null, s.points);
+    }));
+    var yMax = Math.max(panel.yTicks[panel.yTicks.length - 1], dataMax);
 
     var svg = el('svg', {
       viewBox: '0 0 ' + VB_W + ' ' + height,
@@ -86,13 +104,16 @@
       }
     });
 
-    // The series line
-    var d = panel.points.map(function (v, i) {
-      return (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ' ' + y(v).toFixed(1);
-    }).join(' ');
-    svg.appendChild(el('path', { d: d, class: 'vcp-chart__line vcp-chart__line--' + (seriesIndex === 0 ? 'a' : 'b') }));
+    // Series lines, styled by their fixed position in the flat order
+    panel.series.forEach(function (series) {
+      var entry = flat.filter(function (f) { return f.series === series; })[0];
+      var d = series.points.map(function (v, i) {
+        return (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ' ' + y(v).toFixed(1);
+      }).join(' ');
+      svg.appendChild(el('path', { d: d, class: 'vcp-chart__line vcp-chart__line--' + entry.style }));
+    });
 
-    // Direct label (identity never rides on color alone)
+    // Panel direct label (the shared unit; per-line identity lives in the key)
     var direct = el('text', { x: PAD_L, y: 13, class: 'vcp-chart__label' });
     direct.textContent = panel.label;
     svg.appendChild(direct);
@@ -106,16 +127,16 @@
     return { svg: svg, cross: cross, x: x };
   }
 
-  function buildLegend(spec) {
+  function buildLegend(flat) {
     var legend = document.createElement('div');
     legend.className = 'vcp-chart__legend';
-    spec.panels.forEach(function (panel, i) {
+    flat.forEach(function (entry) {
       var item = document.createElement('div');
       item.className = 'vcp-chart__legend-item';
       var swatch = document.createElement('span');
-      swatch.className = 'vcp-chart__swatch vcp-chart__swatch--' + (i === 0 ? 'a' : 'b');
+      swatch.className = 'vcp-chart__swatch vcp-chart__swatch--' + entry.style;
       var text = document.createElement('span');
-      text.textContent = panel.label;
+      text.textContent = entry.series.label;
       item.appendChild(swatch);
       item.appendChild(text);
       legend.appendChild(item);
@@ -123,19 +144,19 @@
     return legend;
   }
 
-  function buildTable(spec) {
+  function buildTable(spec, flat) {
     var details = document.createElement('details');
     details.className = 'vcp-chart__table';
-    var rows = spec.panels[0].points.map(function (_, i) {
-      return '<tr><td>' + (i + 1) + '</td>' + spec.panels.map(function (panel) {
-        return '<td>' + fmtLong(panel.points[i], panel.format) + '</td>';
+    var rows = flat[0].series.points.map(function (_, i) {
+      return '<tr><td>' + (i + 1) + '</td>' + flat.map(function (entry) {
+        return '<td>' + fmtLong(entry.series.points[i], entry.panel.format) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     details.innerHTML =
       '<summary>Data table</summary>' +
       '<div class="vcp-prose"><table>' +
-        '<thead><tr><th>' + spec.xName + '</th>' + spec.panels.map(function (panel) {
-          return '<th>' + panel.label + '</th>';
+        '<thead><tr><th>' + spec.xName + '</th>' + flat.map(function (entry) {
+          return '<th>' + entry.series.label + '</th>';
         }).join('') + '</tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
       '</table></div>';
@@ -143,6 +164,8 @@
   }
 
   function render(container, spec) {
+    var flat = flatSeries(spec);
+
     var figure = document.createElement('figure');
     figure.className = 'vcp-chart';
     figure.setAttribute('role', 'group');
@@ -166,7 +189,7 @@
     panelsWrap.className = 'vcp-chart__panels';
 
     var built = spec.panels.map(function (panel, i) {
-      var b = buildPanel(panel, spec, i === spec.panels.length - 1, i);
+      var b = buildPanel(panel, spec, i === spec.panels.length - 1, flat);
       panelsWrap.appendChild(b.svg);
       return b;
     });
@@ -176,13 +199,13 @@
     panelsWrap.appendChild(tip);
 
     layout.appendChild(panelsWrap);
-    layout.appendChild(buildLegend(spec));
+    layout.appendChild(buildLegend(flat));
     figure.appendChild(layout);
-    figure.appendChild(buildTable(spec));
+    figure.appendChild(buildTable(spec, flat));
     container.appendChild(figure);
 
-    // Hover: nearest-month crosshair across every panel + one tooltip.
-    var n = spec.panels[0].points.length;
+    // Hover: nearest-x crosshair across every panel + one tooltip.
+    var n = flat[0].series.points.length;
     var plotW = VB_W - PAD_L - PAD_R;
 
     panelsWrap.addEventListener('pointermove', function (e) {
@@ -200,8 +223,8 @@
       });
 
       tip.innerHTML = '<strong>' + spec.xName + ' ' + (idx + 1) + '</strong>' +
-        spec.panels.map(function (panel) {
-          return '<span>' + panel.label + ': ' + fmtLong(panel.points[idx], panel.format) + '</span>';
+        flat.map(function (entry) {
+          return '<span>' + entry.series.label + ': ' + fmtLong(entry.series.points[idx], entry.panel.format) + '</span>';
         }).join('');
       tip.style.display = 'flex';
       var tipX = snappedX * scale;
