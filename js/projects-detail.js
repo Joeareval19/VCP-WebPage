@@ -60,33 +60,33 @@
     );
   }
 
-  // Article — case-study blocks of {heading, html, image}, rendered as an
-  // article view: heading + prose + captioned product screenshot per block.
-  // Images carry explicit width/height (no layout shift) and lazy-load.
+  // Article — case-study blocks of {heading, html, image}, rendered as a 3D
+  // click-through carousel (js/vcp-carousel.js): an empty slot is emitted
+  // here and filled after the section lands in the DOM.
   function renderArticle(project, num) {
-    var blocks = project.article.map(function (block) {
-      var parts = [];
-      if (block.heading) parts.push('<h3>' + escapeHtml(block.heading) + '</h3>');
-      if (block.html) parts.push('<div class="vcp-prose">' + block.html + '</div>');
-      if (block.image) {
-        var img = block.image;
-        parts.push(
-          '<figure class="vcp-figure">' +
-            '<img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt) + '" loading="lazy"' +
-            (img.width ? ' width="' + escapeHtml(String(img.width)) + '"' : '') +
-            (img.height ? ' height="' + escapeHtml(String(img.height)) + '"' : '') +
-            '>' +
-            (img.caption ? '<figcaption>' + escapeHtml(img.caption) + '</figcaption>' : '') +
-          '</figure>'
-        );
-      }
-      return parts.join('');
-    }).join('');
-
     return (
       '<section class="detail-section" id="article">' +
         sectionHeading(num, 'Inside the product') +
-        '<div class="vcp-article" style="max-width: 72ch;">' + blocks + '</div>' +
+        '<div class="vcp-article" data-carousel-slot style="max-width: 72ch;"></div>' +
+      '</section>'
+    );
+  }
+
+  // Channels & pricing — channel-manager story: intro prose, the distro card
+  // (js/vcp-distro.js), then the dynamic-pricing prose and the illustrative
+  // rate calculator (js/vcp-rate-calc.js). Slots fill after DOM insert.
+  function renderChannels(project, num) {
+    var cp = project.channels_pricing;
+    return (
+      '<section class="detail-section" id="channels-pricing">' +
+        sectionHeading(num, 'Channel manager & dynamic pricing') +
+        '<div style="max-width: 72ch;">' +
+          '<div class="vcp-prose">' + cp.intro + '</div>' +
+          '<div data-distro-slot></div>' +
+          '<h3 style="margin: var(--space-5) 0 var(--space-3);">' + escapeHtml(cp.pricing_heading) + '</h3>' +
+          '<div class="vcp-prose">' + cp.pricing_html + '</div>' +
+          '<div data-calc-slot></div>' +
+        '</div>' +
       '</section>'
     );
   }
@@ -125,12 +125,15 @@
     );
   }
 
-  // Business model — rich text, may include a simple table.
+  // Business model — rich text, may include a simple table. When the project
+  // carries a `chart` spec, an empty slot is emitted here and filled by
+  // js/vcp-chart.js after the section lands in the DOM.
   function renderBusinessModel(project, num) {
     return (
       '<section class="detail-section" id="business-model">' +
         sectionHeading(num, 'Business model') +
         '<div class="vcp-prose" style="max-width: 72ch;">' + project.business_model + '</div>' +
+        (isBlank(project.chart) ? '' : '<div data-chart-slot style="max-width: 72ch;"></div>') +
       '</section>'
     );
   }
@@ -204,6 +207,7 @@
     var sectionDefs = [
       { blank: isBlank(project.overview), render: renderOverview },
       { blank: isBlank(project.article), render: renderArticle },
+      { blank: isBlank(project.channels_pricing), render: renderChannels },
       { blank: isBlank(project.timeline), render: renderTimeline },
       { blank: isBlank(project.moat), render: renderMoat },
       { blank: isBlank(project.business_model), render: renderBusinessModel },
@@ -220,6 +224,32 @@
     });
 
     root.innerHTML = sections.join('');
+
+    var chartSlot = root.querySelector('[data-chart-slot]');
+    if (chartSlot && window.VCPChart) {
+      window.VCPChart.render(chartSlot, project.chart);
+    }
+
+    var carouselSlot = root.querySelector('[data-carousel-slot]');
+    if (carouselSlot && window.VCPCarousel) {
+      var chromeUrl = '';
+      try { chromeUrl = new URL(project.website).host.replace(/^www\./, ''); } catch (e) {}
+      window.VCPCarousel.render(carouselSlot, {
+        blocks: project.article,
+        chromeUrl: chromeUrl,
+        label: project.name + ' product walkthrough'
+      });
+    }
+
+    var distroSlot = root.querySelector('[data-distro-slot]');
+    if (distroSlot && window.VCPDistro) {
+      window.VCPDistro.render(distroSlot, project.channels_pricing.distribution);
+    }
+
+    var calcSlot = root.querySelector('[data-calc-slot]');
+    if (calcSlot && window.VCPRateCalc) {
+      window.VCPRateCalc.render(calcSlot, project.channels_pricing.calc);
+    }
   }
 
   function renderNotFound() {

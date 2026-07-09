@@ -183,6 +183,8 @@
       <span class="vcp-logo-chip"><img src="assets/logos/caneycloud.png" alt="CaneyCloud logo"></span>
       <span class="vcp-logo-chip"><img src="assets/logos/pipa.png" alt="PIPA wordmark (wide marks widen the chip)"></span>
       <span class="vcp-logo-chip vcp-logo-chip--lg"><img src="assets/logos/vamosavenezuela.svg" alt="VamosaVenezuela logo, large chip variant"></span>
+      <span class="vcp-logo-chip vcp-logo-chip--uniform"><img src="assets/logos/caneycloud.png" alt="CaneyCloud logo, uniform square variant"></span>
+      <span class="vcp-logo-chip vcp-logo-chip--uniform"><img src="assets/logos/vamosavenezuela.svg" alt="VamosaVenezuela logo, uniform square variant (wide mark contained)"></span>
     </div>
   </section>
 
@@ -393,6 +395,29 @@
         </figure>
       </div>
     </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Projection chart (vcp-chart.js)</div>
+      <div id="demo-chart" style="max-width: 72ch;"></div>
+      <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Rendered by <code>js/vcp-chart.js</code> from a spec in <code>data/projects.json</code> — aligned single-axis panels sharing the x scale (never dual y-axes), key on the right, crosshair tooltip on hover, data table fallback.</p>
+    </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">3D carousel (vcp-carousel.js) with browser-chrome frames</div>
+      <div id="demo-carousel" style="max-width: 72ch;"></div>
+      <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Rendered by <code>js/vcp-carousel.js</code> from a project's <code>article</code> blocks — click the center screen (or use arrows, dots, or the keyboard) to advance; the active block's prose swaps in below. Screenshots wear the <code>.vcp-browser</code> monochrome chrome frame.</p>
+    </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Distro card (vcp-distro.js) — hub &amp; spoke</div>
+      <div id="demo-distro" style="max-width: 72ch;"></div>
+      <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Brand marks keep official colors on light plates (the <code>.vcp-logo-chip</code> precedent); wires and pulse are silver and freeze under reduced motion.</p>
+    </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Rate calc (vcp-rate-calc.js) — illustrative dynamic pricing</div>
+      <div id="demo-calc" style="max-width: 72ch;"></div>
+    </div>
   </section>
 
   <!-- ============ 09 DETAILS ============ -->
@@ -500,6 +525,36 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () { r.classList.remove('vcp-dip--hold'); r.classList.add('vcp-dip--out'); }, 1050);
     setTimeout(function () { r.classList.remove('vcp-dip', 'vcp-dip--out'); r.removeAttribute('data-dip-title'); }, 2300);
   });
+});
+</script>
+<script src="js/vcp-chart.js"></script>
+<script src="js/vcp-carousel.js"></script>
+<script src="js/vcp-distro.js"></script>
+<script src="js/vcp-rate-calc.js"></script>
+<script>
+/* Demo-only: render the projection chart, carousel, distro card, and rate
+   calc from the caneycloud spec so the living reference always matches
+   production data. */
+document.addEventListener('DOMContentLoaded', function () {
+  fetch('data/projects.json')
+    .then(function (r) { return r.json(); })
+    .then(function (projects) {
+      var chartProject = projects.filter(function (p) { return p.chart; })[0];
+      if (chartProject) window.VCPChart.render(document.getElementById('demo-chart'), chartProject.chart);
+      var articleProject = projects.filter(function (p) { return p.article; })[0];
+      if (articleProject) {
+        window.VCPCarousel.render(document.getElementById('demo-carousel'), {
+          blocks: articleProject.article,
+          chromeUrl: 'caneycloud.com',
+          label: 'Component demo carousel'
+        });
+      }
+      var cpProject = projects.filter(function (p) { return p.channels_pricing; })[0];
+      if (cpProject) {
+        window.VCPDistro.render(document.getElementById('demo-distro'), cpProject.channels_pricing.distribution);
+        window.VCPRateCalc.render(document.getElementById('demo-calc'), cpProject.channels_pricing.calc);
+      }
+    });
 });
 </script>
 </body>
