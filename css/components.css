@@ -777,6 +777,9 @@
   position: relative;
   aspect-ratio: 1.85;
   perspective: 1400px;
+  /* Side slides translate past the stage edge — clip so they never widen
+     the page (360px horizontal-overflow guard). */
+  overflow: hidden;
 }
 
 .vcp-carousel__slide {
@@ -966,9 +969,18 @@
 .vcp-distro__diagram {
   flex: 1 1 56%;
   min-width: 0;
-  position: relative;
-  min-height: 330px;
+  display: flex;
+  align-items: center;
+  padding: var(--space-3);
   border-left: 1px dashed var(--line-strong);
+}
+
+/* Fixed-ratio inner box (matches the 500×352 wire viewBox) — the whole
+   hub-and-spoke downscales proportionally instead of stretching. */
+.vcp-distro__scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 500 / 352;
 }
 
 .vcp-distro__wires { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
@@ -1025,15 +1037,19 @@
 
 .vcp-distro__node img { width: 56px; height: 56px; display: block; object-fit: contain; }
 
+/* Phones: the card stays horizontal — copy left, diagram right — it just
+   compresses (issue #127 review feedback: never stack it vertically). */
 @media (max-width: 780px) {
-  .vcp-distro { flex-direction: column; }
-  .vcp-distro__copy { padding: var(--space-5) var(--space-4); }
-  .vcp-distro__title { font-size: var(--fs-28); }
-  .vcp-distro__diagram {
-    border-left: none;
-    border-top: 1px dashed var(--line-strong);
-    min-height: 300px;
-  }
+  .vcp-distro__copy { padding: var(--space-4) var(--space-3); flex-basis: 46%; }
+  .vcp-distro__title { font-size: var(--fs-20); }
+  .vcp-distro__sub { font-size: var(--fs-12); }
+  .vcp-distro__status { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+  .vcp-distro__diagram { flex-basis: 54%; padding: var(--space-2); }
+  .vcp-distro__tile { width: 30px; height: 30px; border-radius: var(--radius); }
+  .vcp-distro__tile svg { width: 18px; height: 18px; }
+  .vcp-distro__more { font-size: 10px; }
+  .vcp-distro__node { width: 44px; height: 44px; border-radius: var(--radius); }
+  .vcp-distro__node img { width: 28px; height: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

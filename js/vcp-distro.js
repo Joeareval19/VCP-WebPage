@@ -85,10 +85,14 @@
         '</div>' +
       '</div>' +
       '<div class="vcp-distro__diagram" role="img" aria-label="' + spec.aria_label + '">' +
-        '<svg class="vcp-distro__wires" viewBox="0 0 500 352" preserveAspectRatio="none" aria-hidden="true">' + wires + '</svg>' +
-        spec.left.map(function (key, i) { return tile(key, LEFT_POS[i]); }).join('') +
-        spec.right.map(function (key, i) { return tile(key, RIGHT_POS[i]); }).join('') +
-        '<div class="vcp-distro__node" aria-hidden="true"><img src="' + spec.hub_logo + '" alt=""></div>' +
+        // The scene keeps the wire viewBox's exact aspect ratio at every
+        // size, so the diagram downscales as one unit and never stretches.
+        '<div class="vcp-distro__scene">' +
+          '<svg class="vcp-distro__wires" viewBox="0 0 500 352" preserveAspectRatio="none" aria-hidden="true">' + wires + '</svg>' +
+          spec.left.map(function (key, i) { return tile(key, LEFT_POS[i]); }).join('') +
+          spec.right.map(function (key, i) { return tile(key, RIGHT_POS[i]); }).join('') +
+          '<div class="vcp-distro__node" aria-hidden="true"><img src="' + spec.hub_logo + '" alt=""></div>' +
+        '</div>' +
       '</div>';
 
     container.appendChild(card);
