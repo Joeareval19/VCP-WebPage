@@ -7,7 +7,53 @@
     "client": "VCP build",
     "website": "https://www.caneycloud.com/",
     "logo": "assets/logos/caneycloud.png",
-    "overview": "<p>CaneyCloud is a hotel operating system built for Venezuelan hospitality — posadas, boutique hotels, hostels, glamping, and apartment-hotels. It brings reservations, WhatsApp sales, payments, and invoicing into a single platform, replacing the scattered spreadsheets, chat groups, and disconnected payment systems small operators run on today.</p><p>The product covers the whole operating loop: a drag-and-drop reservation calendar synced against Booking.com, Airbnb, Expedia and direct channels; a point of sale for restaurant, minibar, tours and spa; operational inventory; dynamic pricing driven by occupancy and demand; and an AI-assisted WhatsApp agent that answers with the hotel's own context while the team keeps control.</p>",
+    "overview": "<p>CaneyCloud is a hotel operating system built for Venezuelan hospitality — posadas, boutique hotels, hostels, glamping, and apartment-hotels. It brings reservations, WhatsApp sales, payments, and invoicing into a single platform, replacing the scattered spreadsheets, chat groups, and disconnected payment systems small operators run on today.</p><p>Beyond what the walkthrough below shows, the platform also covers channel sync against Booking.com, Airbnb, Expedia and direct sales, a point of sale for restaurant, minibar, tours and spa, operational inventory, and dynamic pricing driven by occupancy and demand.</p>",
+    "article": [
+      {
+        "heading": "One screen to run the day",
+        "html": "<p>The day starts on the Today dashboard. Operations cards surface exactly what needs a decision right now — pending collections, arrivals, departures, guests in house, and anything overdue that requires immediate action. Below them, the business pulse tracks today's revenue, the month in progress, occupancy, new and cancelled bookings, and the live BCV exchange rate, because every Venezuelan hotel operates in dollars and bolívares at once. Today's reservations and the latest guest messages sit on the same screen, so nothing waits in another tab.</p>",
+        "image": {
+          "src": "assets/screenshots/caneycloud/caneycloud-today.png",
+          "alt": "CaneyCloud Today dashboard showing operations cards, business pulse metrics with the BCV rate, today's reservations, and guest messages",
+          "caption": "The Today dashboard — operations cards, business pulse, and today's reservations in one view.",
+          "width": 3000,
+          "height": 1726
+        }
+      },
+      {
+        "heading": "A calendar that prices every night in two currencies",
+        "html": "<p>The reservation calendar is a drag-and-drop grid of rooms against nights, organized by zone and room type. Every cell shows that night's rate in USD and its bolívar equivalent at the current BCV rate, and reservations stretch across the grid as bars you can move and resize. Availability, blocks, and walk-ins are managed from the same surface, and because the calendar is synced against the OTA channels, a night sold anywhere is a night closed everywhere — no overbooking.</p>",
+        "image": {
+          "src": "assets/screenshots/caneycloud/caneycloud-calendar.png",
+          "alt": "CaneyCloud reservation calendar grid showing rooms by zone with nightly rates in USD and bolívares and reservation bars across dates",
+          "caption": "The reservation calendar — nightly rates in USD and VES for every room, with reservations as draggable bars.",
+          "width": 3000,
+          "height": 1682
+        }
+      },
+      {
+        "heading": "WhatsApp is the front desk",
+        "html": "<p>Venezuelan hotels sell on WhatsApp, so CaneyCloud treats it as the front desk. The inbox unifies WhatsApp and Instagram conversations with guests and prospects, and an AI agent answers with the hotel's own context — availability, rates, policies — in the guest's language. The team watches everything: conversations are filtered by AI-handled, escalated, or human, and one click takes control of any thread. The agent sells and serves; the team stays in charge.</p>",
+        "image": {
+          "src": "assets/screenshots/caneycloud/caneycloud-inbox.png",
+          "alt": "CaneyCloud inbox showing WhatsApp and Instagram conversations with an AI agent replying to a guest in French under team oversight",
+          "caption": "The inbox — the AI agent answers a returning guest in French while the team keeps oversight.",
+          "width": 3000,
+          "height": 1726
+        }
+      },
+      {
+        "heading": "Every guest, remembered",
+        "html": "<p>Every conversation and reservation feeds a built-in CRM. Each guest profile carries their last visit, visit count, loyalty points, verification status, and lifetime value, so the hotel knows exactly who is checking in and what they're worth to the business. Opening a guest pulls up their conversation history right beside the table — the context follows the person, not the channel they wrote on.</p>",
+        "image": {
+          "src": "assets/screenshots/caneycloud/caneycloud-guests.png",
+          "alt": "CaneyCloud guests CRM table with visits, points, and lifetime value columns, and a guest conversation panel open alongside",
+          "caption": "The guest CRM — visits, points, and lifetime value at a glance, with the guest's conversation one click away.",
+          "width": 3000,
+          "height": 1684
+        }
+      }
+    ],
     "timeline": null,
     "moat": "<p>Built Venezuela-first, where global PMS vendors don't reach: dual-currency operation (USD and VES) with SENIAT-compatible fiscal invoicing, channel sync designed for zero overbooking across OTAs and direct sales, and WhatsApp — the channel Venezuelan hotels actually sell on — treated as a first-class sales surface with AI assistance under team oversight.</p>",
     "business_model": "<p>SaaS subscription for hospitality operators. Hotels start on a free tier — up to two users, no credit card — and grow into paid plans as the team and property scale.</p>",
