@@ -142,15 +142,62 @@
     "website": "https://vamosavenezuela.com/",
     "logo": "assets/logos/vamosavenezuela.svg",
     "overview": "<p>VamosaVenezuela is a travel guide and trip-planning platform for Venezuelan tourism. It curates places to stay, dining, and activities across eight regions — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — plus landscape categories from beaches and islands to tepuis and jungle.</p><p>Beyond destination guides, the platform ships real planning tools: an interactive map, flight search, sample trips, and a custom itinerary builder. Every destination carries an editorial safety rating, so travelers know what to expect before they commit.</p>",
+    "article": [
+      {
+        "heading": "Eight regions, three ways in",
+        "html": "<p>The destinations menu is the whole country on one panel. Travelers browse by region — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — by landscape, from beaches and islands to tepuis and jungle, or through a start-here lane built for first-timers: top destinations, hidden gems, easy first trips. A live map locates every destination as you browse, because for a country most visitors have never seen, geography is half the story.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vav-destinations.jpg",
+          "alt": "VamosaVenezuela destinations menu listing regions, landscapes, and start-here links beside a map of Venezuela locating the highlighted destination",
+          "caption": "The destinations menu — by region, by landscape, or start here, with a live map preview.",
+          "width": 3000,
+          "height": 1730
+        }
+      },
+      {
+        "heading": "Editorial depth, not listings",
+        "html": "<p>Every activity reads like a magazine feature and works like a booking funnel. The birdwatching guide opens on the tepuis of the Gran Sabana — the original Lost World — with the numbers that make the case: 92 flagship species, 74 endemics, 35 tepui specialties. From there the reader is routed to the species explorer, the Ruta de los Tepuis, and the posadas that put you in front of the birds. Story first, transaction one click later.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vav-activities.jpg",
+          "alt": "VamosaVenezuela birdwatching page with a waterfall hero image, species statistics, and buttons to explore species and the Ruta de los Tepuis",
+          "caption": "The birdwatching guide — editorial hero, species stats, and routes into bookable stays.",
+          "width": 3000,
+          "height": 1726
+        }
+      },
+      {
+        "heading": "From story to itinerary",
+        "html": "<p>Experience categories pair the narrative with the numbers: an at-a-glance panel names the hub city, the top activities, and the starting price, and Plan with AI folds the page you're reading into a custom itinerary. Adventure alone spans 103 bookable experiences — Andean paragliding, Roraima treks, Class II to Class V white-water — every one feeding the same trip builder.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vav-experiences.jpg",
+          "alt": "VamosaVenezuela adventure page with a Gran Sabana hero, an at-a-glance panel showing the hub city and starting price, and a Plan with AI button",
+          "caption": "The adventure catalog — 103 experiences with an at-a-glance panel and AI trip planning.",
+          "width": 3000,
+          "height": 1736
+        }
+      }
+    ],
+    "extra_sections": [
+      {
+        "title": "Creator & affiliate engine",
+        "html": "<p>Marketing scales through the people already filming Venezuela. Creators join the affiliate program, publish promo videos for the properties and experiences on the platform, and earn a commission on every booking their content drives. Each creator gets trackable links, so attribution — and payout — is automatic.</p><p>The economics compound in both directions: VamosaVenezuela pays for advertising only when it converts, and destinations that could never fund their own campaigns get a fleet of creators with a direct incentive to showcase them. Every new video is inventory that keeps selling.</p>"
+      },
+      {
+        "title": "Impact — rebuilding Venezuela",
+        "html": "<p><strong>Ten percent of every sale is pledged to non-profits rebuilding Venezuela</strong> — organizations doing reconstruction work on the parts of the country that need it most. The pledge is guaranteed and built into the model, not a campaign: booking a trip on VamosaVenezuela funds the country it explores.</p><p>On top of the guaranteed ten percent, every traveler can add a personal donation at booking and direct it to the Venezuelan cause they choose. The platform handles the routing; the traveler decides where their money lands.</p>"
+      }
+    ],
     "timeline": null,
     "moat": "<p>Editorial curation plus a per-destination safety-rating system — a trust layer no generic travel site offers for Venezuela. The content depth across all eight regions, hidden gems included, is the kind of ground-truth coverage a competitor can't scrape together quickly.</p>",
-    "business_model": "<p>Audience-first: the platform builds traffic through curated destination content, with flight search and stay/experience listings as the natural referral and booking surfaces to monetize as the audience grows.</p>",
+    "business_model": "<p>Audience-first: the platform builds traffic through curated destination content, with flight search and stay/experience listings as the booking surfaces that monetize the audience as it grows. The creator affiliate program turns marketing into a pay-on-performance channel — commissions are owed on converted bookings, not impressions.</p><p>Ten percent of sales is pledged to non-profits rebuilding Venezuela, and travelers can add their own donation at checkout — impact is part of the unit economics, not an afterthought.</p>",
     "specifics": {
       "Website": "https://vamosavenezuela.com/",
       "Coverage": "8 regions + landscape categories across Venezuela",
       "Content": "Destinations, stays, gastronomy, experiences, itineraries",
       "Safety": "Per-destination editorial risk ratings",
-      "Tools": "Interactive map, flight search, itinerary builder"
+      "Tools": "Interactive map, flight search, itinerary builder",
+      "Creators": "Affiliate commissions on promo-video bookings",
+      "Impact": "10% of sales to reconstruction non-profits + optional traveler donation"
     },
     "related": null
   },
