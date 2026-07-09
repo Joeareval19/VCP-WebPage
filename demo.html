@@ -399,6 +399,12 @@
       <div id="demo-chart" style="max-width: 72ch;"></div>
       <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Rendered by <code>js/vcp-chart.js</code> from a spec in <code>data/projects.json</code> — aligned single-axis panels sharing the x scale (never dual y-axes), key on the right, crosshair tooltip on hover, data table fallback.</p>
     </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">3D carousel (vcp-carousel.js) with browser-chrome frames</div>
+      <div id="demo-carousel" style="max-width: 72ch;"></div>
+      <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Rendered by <code>js/vcp-carousel.js</code> from a project's <code>article</code> blocks — click the center screen (or use arrows, dots, or the keyboard) to advance; the active block's prose swaps in below. Screenshots wear the <code>.vcp-browser</code> monochrome chrome frame.</p>
+    </div>
   </section>
 
   <!-- ============ 09 DETAILS ============ -->
@@ -509,15 +515,24 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script src="js/vcp-chart.js"></script>
+<script src="js/vcp-carousel.js"></script>
 <script>
-/* Demo-only: render the projection chart from the caneycloud spec so the
-   living reference always matches production data. */
+/* Demo-only: render the projection chart and carousel from the caneycloud
+   spec so the living reference always matches production data. */
 document.addEventListener('DOMContentLoaded', function () {
   fetch('data/projects.json')
     .then(function (r) { return r.json(); })
     .then(function (projects) {
-      var project = projects.filter(function (p) { return p.chart; })[0];
-      if (project) window.VCPChart.render(document.getElementById('demo-chart'), project.chart);
+      var chartProject = projects.filter(function (p) { return p.chart; })[0];
+      if (chartProject) window.VCPChart.render(document.getElementById('demo-chart'), chartProject.chart);
+      var articleProject = projects.filter(function (p) { return p.article; })[0];
+      if (articleProject) {
+        window.VCPCarousel.render(document.getElementById('demo-carousel'), {
+          blocks: articleProject.article,
+          chromeUrl: 'caneycloud.com',
+          label: 'Component demo carousel'
+        });
+      }
     });
 });
 </script>

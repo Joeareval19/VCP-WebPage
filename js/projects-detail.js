@@ -60,33 +60,14 @@
     );
   }
 
-  // Article — case-study blocks of {heading, html, image}, rendered as an
-  // article view: heading + prose + captioned product screenshot per block.
-  // Images carry explicit width/height (no layout shift) and lazy-load.
+  // Article — case-study blocks of {heading, html, image}, rendered as a 3D
+  // click-through carousel (js/vcp-carousel.js): an empty slot is emitted
+  // here and filled after the section lands in the DOM.
   function renderArticle(project, num) {
-    var blocks = project.article.map(function (block) {
-      var parts = [];
-      if (block.heading) parts.push('<h3>' + escapeHtml(block.heading) + '</h3>');
-      if (block.html) parts.push('<div class="vcp-prose">' + block.html + '</div>');
-      if (block.image) {
-        var img = block.image;
-        parts.push(
-          '<figure class="vcp-figure">' +
-            '<img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt) + '" loading="lazy"' +
-            (img.width ? ' width="' + escapeHtml(String(img.width)) + '"' : '') +
-            (img.height ? ' height="' + escapeHtml(String(img.height)) + '"' : '') +
-            '>' +
-            (img.caption ? '<figcaption>' + escapeHtml(img.caption) + '</figcaption>' : '') +
-          '</figure>'
-        );
-      }
-      return parts.join('');
-    }).join('');
-
     return (
       '<section class="detail-section" id="article">' +
         sectionHeading(num, 'Inside the product') +
-        '<div class="vcp-article" style="max-width: 72ch;">' + blocks + '</div>' +
+        '<div class="vcp-article" data-carousel-slot style="max-width: 72ch;"></div>' +
       '</section>'
     );
   }
@@ -227,6 +208,17 @@
     var chartSlot = root.querySelector('[data-chart-slot]');
     if (chartSlot && window.VCPChart) {
       window.VCPChart.render(chartSlot, project.chart);
+    }
+
+    var carouselSlot = root.querySelector('[data-carousel-slot]');
+    if (carouselSlot && window.VCPCarousel) {
+      var chromeUrl = '';
+      try { chromeUrl = new URL(project.website).host.replace(/^www\./, ''); } catch (e) {}
+      window.VCPCarousel.render(carouselSlot, {
+        blocks: project.article,
+        chromeUrl: chromeUrl,
+        label: project.name + ' product walkthrough'
+      });
     }
   }
 
