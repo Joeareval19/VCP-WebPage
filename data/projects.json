@@ -57,6 +57,34 @@
     "timeline": null,
     "moat": "<p>Built Venezuela-first, where global PMS vendors don't reach: dual-currency operation (USD and VES) with SENIAT-compatible fiscal invoicing, channel sync designed for zero overbooking across OTAs and direct sales, and WhatsApp — the channel Venezuelan hotels actually sell on — treated as a first-class sales surface with AI assistance under team oversight.</p>",
     "business_model": "<p>SaaS subscription for hospitality operators, on three tiers: <strong>Free</strong> with usage limits — no credit card, enough to get a small property running — <strong>Premium</strong> at $300/month, and <strong>Premium Plus</strong> at $500/month for larger teams and properties.</p><p>On top of subscriptions, CaneyCloud earns a 1% fee on every transaction handled through the platform — so revenue scales with the hotels' own sales, and the incentive stays aligned: the platform only earns more when its hotels sell more.</p>",
+    "chart": {
+      "title": "First five years — simulated projection",
+      "note": "Simulated: adoption grows to ~460 properties; paid mix rises from 25% to 55% of active properties (70/30 Premium vs Premium Plus); 40% → 90% of guest payments processed on-platform at the 1% fee, on an average posada revenue of $80k/year.",
+      "xName": "Month",
+      "xTicks": [
+        { "at": 11, "label": "Year 1" },
+        { "at": 23, "label": "Year 2" },
+        { "at": 35, "label": "Year 3" },
+        { "at": 47, "label": "Year 4" },
+        { "at": 59, "label": "Year 5" }
+      ],
+      "panels": [
+        {
+          "label": "Monthly revenue (USD)",
+          "format": "usd",
+          "height": 200,
+          "yTicks": [0, 40000, 80000, 120000],
+          "points": [1500, 1800, 2100, 2200, 2700, 3000, 3400, 3900, 4300, 4800, 5500, 6300, 7100, 8000, 9000, 10100, 11300, 12600, 14100, 15600, 17400, 19200, 21300, 23500, 25800, 28200, 31000, 33700, 36600, 39600, 42600, 45800, 49100, 52300, 55700, 58900, 62300, 65700, 69000, 72100, 75200, 78400, 81300, 84400, 87100, 89800, 92300, 94900, 97300, 99700, 101900, 104100, 106400, 108400, 110200, 112000, 113900, 115700, 117300, 119200]
+        },
+        {
+          "label": "Active properties",
+          "format": "count",
+          "height": 150,
+          "yTicks": [0, 150, 300, 450],
+          "points": [13, 15, 17, 18, 21, 23, 26, 29, 32, 35, 39, 44, 49, 54, 60, 66, 73, 80, 88, 96, 106, 115, 126, 137, 148, 160, 173, 186, 199, 213, 226, 240, 254, 267, 281, 294, 307, 320, 332, 343, 354, 365, 374, 384, 392, 400, 407, 414, 420, 426, 431, 436, 441, 445, 448, 451, 454, 457, 459, 462]
+        }
+      ]
+    },
     "specifics": {
       "Website": "https://www.caneycloud.com/",
       "Market": "Posadas, boutique hotels, hostels, glamping — Venezuela",

@@ -125,12 +125,15 @@
     );
   }
 
-  // Business model — rich text, may include a simple table.
+  // Business model — rich text, may include a simple table. When the project
+  // carries a `chart` spec, an empty slot is emitted here and filled by
+  // js/vcp-chart.js after the section lands in the DOM.
   function renderBusinessModel(project, num) {
     return (
       '<section class="detail-section" id="business-model">' +
         sectionHeading(num, 'Business model') +
         '<div class="vcp-prose" style="max-width: 72ch;">' + project.business_model + '</div>' +
+        (isBlank(project.chart) ? '' : '<div data-chart-slot style="max-width: 72ch;"></div>') +
       '</section>'
     );
   }
@@ -220,6 +223,11 @@
     });
 
     root.innerHTML = sections.join('');
+
+    var chartSlot = root.querySelector('[data-chart-slot]');
+    if (chartSlot && window.VCPChart) {
+      window.VCPChart.render(chartSlot, project.chart);
+    }
   }
 
   function renderNotFound() {

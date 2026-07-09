@@ -393,6 +393,12 @@
         </figure>
       </div>
     </div>
+
+    <div style="margin-top: 34px;">
+      <div class="label-caps label-caps--wide" style="margin-bottom: var(--space-3);">Projection chart (vcp-chart.js)</div>
+      <div id="demo-chart" style="max-width: 72ch;"></div>
+      <p style="font-size: var(--fs-14); color: var(--text-muted); margin-top: 12px;">Rendered by <code>js/vcp-chart.js</code> from a spec in <code>data/projects.json</code> — aligned single-axis panels sharing the x scale (never dual y-axes), key on the right, crosshair tooltip on hover, data table fallback.</p>
+    </div>
   </section>
 
   <!-- ============ 09 DETAILS ============ -->
@@ -500,6 +506,19 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () { r.classList.remove('vcp-dip--hold'); r.classList.add('vcp-dip--out'); }, 1050);
     setTimeout(function () { r.classList.remove('vcp-dip', 'vcp-dip--out'); r.removeAttribute('data-dip-title'); }, 2300);
   });
+});
+</script>
+<script src="js/vcp-chart.js"></script>
+<script>
+/* Demo-only: render the projection chart from the caneycloud spec so the
+   living reference always matches production data. */
+document.addEventListener('DOMContentLoaded', function () {
+  fetch('data/projects.json')
+    .then(function (r) { return r.json(); })
+    .then(function (projects) {
+      var project = projects.filter(function (p) { return p.chart; })[0];
+      if (project) window.VCPChart.render(document.getElementById('demo-chart'), project.chart);
+    });
 });
 </script>
 </body>
