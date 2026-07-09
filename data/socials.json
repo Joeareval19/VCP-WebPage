@@ -1,5 +1,5 @@
 {
-  "_comment": "PLACEHOLDER DATA — these are not real accounts. Jose supplies the actual platform list, handles, and URLs before launch. Every url below is a non-functional placeholder anchor (#placeholder-*), not a guessed or real link.",
+  "_comment": "Personal (Jose) links are real, supplied by Jose (#120). Company (VCP) accounts don't exist yet — every #placeholder-* url is a non-functional anchor, not a guessed or real link.",
   "groups": [
     {
       "id": "company",
@@ -43,20 +43,26 @@
       "socials": [
         {
           "platform": "LinkedIn",
-          "handle": "[placeholder]",
-          "url": "#placeholder-personal-linkedin",
+          "handle": "in/joeareval19",
+          "url": "https://www.linkedin.com/in/joeareval19/",
           "icon": "linkedin"
         },
         {
           "platform": "X / Twitter",
-          "handle": "[placeholder]",
-          "url": "#placeholder-personal-x",
+          "handle": "@joeareval19",
+          "url": "https://x.com/joeareval19",
           "icon": "x"
         },
         {
+          "platform": "Instagram",
+          "handle": "@joeareval19",
+          "url": "https://www.instagram.com/joeareval19/",
+          "icon": "instagram"
+        },
+        {
           "platform": "GitHub",
-          "handle": "[placeholder]",
-          "url": "#placeholder-personal-github",
+          "handle": "@Joeareval19",
+          "url": "https://github.com/Joeareval19",
           "icon": "github"
         }
       ]
