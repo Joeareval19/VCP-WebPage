@@ -15,7 +15,6 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <script>/* title-dip pre-paint (issue #57): show overlay before first paint */(function(){try{var t=sessionStorage.getItem('vcp-dip-title');if(t&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var r=document.documentElement;r.setAttribute('data-dip-title',t);r.className+=' vcp-dip vcp-dip--hold';}}catch(e){}})();</script>
-<script>/* penrose-loader pre-paint (issue #71): veil before first paint */(function(){try{if(sessionStorage.getItem('vcp-loader')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.className+=' vcp-loading';}}catch(e){}})();</script>
 <style>
   /* Paper-page layout only — components live in css/components.css.
      Mirrors the Intent page's section rhythm (issue #128). */
@@ -626,7 +625,6 @@
 
 <script defer src="js/nav.js"></script>
 <script defer src="js/page-dip.js"></script>
-<script defer src="js/page-loader.js"></script>
 <script defer src="js/telemetry.js"></script>
 
 <!-- ============ VOICE FEEDBACK WIDGET (issue #43) ============ -->
