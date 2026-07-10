@@ -94,16 +94,19 @@
 
   // Extra sections — project-specific prose sections ({title, html}) that
   // don't warrant their own renderer. Numbered like every other section.
-  // An optional `aside` (trusted HTML, e.g. a large decorative SVG) renders
-  // as a centered figure below the prose (vcp-section-figure).
+  // An optional `aside` (trusted HTML, e.g. a decorative SVG) renders as a
+  // centered figure below the prose (vcp-section-figure), or floats beside
+  // it when aside_position is "right" (vcp-section-figure--right).
   function renderExtraSection(section, num) {
+    var right = section.aside_position === 'right';
     var figure = section.aside
-      ? '<div class="vcp-section-figure">' + section.aside + '</div>'
+      ? '<div class="vcp-section-figure' + (right ? ' vcp-section-figure--right' : '') + '">' + section.aside + '</div>'
       : '';
+    var body = right ? figure + section.html : section.html + figure;
     return (
       '<section class="detail-section">' +
         sectionHeading(num, section.title) +
-        '<div class="vcp-prose" style="max-width: 72ch;">' + section.html + figure + '</div>' +
+        '<div class="vcp-prose" style="max-width: 72ch;' + (right ? ' display: flow-root;' : '') + '">' + body + '</div>' +
       '</section>'
     );
   }
