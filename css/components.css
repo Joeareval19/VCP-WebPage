@@ -601,32 +601,27 @@
   margin-bottom: var(--space-4);
 }
 
-/* === Section split — prose beside a banner aside (icon at poster scale) === */
-.vcp-section-split {
-  display: grid;
-  grid-template-columns: minmax(0, 62ch) 1fr;
-  gap: var(--space-6);
-  align-items: center;
+/* === Prose float — decorative figure the prose wraps around. The
+   shape-outside polygon traces the hands-holding-heart silhouette
+   (narrow rays up top, widest at the heart, tapering at the wrists)
+   so the text follows the icon's edge instead of a square box. === */
+.vcp-prose-float {
+  float: left;
+  width: 240px;
+  margin: var(--space-2) var(--space-5) var(--space-2) 0;
+  shape-outside: polygon(0 0, 30% 0, 42% 10%, 62% 22%, 74% 30%, 78% 45%, 78% 62%, 75% 80%, 70% 94%, 55% 100%, 0 100%);
+  shape-margin: var(--space-3);
 }
 
-.vcp-section-split__aside {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-5);
-  background: radial-gradient(closest-side, rgba(232, 234, 237, 0.07), transparent);
-}
-
-.vcp-section-split__aside .vcp-section-icon {
-  width: min(100%, 300px);
+.vcp-prose-float .vcp-section-icon {
+  width: 100%;
   height: auto;
   margin: 0;
   color: var(--silver-bright);
 }
 
-@media (max-width: 900px) {
-  .vcp-section-split { grid-template-columns: 1fr; }
-  .vcp-section-split__aside .vcp-section-icon { max-width: 200px; }
+@media (max-width: 640px) {
+  .vcp-prose-float { width: 150px; margin-right: var(--space-4); }
 }
 
 /* Status dot — "available for advisory" */
