@@ -601,27 +601,18 @@
   margin-bottom: var(--space-4);
 }
 
-/* === Prose float — decorative figure the prose wraps around. The
-   shape-outside polygon traces the hands-holding-heart silhouette
-   (narrow rays up top, widest at the heart, tapering at the wrists)
-   so the text follows the icon's edge instead of a square box. === */
-.vcp-prose-float {
-  float: left;
-  width: 240px;
-  margin: var(--space-2) var(--space-5) var(--space-2) 0;
-  shape-outside: polygon(0 0, 30% 0, 42% 10%, 62% 22%, 74% 30%, 78% 45%, 78% 62%, 75% 80%, 70% 94%, 55% 100%, 0 100%);
-  shape-margin: var(--space-3);
+/* === Section figure — decorative figure centered below a prose section === */
+.vcp-section-figure {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
 }
 
-.vcp-prose-float .vcp-section-icon {
-  width: 100%;
+.vcp-section-figure .vcp-section-icon {
+  width: min(100%, 240px);
   height: auto;
   margin: 0;
   color: var(--silver-bright);
-}
-
-@media (max-width: 640px) {
-  .vcp-prose-float { width: 150px; margin-right: var(--space-4); }
 }
 
 /* Status dot — "available for advisory" */
