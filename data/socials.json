@@ -1,5 +1,5 @@
 {
-  "_comment": "Personal (Jose) links are real, supplied by Jose (#120). Company (VCP) accounts don't exist yet — every #placeholder-* url is a non-functional anchor, not a guessed or real link.",
+  "_comment": "All links are real, supplied by Jose (#120 personal, #152 company). Platforms without a live account are omitted rather than shown as placeholders.",
   "groups": [
     {
       "id": "company",
@@ -7,33 +7,9 @@
       "socials": [
         {
           "platform": "LinkedIn",
-          "handle": "[placeholder]",
-          "url": "#placeholder-company-linkedin",
+          "handle": "company/vegas-consulting-partners",
+          "url": "https://www.linkedin.com/company/vegas-consulting-partners/",
           "icon": "linkedin"
-        },
-        {
-          "platform": "X / Twitter",
-          "handle": "[placeholder]",
-          "url": "#placeholder-company-x",
-          "icon": "x"
-        },
-        {
-          "platform": "GitHub",
-          "handle": "[placeholder]",
-          "url": "#placeholder-company-github",
-          "icon": "github"
-        },
-        {
-          "platform": "YouTube",
-          "handle": "[placeholder]",
-          "url": "#placeholder-company-youtube",
-          "icon": "youtube"
-        },
-        {
-          "platform": "Instagram",
-          "handle": "[placeholder]",
-          "url": "#placeholder-company-instagram",
-          "icon": "instagram"
         }
       ]
     },
