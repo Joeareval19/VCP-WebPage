@@ -3,8 +3,8 @@
  *
  * Single template shared by every project: reads ?slug= from the URL,
  * looks up the matching entry in data/projects.json (via js/projects-data.js),
- * and renders up to 8 sections (header, overview, article, timeline, moat,
- * business model, specifics, related). Every section after the header is optional —
+ * and renders the sections (header, overview, article, timeline, moat,
+ * business model, extra sections, specifics, related). Every section after the header is optional —
  * omitted entirely, heading and all, when the underlying data is null/empty —
  * and section numbers are assigned to the sections that actually render, so
  * a minimal entry never shows gaps in the numbering.
@@ -138,6 +138,21 @@
     );
   }
 
+  // Extra sections — generic per-project prose sections ({title, html}), so
+  // bespoke content (affiliate program, impact pledge, ...) needs no renderer
+  // change per project. Each entry becomes its own numbered section.
+  function renderExtraSection(section) {
+    var id = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return function (project, num) {
+      return (
+        '<section class="detail-section" id="' + id + '">' +
+          sectionHeading(num, section.title) +
+          '<div class="vcp-prose" style="max-width: 72ch;">' + section.html + '</div>' +
+        '</section>'
+      );
+    };
+  }
+
   // Specifics — flexible key-value block. URL values render as links.
   function renderSpecifics(project, num) {
     var rows = Object.keys(project.specifics).map(function (key) {
@@ -210,10 +225,15 @@
       { blank: isBlank(project.channels_pricing), render: renderChannels },
       { blank: isBlank(project.timeline), render: renderTimeline },
       { blank: isBlank(project.moat), render: renderMoat },
-      { blank: isBlank(project.business_model), render: renderBusinessModel },
+      { blank: isBlank(project.business_model), render: renderBusinessModel }
+    ].concat(
+      (project.extra_sections || []).map(function (section) {
+        return { blank: isBlank(section.html), render: renderExtraSection(section) };
+      })
+    ).concat([
       { blank: isBlank(project.specifics), render: renderSpecifics },
       { blank: relatedGroups(project).length === 0, render: renderRelated }
-    ];
+    ]);
 
     var sections = [renderHeader(project)];
     var next = 1;

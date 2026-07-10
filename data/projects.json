@@ -136,21 +136,67 @@
   {
     "slug": "vamosavenezuela",
     "name": "VamosaVenezuela",
-    "one_liner": "A booking platform for the Venezuela you haven't seen — curated stays, dining, and experiences across every region of the country.",
+    "one_liner": "A booking platform for the Venezuela you haven't seen — stays, flights, transportation, experiences, and gastronomy — with an embedded donation channel that lets every traveler give directly to national causes.",
     "status": "Active",
     "client": "VCP build",
     "website": "https://vamosavenezuela.com/",
     "logo": "assets/logos/vamosavenezuela.svg",
-    "overview": "<p>VamosaVenezuela is a travel guide and trip-planning platform for Venezuelan tourism. It curates places to stay, dining, and activities across eight regions — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — plus landscape categories from beaches and islands to tepuis and jungle.</p><p>Beyond destination guides, the platform ships real planning tools: an interactive map, flight search, sample trips, and a custom itinerary builder. Every destination carries an editorial safety rating, so travelers know what to expect before they commit.</p>",
+    "overview": "<p>VamosaVenezuela is a booking platform for Venezuelan travel, built to make booking the country easy and enjoyable — hotels, flights, transportation, experiences, and gastronomy, for domestic travelers and international visitors alike, all in one place.</p><p>The bookings sit inside real trip-planning depth: curated coverage of eight regions — Los Roques, Mérida and the Andes, Canaima and Angel Falls, Morrocoy, Margarita, Gran Sabana, Caracas, Barquisimeto — plus landscape categories from beaches and islands to tepuis and jungle, an interactive map, flight search, sample trips, and a custom itinerary builder. Every destination carries an editorial safety rating, so travelers know what to expect before they commit.</p><p>And beyond bookings, the platform is a reconstruction vehicle: a guaranteed share of every sale is funneled to non-profits rebuilding the country's critical infrastructure, with an optional personal donation at checkout on top.</p>",
+    "article": [
+      {
+        "heading": "Every trip starts at one doorway",
+        "html": "<p>The Destinations menu is the whole country in one panel: eight regions down one column, landscape categories — beaches and islands, mountains and páramo, tepuis and jungle, cities and culture — down the next, and \"start here\" trails for first-timers beside a live map of Venezuela. The booking surfaces sit in the same navigation — accommodation, gastronomy, activities, planning — so browsing a region flows straight into booking it.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vamosavenezuela-destinations.png",
+          "alt": "VamosaVenezuela destinations menu listing eight regions, landscape categories, start-here links, and an interactive map of Venezuela",
+          "caption": "The Destinations menu — regions, landscapes, first-trip trails, and the map in one panel.",
+          "width": 3000,
+          "height": 1730
+        }
+      },
+      {
+        "heading": "Editorial that ends in a booking",
+        "html": "<p>The content layer is written to sell the trip, not just describe it. The birdwatching guide opens on species that exist nowhere else on Earth — 92 flagship species, 74 endemics, 35 tepui specialties — and lands on the platform's core move: explore the species, find the routes, and book the posada that puts you in front of them. Every guide is a funnel that ends at a reservation.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vamosavenezuela-birdwatching.png",
+          "alt": "VamosaVenezuela birdwatching page over an Angel Falls backdrop with species statistics and calls to action to explore species and routes",
+          "caption": "The birdwatching guide — editorial depth with species stats, ending in a bookable posada.",
+          "width": 2200,
+          "height": 1266
+        }
+      },
+      {
+        "heading": "From inspiration to itinerary",
+        "html": "<p>Experience categories are bookable inventories, not brochures. The adventure page carries 103 experiences — Andean paragliding, Roraima treks, Class V white-water — each with an at-a-glance card for the hub city, top activity, and starting price. \"Plan with AI\" builds the itinerary, and every pick lands in My Trip, the traveler's running plan from first idea to checkout.</p>",
+        "image": {
+          "src": "assets/screenshots/vamosavenezuela/vamosavenezuela-adventure.png",
+          "alt": "VamosaVenezuela adventure experiences page showing 103 available experiences, an at-a-glance summary card with pricing, and a Plan with AI button",
+          "caption": "The adventure catalog — 103 bookable experiences with pricing, AI planning, and the My Trip builder.",
+          "width": 2400,
+          "height": 1389
+        }
+      }
+    ],
     "timeline": null,
     "moat": "<p>Editorial curation plus a per-destination safety-rating system — a trust layer no generic travel site offers for Venezuela. The content depth across all eight regions, hidden gems included, is the kind of ground-truth coverage a competitor can't scrape together quickly.</p>",
-    "business_model": "<p>Audience-first: the platform builds traffic through curated destination content, with flight search and stay/experience listings as the natural referral and booking surfaces to monetize as the audience grows.</p>",
+    "business_model": "<p>Booking-first: VamosaVenezuela earns on every booking made through the platform — stays, flights, transportation, experiences, and gastronomy — while the curated destination content keeps pulling the audience in. A creator affiliate program multiplies the marketing: influencers earn commission on promo videos for listed properties and experiences, compounding reach for the platform and its locations at near-zero fixed cost.</p><p>A guaranteed 10% of sales is pledged to non-profits working on the reconstruction of Venezuela — the business only wins when the country does.</p>",
+    "extra_sections": [
+      {
+        "title": "Creator & affiliate program",
+        "html": "<p>VamosaVenezuela turns travel creators into its marketing engine. Influencers earn a commission on promo videos they produce for listed properties and experiences — so every creator who joins multiplies the platform's marketing output, and hands the listed locations advertising reach they couldn't buy on their own, at near-zero fixed cost to the platform.</p><p>The incentives line up three ways: creators get paid for content they'd make anyway, properties get professional promotion tied directly to bookings, and the platform's catalog markets itself harder with every new voice.</p>"
+      },
+      {
+        "title": "Impact — rebuilding Venezuela",
+        "html": "<p>VamosaVenezuela is more than a booking platform — it is a funding channel for the country's reconstruction. A guaranteed <strong>10% of sales</strong> goes to a set of non-profits working on rebuilding critical parts of Venezuela's infrastructure. That pledge is structural, not a campaign: it applies to every sale, from the first.</p><p>On top of the guaranteed share, every traveler can add a personal donation at checkout, directed to the Venezuelan cause of their choice — so each booking carries the platform's commitment, and, when the traveler wants, their own.</p>"
+      }
+    ],
     "specifics": {
       "Website": "https://vamosavenezuela.com/",
+      "Booking": "Hotels, flights, transportation, experiences & gastronomy — domestic + international",
       "Coverage": "8 regions + landscape categories across Venezuela",
-      "Content": "Destinations, stays, gastronomy, experiences, itineraries",
       "Safety": "Per-destination editorial risk ratings",
-      "Tools": "Interactive map, flight search, itinerary builder"
+      "Tools": "Interactive map, flight search, AI itinerary builder",
+      "Impact": "10% of sales to reconstruction non-profits + traveler donations at checkout"
     },
     "related": null
   },
