@@ -592,6 +592,44 @@
 
 .vcp-social:hover { border-color: var(--line-strong); color: var(--text); }
 
+/* === Section icon — decorative inline-SVG opener for a prose section === */
+.vcp-section-icon {
+  display: block;
+  width: var(--space-7);
+  height: var(--space-7);
+  color: var(--silver);
+  margin-bottom: var(--space-4);
+}
+
+/* === Section figure — decorative figure centered below a prose section,
+   or floated beside it with the --right modifier === */
+.vcp-section-figure {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+.vcp-section-figure .vcp-section-icon {
+  width: min(100%, 240px);
+  height: auto;
+  margin: 0;
+  color: var(--silver-bright);
+}
+
+.vcp-section-figure--right {
+  float: right;
+  width: min(42%, 300px);
+  margin: var(--space-1) 0 var(--space-3) var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .vcp-section-figure--right {
+    float: none;
+    width: 100%;
+    margin: var(--space-4) 0 0;
+  }
+}
+
 /* Status dot — "available for advisory" */
 .vcp-status-dot {
   width: 8px;

@@ -3,8 +3,9 @@
  *
  * Single template shared by every project: reads ?slug= from the URL,
  * looks up the matching entry in data/projects.json (via js/projects-data.js),
- * and renders up to 8 sections (header, overview, article, timeline, moat,
- * business model, specifics, related). Every section after the header is optional —
+ * and renders the sections (header, overview, article, channels & pricing,
+ * any project-specific extra_sections, timeline, moat, business model,
+ * specifics, related). Every section after the header is optional —
  * omitted entirely, heading and all, when the underlying data is null/empty —
  * and section numbers are assigned to the sections that actually render, so
  * a minimal entry never shows gaps in the numbering.
@@ -87,6 +88,25 @@
           '<div class="vcp-prose">' + cp.pricing_html + '</div>' +
           '<div data-calc-slot></div>' +
         '</div>' +
+      '</section>'
+    );
+  }
+
+  // Extra sections — project-specific prose sections ({title, html}) that
+  // don't warrant their own renderer. Numbered like every other section.
+  // An optional `aside` (trusted HTML, e.g. a decorative SVG) renders as a
+  // centered figure below the prose (vcp-section-figure), or floats beside
+  // it when aside_position is "right" (vcp-section-figure--right).
+  function renderExtraSection(section, num) {
+    var right = section.aside_position === 'right';
+    var figure = section.aside
+      ? '<div class="vcp-section-figure' + (right ? ' vcp-section-figure--right' : '') + '">' + section.aside + '</div>'
+      : '';
+    var body = right ? figure + section.html : section.html + figure;
+    return (
+      '<section class="detail-section">' +
+        sectionHeading(num, section.title) +
+        '<div class="vcp-prose" style="max-width: 72ch;' + (right ? ' display: flow-root;' : '') + '">' + body + '</div>' +
       '</section>'
     );
   }
@@ -207,13 +227,23 @@
     var sectionDefs = [
       { blank: isBlank(project.overview), render: renderOverview },
       { blank: isBlank(project.article), render: renderArticle },
-      { blank: isBlank(project.channels_pricing), render: renderChannels },
+      { blank: isBlank(project.channels_pricing), render: renderChannels }
+    ];
+
+    (project.extra_sections || []).forEach(function (section) {
+      sectionDefs.push({
+        blank: isBlank(section.html),
+        render: function (p, num) { return renderExtraSection(section, num); }
+      });
+    });
+
+    sectionDefs = sectionDefs.concat([
       { blank: isBlank(project.timeline), render: renderTimeline },
       { blank: isBlank(project.moat), render: renderMoat },
       { blank: isBlank(project.business_model), render: renderBusinessModel },
       { blank: isBlank(project.specifics), render: renderSpecifics },
       { blank: relatedGroups(project).length === 0, render: renderRelated }
-    ];
+    ]);
 
     var sections = [renderHeader(project)];
     var next = 1;
